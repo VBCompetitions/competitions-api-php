@@ -1,0 +1,21 @@
+{
+  "name": "vbcompetitions/competitions-api",
+  "description": "A PHP library for an API server and management UI for hosting VBCompetitions",
+  "license": "MIT",
+  "type": "library",
+  "autoload": {
+    "psr-4": {"VBCompetitions\\CompetitionsAPI\\": "src/"}
+  },
+  "require": {
+    "php": "^8.0",
+    "ramsey/uuid": "^4.7",
+    "slim/slim": "4.*",
+    "slim/psr7": "^1.5",
+    "vbcompetitions/competitions": "^0.10.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0",
+    "phpunit/php-code-coverage": "^10.0",
+    "phpstan/phpstan": "^1.10"
+  }
+}

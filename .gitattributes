@@ -1,0 +1,12 @@
+/.gitattributes    export-ignore
+/.github           export-ignore
+/.gitignore        export-ignore
+/.vscode           export-ignore
+/dev               export-ignore
+/docs              export-ignore
+/example           export-ignore
+/openapi           export-ignore
+/phpunit.xml       export-ignore
+/README.md         export-ignore
+/tests             export-ignore
+/ui                export-ignore

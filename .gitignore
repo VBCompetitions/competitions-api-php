@@ -1,0 +1,11 @@
+/.phpdoc/*
+/.phpunit.cache/*
+/.phpunit.result.cache
+/composer.lock
+/coverage/*
+/vendor/*
+/pkg/
+!/example/data/sessions/.htaccess
+/example/data/sessions/*
+!/example/data/users/.htaccess
+/example/data/users/*

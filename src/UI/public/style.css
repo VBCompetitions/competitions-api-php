@@ -1,0 +1,765 @@
+:root {
+  --color-background: #ffffff;
+  --color-form-background: #ffffff;
+  --color-midway: #9f9f9f;
+  --color-text: #404040;
+  --color-text-alt: #ffffff;
+  --color-action-link-background: #eeeeee;
+  --color-action-link-text: #404040;
+  --color-table-link-text: #404040;
+
+  --color-table-cell-background: #eeeeee;
+  --color-table-header-background: #aaaaaa;
+  --color-table-text: #404040;
+  --color-table-text-alt: #ffffff;
+
+  --color-winner-background: #a9f0b4;
+  --color-winner-text: #1b962c;
+  --color-winner-span: #1b962c;
+  --color-loser-background: #e9e9e9;
+  --color-loser-text: #484848;
+  --color-time-background: #40904a;
+  --color-time-played-background: #aaaaaa;
+
+  --color-this-team-background: #eeeeee;
+  --color-this-team-border: #40904a;
+
+  --color-header-background: #404040;
+  --color-header-border: #202020;
+  --color-header-text: #b0b0b0;
+  --color-header-text-hover: #f0f0f0;
+
+  --color-theme-slider-background: #b0b0b0;
+  --color-theme-slider: #404040;
+  --color-theme-text-light: #b0b0b0;
+  --color-theme-text-dark: #404040;
+
+  --color-bool-slider-background: #b0b0b0;
+  --color-bool-slider: #404040;
+  --color-bool-text-off: #b0b0b0;
+  --color-bool-text-on: #404040;
+
+  --color-save-button: #587Cf5;
+  --color-save-button-text: #ffffff;
+  --color-restore-button: #587Cf5;
+  --color-restore-button-text: #ffffff;
+  --color-button-disabled: #9f9f9f;
+  --color-status-ok: #3fce52;
+  --color-status-ok-called: #a9f0b4;
+  --color-status-ok-text: #ffffff;
+  --color-status-sending: #a9f0b4;
+  --color-status-sending-text: #ffffff;
+  --color-status-error: #d33f3f;
+  --color-status-error-text: #ffffff;
+
+  --transition-time: 0s;
+}
+
+[data-theme="dark"] {
+  --color-background: #404040;
+  --color-form-background: #9f9f9f;
+  --color-text: #FFFFFF;
+  --color-text-alt: #404040;
+  --color-action-link-background: #dbdbdb;
+  --color-action-link-text: #404040;
+  --color-table-link-text: #404040;
+
+  --color-table-cell-background: #dbdbdb;
+  --color-table-header-background: #6d6d6d;
+  --color-table-text: #404040;
+  --color-table-text-alt: #ffffff;
+
+  --color-winner-background: #1b962c;
+  --color-winner-text: #dafadf;
+  --color-winner-span: #1b962c;
+  --color-loser-background: #707070;
+  --color-loser-text: #eeeeee;
+  --color-time-played-background: #6d6d6d;
+
+  --color-this-team-background: #c0eec6;
+  --color-this-team-border: #22b135;
+
+  --color-header-background: #2d2d2d;
+
+  --color-theme-text-light: #404040;
+  --color-theme-slider: #2d2d2d;
+  --color-theme-text-dark: #b0b0b0;
+
+  --color-save-button: #587Cf5;
+  --color-save-button-text: #ffffff;
+  --color-restore-button: #587Cf5;
+  --color-restore-button-text: #ffffff;
+  --color-status-ok: #1b962c;
+  --color-status-ok-called: #a2c4a6;
+  --color-status-ok-text: #ffffff;
+  --color-status-sending: #a2c4a6;
+  --color-status-sending-text: #ffffff;
+  --color-status-error: #d33f3f;
+  --color-status-error-text: #ffffff;
+}
+
+[data-loaded="loaded"] {
+  --transition-time: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: inherit;
+}
+
+*:before, *:after {
+  box-sizing: inherit;
+}
+
+html {
+  height: 100%;
+  background: var(--color-background);
+  box-sizing: border-box;
+  color: var(--color-text);
+  font-size: 16px;
+  transition: var(--transition-time);
+}
+
+body {
+  position: relative;
+  min-height: 100%;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 16px;
+  transition: var(--transition-time);
+}
+
+header {
+  background: var(--color-header-background);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-header-border);
+  color: var(--color-header-text);
+  text-align: center;
+  font-size: 20px;
+  transition: var(--transition-time);
+}
+
+/* header a:any-link {
+  color: var(--color-header-text);
+} */
+
+header a:active, header a:hover {
+  color: var(--color-header-text-hover);
+}
+
+main {
+  margin-bottom: auto;
+}
+
+footer {
+  background: var(--color-header-background);
+  border-top: 1px;
+  border-top-style: solid;
+  border-top-color: var(--color-header-border);
+  bottom: 0;
+  color: var(--color-header-text);
+  font-size: 16px;
+  padding: 10px 25px;
+  position: absolute;
+  text-align: right;
+  transition: var(--transition-time);
+  width: 100%;
+}
+
+footer a:any-link {
+  color: var(--color-header-text);
+}
+
+footer a:active, footer a:hover {
+  color: var(--color-header-text-hover);
+}
+
+div.inline-block {
+  display: inline-block;
+}
+
+div.centred {
+  text-align: center;
+}
+
+div.left-align {
+  text-align: left;
+}
+
+div.left-float {
+  float: left;
+}
+
+div.right-align {
+  text-align: right;
+}
+
+div.right-float {
+  float: right;
+}
+
+div.spaced {
+  margin: 50px;
+}
+
+div.boxed {
+  border: 1px solid var(--color-midway);
+  border-radius: 4px;
+  display: inline-block;
+  padding: 15px;
+}
+
+div.vbc-logo {
+  float: left;
+}
+
+p {
+  padding: 0.5em 0em 0.5em 0em;
+}
+
+.container {
+  max-width: 899px;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.container-narrow {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+section {
+  padding: 15px;
+}
+
+nav.breadcrumb-nav {
+  display: inline-block;
+  margin-top: 31px;
+}
+
+a:link {
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-time);
+}
+
+a:visited {
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-time);
+}
+
+a:hover {
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-time);
+}
+
+a:active {
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-time);
+}
+
+.breadcrumb {
+  color: var(--color-header-text);
+  display: inline-block;
+  margin-left: 4px;
+  margin-right: 4px;
+  text-decoration: none;
+}
+
+a.breadcrumb:link {
+  color: var(--color-header-text);
+  display: inline-block;
+  text-decoration: none;
+}
+
+a.breadcrumb:visited {
+  color: var(--color-header-text);
+  display: inline-block;
+  text-decoration: none;
+}
+
+a.breadcrumb:hover {
+  color: var(--color-header-text-hover);
+  text-decoration: none;
+}
+
+a.breadcrumb.active {
+  color: var(--color-header-text-hover);
+}
+
+a.action-link {
+  background-color: var(--color-action-link-background);
+  border-radius: 5px;
+  color: var(--color-action-link-text);
+  display: block;
+  margin: 15px;
+  padding: 20px 40px 20px 40px;
+  width: fit-content;
+}
+
+a.table-link {
+  color: var(--color-table-link-text);
+}
+
+span.save-button {
+  color: var(--color-save-button-text);
+  transition: var(--transition-time);
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+span.restore-button {
+  color: var(--color-restore-button-text);
+  transition: var(--transition-time);
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/***************
+ * forms
+ ***************/
+
+form input {
+  background-color: var(--color-form-background);
+  border: 1px solid var(--color-text);
+  border-radius: 3px;
+  margin: 5px;
+  padding: 8px;
+}
+
+form button {
+  background-color: var(--color-save-button);
+  border: 0px solid var(--color-save-button);
+  border-radius: 3px;
+  color: var(--color-save-button-text);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px;
+  text-align: center;
+  /* width: 1px; */
+  transition: var(--transition-time);
+}
+
+form button:disabled {
+  background-color: var(--color-button-disabled);
+  border: 0px solid var(--color-button-disabled);
+  cursor:default
+}
+
+/***************
+ * Light/Dark theme toggle
+ ***************/
+.vbc-theme-toggle-wrapper {
+  float: right;
+  margin: 26px 10px 0px 26px;
+}
+
+.vbc-theme-toggle {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 121px;
+}
+
+.theme-toggle input {
+  display: none;
+}
+
+span.vbc-theme-toggle-text {
+  display: inline-block;
+  position: relative;
+  margin-top: 5px;
+}
+
+span.vbc-theme-toggle-text.light {
+  color: var(--color-theme-text-light);
+  transition: var(--transition-time);
+}
+
+span.vbc-theme-toggle-text.dark {
+  color: var(--color-theme-text-dark);
+  transition: var(--transition-time);
+}
+
+.slider {
+  background-color: var(--color-theme-slider-background);
+  white-space: nowrap;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: var(--transition-time);
+}
+
+.slider:before {
+  background-color: var(--color-theme-slider);
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  width: 60px;
+  transition: var(--transition-time);
+}
+
+input:checked + .slider:before {
+  width: 56px;
+  transform: translateX(56px);
+  background-color: var(--color-theme-slider);
+  transition: var(--transition-time);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 34px;
+}
+
+/***************
+ * Bool flag toggle
+ ***************/
+div.bool-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 5px 10px 0px 5px;
+}
+
+span.bool-toggle-label {
+  margin: 0px 7px;
+}
+
+.bool-toggle {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 72px;
+}
+
+.bool-toggle input {
+  display: none;
+}
+
+span.bool-toggle-text {
+  display: inline-block;
+  position: relative;
+  margin: 8px 0px 0px 10px;
+}
+
+span.bool-toggle-off-text.bool-toggle-off {
+  color: var(--color-bool-text-off);
+  transition: var(--transition-time);
+}
+
+span.bool-toggle-off-text.bool-toggle-on {
+  color: var(--color-bool-text-on);
+  transition: var(--transition-time);
+}
+
+span.bool-toggle-on-text.bool-toggle-off {
+  color: var(--color-bool-text-on);
+  transition: var(--transition-time);
+}
+
+span.bool-toggle-on-text.bool-toggle-on {
+  color: var(--color-bool-text-off);
+  transition: var(--transition-time);
+}
+
+.bool-slider {
+  background-color: var(--color-bool-slider-background);
+  white-space: nowrap;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: var(--transition-time);
+}
+
+.bool-slider:before {
+  background-color: var(--color-bool-slider);
+  bottom:4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  width: 36px;
+  transition: var(--transition-time);
+}
+
+input:checked + .bool-slider:before {
+  width: 30px;
+  transform: translateX(34px);
+  background-color: var(--color-bool-slider);
+  transition: var(--transition-time);
+}
+
+.bool-slider.round {
+  border-radius: 34px;
+}
+
+.bool-slider.round:before {
+  border-radius: 34px;
+}
+
+/***************
+ * Match/League styles
+ ***************/
+
+table {
+  background-color: inherit;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+table th {
+  background-color: var(--color-table-header-background);
+  border-color: var(--color-table-header-background);
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 2px;
+  padding: 5px 10px 5px 10px;
+  transition: var(--transition-time);
+}
+
+table th.vbc-match-blank {
+  background-color: inherit;
+  border-radius: 5px;
+  border-style: hidden;
+  border-width: 2px;
+  padding: 5px 10px 5px 10px;
+}
+
+table td {
+  background-color: var(--color-table-cell-background);
+  border-color: var(--color-table-cell-background);
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 2px;
+  color: var(--color-table-text);
+  padding: 5px 10px 5px 10px;
+  transition: var(--transition-time);
+}
+
+table td.button {
+  background-color: var(--color-save-button);
+  border-color: var(--color-save-button);
+  text-align: center;
+  width: 1px;
+  transition: var(--transition-time);
+}
+
+table.vbc-match td.vbc-match-start {
+  background-color: var(--color-time-background);
+  border-color: var(--color-time-background);
+  color: var(--color-table-text-alt);
+  width: 1px;
+  transition: var(--transition-time);
+}
+
+table.vbc-match td.vbc-match-start.vbc-match-played {
+  background-color: var(--color-time-played-background);
+  border-color: var(--color-time-played-background);
+  color: var(--color-text);
+  transition: var(--transition-time);
+}
+
+table.vbc-match td.vbc-match-id {
+  width: 1px;
+}
+
+table.vbc-match td.vbc-match-court {
+  text-align: center;
+  width: 1px;
+}
+
+table.vbc-match td.vbc-match-score {
+  border-width: 2px;
+  border-color: var(--color-table-cell-background);
+  text-align: center;
+  width: 1px;
+  transition: var(--transition-time);
+}
+
+table.vbc-score {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+td.vbc-match-score-sets {
+  text-align: center;
+  padding: 0px;
+}
+
+table.vbc-match td.vbc-match-score.vbc-match-winner {
+  background-color: var(--color-winner-background);
+  border-width: 2px;
+  border-color: var(--color-winner-background);
+  color: var(--color-winner-text);
+  transition: var(--transition-time);
+  font-weight: 600;
+}
+
+table.vbc-match td.vbc-match-score.vbc-match-loser {
+  background-color: var(--color-loser-background);
+  border-width: 2px;
+  border-color: var(--color-loser-background);
+  color: var(--color-loser-text);
+  font-weight: 600;
+  transition: var(--transition-time);
+}
+
+table.vbc-match td.vbc-match-blank {
+  background-color: inherit;
+  border-radius: 5px;
+  border-style: hidden;
+  border-width: 2px;
+  padding: 5px 10px 5px 10px;
+  transition: var(--transition-time);
+}
+
+table.vbc-match td.vbc-match-break {
+  text-align: center;
+}
+
+table.vbc-league td.vbc-league-table-num {
+  width: 1px;
+  text-align: center;
+}
+
+table.vbc-break td.vbc-break {
+  background-color: var(--color-table-cell-background);
+  border-color: var(--color-table-cell-background);
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 2px;
+  padding: 5px 10px 5px 10px;
+  width: 500px;
+  text-align: center;
+  transition: var(--transition-time);
+}
+
+table td.vbc-this-team {
+  border-width: 3px;
+  background-color: var(--color-this-team-background);
+  border-color: var(--color-this-team-border);
+  transition: var(--transition-time);
+}
+
+table td.vbc-status-sending {
+  background-color: var(--color-status-sending);
+  border-width: 2px;
+  border-color: var(--color-status-sending);
+  color: var(--color-status-sending-text);
+  transition: var(--transition-time);
+}
+
+table td.vbc-status-ok {
+  background-color: var(--color-status-ok);
+  border-width: 2px;
+  border-color: var(--color-status-ok);
+  color: var(--color-status-ok-text);
+  transition: var(--transition-time);
+}
+
+table td.vbc-status-error {
+  background-color: var(--color-status-error);
+  border-width: 2px;
+  border-color: var(--color-status-error);
+  color: var(--color-status-error-text);
+  transition: var(--transition-time);
+}
+
+table td.vbc-status-ok-called {
+  background-color: var(--color-status-ok-called);
+  border-width: 2px;
+  border-color: var(--color-status-ok);
+  color: var(--color-status-ok-text);
+  transition: var(--transition-time);
+}
+
+table td.vbc-match-score > input {
+  width: 3em;
+  font-size: 16px;
+  text-align: center;
+}
+
+span.vbc-match-winner {
+  color: var(--color-winner-span);
+  font-weight: 600;
+}
+
+.vbc-unknown-value {
+  font-style: italic;
+}
+
+@media only screen and (max-width: 760px) {
+  body {
+    font-size: 12px;
+  }
+
+  table.vbc-match {
+    width: 100%;
+  }
+
+  table.vbc-league th, table.vbc-league td {
+    padding: 1px 3px 1px 3px;
+  }
+
+  table.vbc-match th, table.vbc-match td {
+    padding: 1px 1px 1px 1px;
+  }
+
+  table.vbc-match th.vbc-match-id, table.vbc-match td.vbc-match-id {
+    display: none;
+  }
+
+  table.vbc-match th.vbc-match-blank, table.vbc-match td.vbc-match-blank {
+    width: 5px;
+  }
+
+  table.vbc-match td.vbc-match-team, table.vbc-match td.vbc-match-officials {
+    width: 30%;
+  }
+
+  table.vbc-match th.vbc-match-start, table.vbc-match td.vbc-match-break {
+    width: 1px;
+    padding: 2px 2px 2px 2px;
+  }
+
+  table.vbc-match td.vbc-match-break {
+    width: 75%;
+  }
+
+  table td.vbc-match-score > input {
+    width: 2em;
+    font-size: 14px;
+  }
+
+  a.action-link {
+    font-size: 20px;
+  }
+}
