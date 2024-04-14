@@ -27,7 +27,7 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
 
 
   const handleScoreChange = (e, homeTeam, set) => {
-    if (isNaN(parseInt(e.target.value))) {
+    if (isNaN(parseInt(e.target.value)) && e.target.value !== '') {
       return
     }
 
@@ -39,9 +39,19 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
     }
 
     if (homeTeam) {
-      scores.homeScores[set - 1] = parseInt(e.target.value)
+      scores.homeScores[set - 1] = e.target.value === '' ? '' : parseInt(e.target.value)
     } else {
-      scores.awayScores[set - 1] = parseInt(e.target.value)
+      scores.awayScores[set - 1] = e.target.value === '' ? '' : parseInt(e.target.value)
+    }
+
+    for (let i = scores.homeScores.length - 1; i >= 0; i--) {
+      if ((scores.homeScores[i] === 0 || scores.homeScores[i] === '') &&
+          (scores.awayScores[i] === 0 || scores.awayScores[i] === '')) {
+        scores.homeScores.pop()
+        scores.awayScores.pop()
+      } else {
+        break
+      }
     }
     setScores(scores)
   }
@@ -73,10 +83,10 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
         <Box sx={{ display: 'flex' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', width: '50%', borderStyle: 'solid', borderWidth: '0px 1px 0px 0px', borderColor: '#d7d7d7', padding: '0px 5px' }}>
             <DialogContentText  sx={{ flexGrow: '1', textAlign: 'right', padding: '0px 10px' }} >{`Set\u00A0${i}`}</DialogContentText>
-            <TextField sx={{ width: '55px' }} autoFocus margin="dense" size="small" id="score-save-name" defaultValue={match.getHomeTeamScores().length >= i ? match.getHomeTeamScores()[i - 1] : ''} onChange={e => { handleScoreChange(e, true, i) }} type="text"/>
+            <TextField sx={{ width: '55px', minWidth: '40px' }} autoFocus margin="dense" size="small" id="score-save-name" defaultValue={match.getHomeTeamScores().length >= i ? match.getHomeTeamScores()[i - 1] : ''} onChange={e => { handleScoreChange(e, true, i) }} type="text"/>
           </Box>
           <Box sx={{ display: 'flex', width: '50%', padding: '0px 5px' }}>
-            <TextField sx={{ width: '55px' }} margin="dense" size="small" id="score-save-name" defaultValue={match.getAwayTeamScores().length > (i - 1) ? match.getAwayTeamScores()[i - 1] : ''} onChange={e => { handleScoreChange(e, false, i)} } type="text"/>
+            <TextField sx={{ width: '55px', minWidth: '40px' }} margin="dense" size="small" id="score-save-name" defaultValue={match.getAwayTeamScores().length > (i - 1) ? match.getAwayTeamScores()[i - 1] : ''} onChange={e => { handleScoreChange(e, false, i)} } type="text"/>
           </Box>
         </Box>
       )
