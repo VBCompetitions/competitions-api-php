@@ -5,6 +5,7 @@ namespace VBCompetitions\CompetitionsAPI;
 include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
 use stdClass;
+use DateTime;
 use Ramsey\Uuid\Uuid;
 use VBCompetitions\CompetitionsAPI\Roles;
 
@@ -85,6 +86,7 @@ $admin_user->{'hash-v1'} = password_hash($password, PASSWORD_BCRYPT);
 $admin_user->state = 'active';
 $admin_user->roles = [ Roles::ADMIN ];
 $admin_user->lastLogin = '';
+$admin_user->created = (new DateTime())->format('c');
 
 $users_data->lookup->admin = $user_id;
 $users_data->users->$user_id = $admin_user;
