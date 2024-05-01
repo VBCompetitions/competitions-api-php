@@ -11,9 +11,8 @@ use VBCompetitions\CompetitionsAPI\Roles;
 if ($argc != 2) {
   echo 'Usage: php vbc-api-setup.php [data-directory]'.PHP_EOL.PHP_EOL;
   echo 'Creates a set of folders within the given data-directory for storing the'.PHP_EOL;
-  echo 'competitions, the users and the sessions.  This should be an empty'.PHP_EOL;
-  echo 'directory with a name like "data".  You may then want to create the base'.PHP_EOL;
-  echo 'index file for the API in a folder next to the data-directory'.PHP_EOL;
+  echo 'competitions, the users and the sessions.  data-directory must already'.PHP_EOL;
+  echo 'exist and should be an empty directory with a name like "data"'.PHP_EOL;
   exit(1);
 }
 
@@ -50,6 +49,10 @@ mkdir($data_dir.DIRECTORY_SEPARATOR.'competitions');
 mkdir($data_dir.DIRECTORY_SEPARATOR.'sessions');
 mkdir($data_dir.DIRECTORY_SEPARATOR.'users');
 mkdir($data_dir.DIRECTORY_SEPARATOR.'competitions');
+
+$h = fopen($data_dir.DIRECTORY_SEPARATOR.'.htaccess', 'w');
+fwrite($h, 'Require all denied');
+fclose($h);
 
 $h = fopen($data_dir.DIRECTORY_SEPARATOR.'competitions'.DIRECTORY_SEPARATOR.'.htaccess', 'w');
 fwrite($h, 'Require all denied');
