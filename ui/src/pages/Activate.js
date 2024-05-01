@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useLoaderData } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -13,9 +14,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import VisibilityRounded from '@mui/icons-material/VisibilityRounded'
 import VisibilityOffRounded from '@mui/icons-material/VisibilityOffRounded'
-import { useLoaderData } from 'react-router-dom'
 
-import { getUsernameFromLinkID } from './apis/uidataAPI'
+import { getUsernameFromLinkID } from '../apis/uidataAPI'
 
 export async function loadUserActivation (url) {
   const linkID = url.params.linkID

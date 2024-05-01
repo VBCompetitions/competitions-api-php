@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link, redirect, useLoaderData, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -30,10 +31,9 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { Link, redirect, useLoaderData, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
-import { States, createUser, deleteUser, getUsers, resetUser, updateUser } from './apis/uidataAPI'
-import Roles, { InsufficientRoles } from './Roles'
+import { States, createUser, deleteUser, getUsers, resetUser, updateUser } from '../apis/uidataAPI'
+import Roles, { InsufficientRoles } from '../components/Roles'
 
 export async function userListLoader() {
   try {

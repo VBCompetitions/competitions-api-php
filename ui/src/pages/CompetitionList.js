@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router-dom'
 
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import Box from '@mui/material/Box'
@@ -16,11 +17,10 @@ import LinearProgress from '@mui/material/LinearProgress'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router-dom'
 
-import { createCompetition, getCompetitions } from './apis/competitionAPI.js'
-import CompetitionCard from './CompetitionCard.js'
-import Roles from './Roles.js'
+import { createCompetition, getCompetitions } from '../apis/competitionAPI.js'
+import CompetitionCard from '../components/CompetitionCard.js'
+import Roles from '../components/Roles.js'
 
 
 export async function competitionListLoader() {

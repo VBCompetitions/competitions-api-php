@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -12,7 +13,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import VisibilityRounded from '@mui/icons-material/VisibilityRounded'
 import VisibilityOffRounded from '@mui/icons-material/VisibilityOffRounded'
-import { useSearchParams } from 'react-router-dom'
 
 export default function Login () {
   const [showPassword, setShowPassword] = React.useState(false)

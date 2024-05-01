@@ -3,10 +3,12 @@
   "description": "A PHP library for an API server and management UI for hosting VBCompetitions",
   "license": "MIT",
   "type": "library",
+  "bin": ["bin/vbc-api-setup.php"],
   "autoload": {
     "psr-4": {"VBCompetitions\\CompetitionsAPI\\": "src/"}
   },
   "require": {
+    "composer-runtime-api": "^2.2",
     "php": "^8.0",
     "ramsey/uuid": "^4.7",
     "slim/slim": "4.*",

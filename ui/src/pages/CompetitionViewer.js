@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link, redirect, useLoaderData, useNavigate, useNavigation } from 'react-router-dom'
 
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -22,15 +23,13 @@ import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
-import ClubCard from './ClubCard.js'
-import TeamCard from './TeamCard.js'
-import GroupMatchSimple from './GroupMatchSimple.js'
-import GroupBreak from './GroupBreak.js'
+import ClubCard from '../components/ClubCard.js'
+import TeamCard from '../components/TeamCard.js'
+import GroupMatchSimple from '../components/GroupMatchSimple.js'
+import GroupBreak from '../components/GroupBreak.js'
 import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 
-import { getCompetitionByID } from './apis/competitionAPI.js'
-
-import { Link, redirect, useLoaderData, useNavigate, useNavigation } from 'react-router-dom'
+import { getCompetitionByID } from '../apis/competitionAPI.js'
 
 export async function competitionLoader (url) {
   const competitionID = url.params.competitionID

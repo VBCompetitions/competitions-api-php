@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import Box from '@mui/material/Box'
-import NotificationSnackbar from './NotificationSnackbar.js'
+import NotificationSnackbar from './components/NotificationSnackbar.js'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import '@fontsource/roboto/300.css'
@@ -10,14 +10,14 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
-import Root, { loggedIn } from './Root.js'
-import CompetitionList, { competitionListLoader } from './CompetitionList.js'
-import CompetitionViewer, { competitionLoader } from './CompetitionViewer.js'
-import ErrorPage from './ErrorPage.js'
-import Login from './Login.js'
-import Account, { accountLoader } from './Account.js'
-import Activate, { loadUserActivation } from './Activate.js'
-import Users, { userListLoader } from './Users.js'
+import Root, { loggedIn } from './pages/Root.js'
+import CompetitionList, { competitionListLoader } from './pages/CompetitionList.js'
+import CompetitionViewer, { competitionLoader } from './pages/CompetitionViewer.js'
+import ErrorPage from './pages/ErrorPage.js'
+import Login from './pages/Login.js'
+import Account, { accountLoader } from './pages/Account.js'
+import Activate, { loadUserActivation } from './pages/Activate.js'
+import Users, { userListLoader } from './pages/Users.js'
 
 export default function App () {
   const [successMessage, setSuccessMessage] = useState(null)

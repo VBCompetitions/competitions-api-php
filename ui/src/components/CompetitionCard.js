@@ -22,7 +22,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link, useRouteLoaderData } from 'react-router-dom'
 
-import { deleteCompetition, updateCompetition } from './apis/competitionAPI'
+import { deleteCompetition, updateCompetition } from '../apis/competitionAPI'
 import Roles from './Roles'
 
 export default function CompetitionCard ({ competition, setErrorMessage, triggerLoading, triggerRefresh }) {

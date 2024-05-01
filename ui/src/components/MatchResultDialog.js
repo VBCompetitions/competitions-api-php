@@ -12,7 +12,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
 
 import { MatchType } from '@vbcompetitions/competitions'
-import { updateMatch } from './apis/competitionAPI.js'
+import { updateMatch } from '../apis/competitionAPI.js'
 
 function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOpen, closeDialog, setUpdating, setSuccessMessage, setErrorMessage }) {
   const initialScoresData = { homeScores: [], awayScores: [] }
