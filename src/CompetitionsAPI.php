@@ -65,6 +65,11 @@ class CompetitionsAPI {
         // Calls to the UI backend are mounted on /uidata
         $this->app->group('/uidata', $this->ui->attachUIDataRoutes());
 
+        $this->app->get('/', function (Request $_, Response $res) {
+            $res = $res->withHeader('location', $this->config->getBasePath().'/ui')->withStatus(302);
+            return $res;
+        });
+
         $this->app->run();
     }
 
