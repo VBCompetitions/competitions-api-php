@@ -56,7 +56,7 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
     setScores(scores)
   }
 
-  if (match.isComplete()) {
+  if (match.isComplete() && !match.isDraw()) {
     if (match.getWinnerTeamID() === homeTeam.getID()) {
       homeWin = '-winner'
     } else if (match.getWinnerTeamID() === awayTeam.getID()) {

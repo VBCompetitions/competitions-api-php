@@ -9,7 +9,7 @@ function TeamAndScoreBox ({ match, homeTeam, awayTeam }) {
   let homeWin = ''
   let awayWin = ''
 
-  if (match.isComplete()) {
+  if (match.isComplete() && !match.isDraw()) {
     if (match.getWinnerTeamID() === homeTeam.getID()) {
       homeWin = '-winner'
     } else if (match.getWinnerTeamID() === awayTeam.getID()) {
