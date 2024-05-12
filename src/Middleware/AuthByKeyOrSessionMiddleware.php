@@ -39,7 +39,7 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
                 return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, null);
             }
 
-            foreach ($request->getHeader('Authorization') as $auth_header) {
+            foreach ($request->getHeader('authorization') as $auth_header) {
                 $auth_parts = explode(' ', $auth_header, 2);
 
                 if (count($auth_parts) !== 2) {
