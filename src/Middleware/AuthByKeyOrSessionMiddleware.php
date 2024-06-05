@@ -25,7 +25,7 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
         //  verifying has to pass like a password check
         // API Keys are in the header:
         //   Authorization: APIKeyV1 XXXXX
-        if ($request->hasHeader('Authorization')) {
+        if ($request->hasHeader('authorization') || $request->hasHeader('Authorization')) {
             // read in keys file
             $keys_file = $this->config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
             $h = fopen($keys_file, 'r');
@@ -39,7 +39,19 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
                 return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, null);
             }
 
-            foreach ($request->getHeader('authorization') as $auth_header) {
+            $auth_headers = [];
+            if ($request->hasHeader('authorization')) {
+                foreach($request->getHeader('authorization') as $auth_header) {
+                    array_push($auth_headers, $auth_header);
+                }
+            }
+            if ($request->hasHeader('Authorization')) {
+                foreach($request->getHeader('Authorization') as $auth_header) {
+                    array_push($auth_headers, $auth_header);
+                }
+            }
+
+            foreach ($auth_headers as $auth_header) {
                 $auth_parts = explode(' ', $auth_header, 2);
 
                 if (count($auth_parts) !== 2) {
@@ -89,7 +101,7 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
                     return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, null);
                 }
 
-                // Check if user already exists
+                // Check if user exists and is active
                 if (!property_exists($users_data->users, $user_id) || $users_data->users->$user_id->state !== 'active') {
                     return ErrorMessage::respondWithError(ErrorMessage::UNAUTHORIZED_CODE, 'Authentication Error', ErrorMessage::UNAUTHORIZED_TEXT, null);
                 }
