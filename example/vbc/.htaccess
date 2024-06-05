@@ -3,3 +3,6 @@ RewriteBase "/competitions-api-php/example/vbc"
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
+# Allow passing the Authorization header
+# https://serverfault.com/questions/1094686/rewriterule-e-http-authorizationhttpauthorization-what-does-it-mean
+CGIPassAuth On

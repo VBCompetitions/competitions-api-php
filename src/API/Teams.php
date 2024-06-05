@@ -38,7 +38,7 @@ final class Teams
             $competition = Competition::loadFromFile($config->getCompetitionsDir(), $competition_id.'.json');
             $team = $competition->getTeamByID($team_id);
             if ($team->getID() === CompetitionTeam::UNKNOWN_TEAM_ID) {
-                return ErrorMessage::respondWithError(404, 'No such team', ErrorMessage::RESOURCE_DOES_NOT_EXIST, '00200');
+                return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No such team', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '00200');
             } else {
                 $res->getBody()->write(json_encode($team));
                 return $res->withHeader('content-type', 'application/json');

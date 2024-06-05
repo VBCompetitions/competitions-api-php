@@ -87,10 +87,34 @@ final class Matches
             return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid match data, scores are invalid: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_TEXT, '00340');
         }
 
+        if (property_exists($match_data->homeTeam, 'mvp')) {
+            try {
+                $match->getHomeTeam()->setMVP(strlen($match_data->homeTeam->mvp) > 0 ? $match_data->homeTeam->mvp : null);
+            } catch (Throwable $th) {
+                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid match data, invalid home team MVP: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_TEXT, '00341');
+            }
+        }
+
+        if (property_exists($match_data->awayTeam, 'mvp')) {
+            try {
+                $match->getAwayTeam()->setMVP(strlen($match_data->awayTeam->mvp) > 0 ? $match_data->awayTeam->mvp : null);
+            } catch (Throwable $th) {
+                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid match data, invalid away team MVP: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_TEXT, '00342');
+            }
+        }
+
+        if (property_exists($match_data, 'mvp')) {
+            try {
+                $match->setMVP(strlen($match_data->mvp) > 0 ? $match_data->mvp : null);
+            } catch (Throwable $th) {
+                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid match data, invalid match MVP: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_TEXT, '00343');
+            }
+        }
+
         try {
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to update the match', ErrorMessage::INTERNAL_ERROR_TEXT, '00341');
+            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to update the match', ErrorMessage::INTERNAL_ERROR_TEXT, '00344');
         }
 
         return $res;
