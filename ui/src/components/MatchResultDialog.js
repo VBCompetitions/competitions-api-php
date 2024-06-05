@@ -10,6 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { MatchType } from '@vbcompetitions/competitions'
 import { updateMatch } from '../apis/competitionAPI.js'
@@ -24,7 +26,8 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
   const [scores, setScores] = useState(initialScoresData)
   let homeWin = ''
   let awayWin = ''
-
+  const [perTeamMVP, setPerTeamMVP] = useState(true)
+  const [mvpList, setMVPs] = useState(['', '', ''])
 
   const handleScoreChange = (e, homeTeam, set) => {
     if (isNaN(parseInt(e.target.value)) && e.target.value !== '') {
@@ -56,11 +59,52 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
     setScores(scores)
   }
 
+  const handleMVPChange = (e, matchMVP, homeTeam) => {
+    if (matchMVP) {
+      mvpList[2] = e.target.value
+    } else {
+      if (homeTeam) {
+        mvpList[0] = e.target.value
+      } else {
+        mvpList[1] = e.target.value
+      }
+    }
+    setMVPs(mvpList)
+  }
+
   if (match.isComplete() && !match.isDraw()) {
     if (match.getWinnerTeamID() === homeTeam.getID()) {
       homeWin = '-winner'
     } else if (match.getWinnerTeamID() === awayTeam.getID()) {
       awayWin = '-winner'
+    }
+  }
+
+  const resultEntrySave = async () => {
+    const stageID = match.getGroup().getStage().getID()
+    const groupID = match.getGroup().getID()
+
+    try {
+      match.setScores(scores.homeScores, scores.awayScores, true)
+    } catch (error) {
+      setErrorMessage(error.message)
+      return
+    }
+
+    match.getHomeTeam().setMVP(mvpList[0])
+    match.getAwayTeam().setMVP(mvpList[1])
+    match.setMVP(mvpList[2])
+
+    const matchData = match.serialize()
+    try {
+      setUpdating(true)
+      closeDialog()
+      await updateMatch(competitionID, stageID, groupID, match.getID(), matchData)
+      setUpdating(false)
+      setSuccessMessage('Match updated')
+    } catch (error) {
+      setUpdating(false)
+      setErrorMessage(error.message)
     }
   }
 
@@ -94,34 +138,33 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
   } else {
 
   }
-
-  const scoreEntrySave = async () => {
-    const stageID = match.getGroup().getStage().getID()
-    const groupID = match.getGroup().getID()
-
-    try {
-      match.setScores(scores.homeScores, scores.awayScores, true)
-    } catch (error) {
-      setErrorMessage(error.message)
-      return
-    }
-
-    const matchData = match.serialize()
-    try {
-      setUpdating(true)
-      closeDialog()
-      await updateMatch(competitionID, stageID, groupID, match.getID(), matchData)
-      setUpdating(false)
-      setSuccessMessage('Match updated')
-    } catch (error) {
-      setUpdating(false)
-      setErrorMessage(error.message)
-    }
-  }
+  const mvps = (
+    <Box>
+      <Box>
+        <Typography sx={{ padding: '5px 10px', display: 'inline' }} variant="subtitle2" component='span' textAlign='center'>Team MVP</Typography>
+      </Box>
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', width: '50%', borderStyle: 'solid', borderWidth: '0px 1px 0px 0px', borderColor: '#d7d7d7', padding: '0px 5px' }}>
+          <TextField sx={{ width: '200px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-home-team" defaultValue={match.getHomeTeam().getMVP()} onChange={e => { handleMVPChange(e, false, true) }} type="text"/>
+        </Box>
+        <Box sx={{ display: 'flex', width: '50%', padding: '0px 5px' }}>
+          <TextField sx={{ width: '200px', minWidth: '100px' }} margin="dense" size="small" id="mvp-away-team" defaultValue={match.getAwayTeam().getMVP()} onChange={e => { handleMVPChange(e, false, false)} } type="text"/>
+        </Box>
+      </Box>
+      <Box>
+        <Typography sx={{ padding: '5px 10px', display: 'inline' }} variant="subtitle2" component='span' textAlign='center'>Match MVP</Typography>
+      </Box>
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', padding: '5px' }}>
+          <TextField sx={{ width: '400px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-match" defaultValue={match.getMVP()} onChange={e => { handleMVPChange(e, true, false) }} type="text"/>
+        </Box>
+      </Box>
+    </Box>
+  )
 
   return (
     <Dialog open={dialogOpen} aria-labelledby="add new competition">
-      <DialogTitle id="add-competition-dialog-title">Update score</DialogTitle>
+      <DialogTitle id="add-competition-dialog-title">Update Match Results</DialogTitle>
       <DialogContent>
         <Box id='teams' sx={{ minWidth: '100px', maxWidth: '500px', display: 'flex' }}>
           <Box id='homeTeam' sx={{ width: '50%', justifyContent: "center", display: 'flex' }}>
@@ -138,10 +181,13 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
         <Box sx ={{ padding: '5px 0px' }}>
           {points}
         </Box>
+        <Box sx ={{ padding: '5px 0px' }}>
+          {mvps}
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDialog} variant="outlined" color="primary">Cancel</Button>
-        <Button onClick={scoreEntrySave} variant="contained" color="primary">Save</Button>
+        <Button onClick={resultEntrySave} variant="contained" color="primary">Save</Button>
       </DialogActions>
     </Dialog>
   )

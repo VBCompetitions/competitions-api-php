@@ -64,6 +64,16 @@ function TeamAndScoreBox ({ match, homeTeam, awayTeam }) {
         <Box sx={{ display: 'block' }}>
           {setScores}
         </Box>
+        {
+          match.getMVP()
+          ?
+          <>
+            <br />
+            <Typography className='team-and-score-mvp' variant='body2' component='span'>Match MPV: {match.getMVP()}</Typography>
+          </>
+          :
+          null
+        }
       </Box>
     )
   }
@@ -73,10 +83,30 @@ function TeamAndScoreBox ({ match, homeTeam, awayTeam }) {
     <Box sx={{ padding: '10px 0px 0px 0px', display: 'flex' }}>
       <Box sx={{ display: 'inline' }}>
         <Typography className='team-and-score-team' variant='h6' component='span'>{homeTeam.getName()}</Typography>
+        {
+          match.getHomeTeam().getMVP()
+          ?
+          <>
+            <br />
+            <Typography className='team-and-score-mvp' variant='body2' component='span'>Team MPV: {match.getHomeTeam().getMVP()}</Typography>
+          </>
+          :
+          null
+        }
       </Box>
       {result}
       <Box sx={{ display: 'inline' }}>
         <Typography className='team-and-score-team' variant='h6' component='span'>{awayTeam.getName()}</Typography>
+        {
+          match.getAwayTeam().getMVP()
+          ?
+          <>
+            <br />
+            <Typography className='team-and-score-mvp' variant='body2' component='span'>Team MPV: {match.getAwayTeam().getMVP()}</Typography>
+          </>
+          :
+          null
+        }
       </Box>
     </Box>
   )

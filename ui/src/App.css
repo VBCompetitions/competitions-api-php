@@ -180,8 +180,7 @@ div.data-box-buttons {
 
 .team-and-score-team {
   padding: 5px 10px;
-  max-width: 300px;
-  min-width: 100px;
+  width: 200px;
   display: inline-block;
 }
 
@@ -217,7 +216,13 @@ div.team-and-score-highlighted-score-winner {
   color: var(--color-winner-background);
 }
 
-@media only screen and (max-width: 740px) {
+@media only screen and (max-width: 900px) {
+  .team-and-score-team {
+    padding: 5px 10px;
+    width: 175px;
+    display: inline-block;
+  }
+
   .group-match {
     flex-wrap: wrap;
   }
@@ -246,9 +251,8 @@ div.team-and-score-highlighted-score-winner {
 
 @media only screen and (max-width: 600px) {
   .team-and-score-team {
-    padding: 5px 10px;
-    max-width: 200px;
-    min-width: 50px;
+    padding: 2px 7px;
+    width: 100px;
     display: inline-block;
   }
 
@@ -277,11 +281,10 @@ div.team-and-score-highlighted-score-winner {
   }
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 450px) {
   .team-and-score-team {
-    padding: 2px 3px;
-    max-width: 150px;
-    min-width: 40px;
+    padding: 1px 2px;
+    max-width: 100px;
     display: inline-block;
   }
 
