@@ -96,7 +96,7 @@ final class Teams
 
         $team = $competition->getTeam($team_id);
         if ($team->getID() === CompetitionTeam::UNKNOWN_TEAM_ID) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such team' , ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00100');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such team' , ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00620');
         }
 
         $context->getLogger()->info('Team with ID ['.$team_id.'] and name ['.$team->getName().'] in competition with ID ['.$competition_id.'] returned');

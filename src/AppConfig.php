@@ -16,6 +16,9 @@ final class AppConfig
     public const VALIDATE_TEAM_UPDATE = 'teamUpdate';
     public const VALIDATE_CONTACT_CREATE = 'contactCreate';
     public const VALIDATE_CONTACT_UPDATE = 'contactUpdate';
+    public const VALIDATE_PLAYER_CREATE = 'playerCreate';
+    public const VALIDATE_PLAYER_UPDATE = 'playerUpdate';
+    public const VALIDATE_PLAYER_TRANSFER = 'playerTransfer';
 
     private string $base_path;
     private string $data_dir;

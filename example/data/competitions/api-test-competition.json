@@ -50,7 +50,7 @@
             "contacts": [
                 {
                     "id": "C1",
-                    "name": "Chris Collins",
+                    "name": "Chris Collin",
                     "roles": [
                         "treasurer"
                     ],
@@ -66,6 +66,134 @@
         {
             "id": "TMO",
             "name": "Team Omega"
+        }
+    ],
+    "players": [
+        {
+            "id": "PL0001",
+            "name": "A Ackers",
+            "number": 1,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0002",
+            "name": "A Addams",
+            "number": 2,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0003",
+            "name": "A Atkins",
+            "number": 4,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0004",
+            "name": "B Baines",
+            "number": 6,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0005",
+            "name": "B Barker",
+            "number": 5,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0006",
+            "name": "B Bettis",
+            "number": 9,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0007",
+            "name": "C Collin",
+            "number": 3,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0008",
+            "name": "C Courts",
+            "number": 2,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0009",
+            "name": "C Curtis",
+            "number": 1,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0010",
+            "name": "D Davies",
+            "number": 7,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0011",
+            "name": "D Dennis",
+            "number": 9,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0012",
+            "name": "D Dobins",
+            "number": 4,
+            "teams": [
+                {
+                    "id": "TMB",
+                    "until": "2024-03-02"
+                },
+                {
+                    "id": "TMO",
+                    "from": "2024-03-02",
+                    "notes": "Emergency transfer"
+                }
+            ]
         }
     ],
     "stages": [

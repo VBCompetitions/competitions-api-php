@@ -96,6 +96,34 @@ final class ContactRoles
     }
 }
 
+final class PlayerRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function get() : array
+    {
+        return Roles::_ALL;
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function transfer() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
 final class MatchRoles
 {
     public static function delete() : array
@@ -196,6 +224,10 @@ final class Roles
     public static function contact() : ContactRoles
     {
         return new ContactRoles();
+    }
+    public static function player() : PlayerRoles
+    {
+        return new PlayerRoles();
     }
 
     public static function match() : MatchRoles

@@ -2653,7 +2653,7 @@ components:
           maxLength: 100
           pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
         name:
-          description: The name of this contact
+          description: The name of this player
           type: string
           minLength: 1
           maxLength: 1000
@@ -2696,12 +2696,12 @@ components:
       required:
         - name
     UpdatePlayerDetails:
-      description: A single player
+      description: Details on a player
       type: object
       additionalProperties: false
       properties:
         name:
-          description: The name of this contact
+          description: The name of this player
           type: string
           minLength: 1
           maxLength: 1000
@@ -2742,7 +2742,7 @@ components:
           type: string
           minLength: 1
     PlayerTransferDetails:
-      description: A Player's team registration entry, linking them to the specified team, potentially for the time period covered by "from" to "until"
+      description: A Player's team registration entry, linking them to the specified team
       type: object
       additionalProperties: false
       properties:

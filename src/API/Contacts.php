@@ -119,7 +119,7 @@ final class Contacts
     public static function getContact(AppConfig $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
-        $context->getLogger()->info('Request to get the contact with ID ['.$contact_id.'] inteam with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
+        $context->getLogger()->info('Request to get the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::get(), $competition_id, '0012');
@@ -129,13 +129,13 @@ final class Contacts
 
         $team = $competition->getTeam($team_id);
         if ($team->getID() === CompetitionTeam::UNKNOWN_TEAM_ID) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such team' , ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00100');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such team' , ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00120');
         }
 
         try {
             $contact = $team->getContact($contact_id);
         } catch (Throwable $err) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Failed to find the contact', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00120');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Failed to find the contact', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00121');
         }
 
         $context->getLogger()->info('Contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.'] returned');
@@ -210,7 +210,7 @@ final class Contacts
             return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00133');
         }
 
-        $context->getLogger()->info('Updated contact with ID ['.$contact_id.'] and name ['.$contact->getName().'] in team with ID ['.$team_id.'] competition with ID ['.$competition_id.']');
+        $context->getLogger()->info('Updated contact with ID ['.$contact_id.'] and name ['.$contact->getName().'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
         return $res->withStatus(200);
     }
 
