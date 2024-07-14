@@ -10,29 +10,30 @@ use VBCompetitions\CompetitionsAPI\ErrorMessage;
 
 class CheckContentTypeMiddleware implements MiddlewareInterface
 {
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $req, RequestHandlerInterface $handler) : ResponseInterface
     {
-        $content_type = $request->getHeader('content-type');
+        $context = $req->getAttribute('context');
+        $content_type = $req->getHeader('content-type');
 
         if (count($content_type) > 1) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Multiple content type headers found; there must be only one', ErrorMessage::BAD_DATA_TEXT, null);
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_DATA_HTTP, 'Multiple content type headers found; there must be only one', ErrorMessage::BAD_DATA_CODE, null);
         }
 
-        $method = $request->getMethod();
+        $method = $req->getMethod();
 
         if ($method === 'POST' || $method === 'PUT'){
             if ($content_type[0] !== 'application/json') {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Bad content type, the content-type header should be "application/json"', ErrorMessage::BAD_DATA_TEXT, null);
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_DATA_HTTP, 'Bad content type, the content-type header should be "application/json"', ErrorMessage::BAD_DATA_CODE, null);
             }
 
-            $json_body = $request->getParsedBody();
+            $json_body = $req->getParsedBody();
 
             if ($json_body === null) {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Bad content, the body must be valid JSON', ErrorMessage::BAD_DATA_TEXT, null);
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_DATA_HTTP, 'Bad content, the body must be valid JSON', ErrorMessage::BAD_DATA_CODE, null);
             }
             // if ()
         }
 
-        return $handler->handle($request);
+        return $handler->handle($req);
     }
 }

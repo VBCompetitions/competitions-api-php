@@ -13,7 +13,8 @@
     "ramsey/uuid": "^4.7",
     "slim/slim": "4.*",
     "slim/psr7": "^1.5",
-    "vbcompetitions/competitions": "^0.10.0"
+    "vbcompetitions/competitions": "^0.11.0",
+    "opis/json-schema": "^2.3"
   },
   "require-dev": {
     "phpunit/phpunit": "^10.0",

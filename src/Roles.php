@@ -27,6 +27,75 @@ final class CompetitionRoles
     }
 }
 
+final class ClubRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function get() : array
+    {
+        return Roles::_ALL;
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
+final class TeamRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function get() : array
+    {
+        return Roles::_ALL;
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
+final class ContactRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function get() : array
+    {
+        return Roles::_ALL;
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
 final class MatchRoles
 {
     public static function delete() : array
@@ -73,6 +142,14 @@ final class UserRoles
     }
 }
 
+final class SystemRoles
+{
+    public static function logs() : array
+    {
+        return [Roles::ADMIN];
+    }
+}
+
 final class Roles
 {
     public const ADMIN = 'ADMIN';
@@ -106,6 +183,21 @@ final class Roles
         return new CompetitionRoles();
     }
 
+    public static function club() : ClubRoles
+    {
+        return new ClubRoles();
+    }
+
+    public static function team() : TeamRoles
+    {
+        return new TeamRoles();
+    }
+
+    public static function contact() : ContactRoles
+    {
+        return new ContactRoles();
+    }
+
     public static function match() : MatchRoles
     {
         return new MatchRoles();
@@ -114,5 +206,10 @@ final class Roles
     public static function user() : UserRoles
     {
         return new UserRoles();
+    }
+
+    public static function system() : SystemRoles
+    {
+        return new SystemRoles();
     }
 }

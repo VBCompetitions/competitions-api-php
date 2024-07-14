@@ -106,8 +106,8 @@ class UI {
             /**********************************************
               Routes for an individual user's own api keys
              *********************************************/
-            $group->get('/k', function (Request $_, Response $res) {
-                return Keys::getKeys($this->config, $res);
+            $group->get('/k', function (Request $req, Response $res) {
+                return Keys::getKeys($this->config, $req, $res);
             })->add(new AuthBySessionMiddleware($this->config));
 
             $group->post('/k', function (Request $req, Response $res) {
@@ -126,17 +126,17 @@ class UI {
 
             if ($get_post_mode) {
                 $group->post('/k/{key_id}/delete', function (Request $req, Response $res, $args) {
-                    return Keys::deleteKey($this->config, $args['key_id'], $res);
+                    return Keys::deleteKey($this->config, $args['key_id'], $req, $res);
                 })->add(new AuthBySessionMiddleware($this->config));
             } else {
                 $group->delete('/k/{key_id}', function (Request $req, Response $res, $args) {
-                    return Keys::deleteKey($this->config, $args['key_id'], $res);
+                    return Keys::deleteKey($this->config, $args['key_id'], $req, $res);
                 })->add(new AuthBySessionMiddleware($this->config));
             }
 
-             /*****************************************
-              Routes for an admin to manage the users
-             ****************************************/
+            /****************************************
+             Routes for an admin to manage the users
+            ****************************************/
             $group->get('/u', function (Request $req, Response $res) {
                 return Users::getUsers($this->config, $req, $res);
             })->add(new AuthBySessionMiddleware($this->config));
@@ -167,6 +167,14 @@ class UI {
 
             $group->get('/u/{user_id}/reset', function (Request $req, Response $res, $args) {
                 return Users::resetUser($this->config, $args['user_id'], $req, $res);
+            })->add(new AuthBySessionMiddleware($this->config));
+
+
+            /**********************************
+              Routes for system admin commands
+             **********************************/
+            $group->get('/s/logs', function (Request $req, Response $res) {
+                return System::getLogs($this->config, $req, $res);
             })->add(new AuthBySessionMiddleware($this->config));
 
             /*!!!!!!!!!!!!!!!!!!!!!!!!

@@ -17,13 +17,14 @@ final class Users
 {
     public static function getUsers(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00000');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
         }
 
         if (!Roles::roleCheck($roles, Roles::user()::get())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '01001');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01001');
         }
 
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -33,14 +34,14 @@ final class Users
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01002');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01002');
         }
 
         $user_list = [];
 
         foreach (get_object_vars($users_data->lookup) as $username => $user_id) {
             if (!property_exists($users_data->users, $user_id)) {
-                return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01003');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01003');
             }
             $user = new stdClass();
             $user->username = $username;
@@ -62,13 +63,14 @@ final class Users
 
     public static function createUser(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00000');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
         }
 
         if (!Roles::roleCheck($roles, Roles::user()::create())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '01001');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01001');
         }
 
         $body_params = (array)$req->getParsedBody();
@@ -76,13 +78,13 @@ final class Users
 
         // check username is valid must contain only ASCII printable characters excluding " : { } ? =
         if (!preg_match('/^((?![":{}?= ])[\x20-\x7F])+$/', $username)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_TEXT, '01003');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01003');
         }
 
         // Check requested roles are valid
         foreach($body_params['roles'] as $requested_roles) {
             if (!in_array($requested_roles, Roles::_ALL)) {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Role does not exist', ErrorMessage::BAD_REQUEST_TEXT, '01011');
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Role does not exist', ErrorMessage::BAD_REQUEST_CODE, '01011');
             }
         }
 
@@ -101,12 +103,12 @@ final class Users
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01012');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01012');
         }
 
         // Check if user already exists
         if (property_exists($users_data->lookup, $username)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_EXISTS_CODE, 'User already exists', ErrorMessage::RESOURCE_EXISTS_TEXT, '01013');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_EXISTS_HTTP, 'User already exists', ErrorMessage::RESOURCE_EXISTS_CODE, '01013');
         }
 
         $user_id = Uuid::uuid4()->toString();
@@ -137,13 +139,14 @@ final class Users
 
     public static function updateUser(AppConfig $config, string $user_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00000');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
         }
 
         if (!Roles::roleCheck($roles, Roles::user()::update())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '01001');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01001');
         }
 
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -153,17 +156,17 @@ final class Users
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01021');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01021');
         }
 
         // Check if user exists
         if (!property_exists($users_data->users, $user_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01022');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01022');
         }
 
         // Cannot modify the admin user
         if ($users_data->users->$user_id->username === 'admin') {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid call', ErrorMessage::BAD_REQUEST_TEXT, '01023');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid call', ErrorMessage::BAD_REQUEST_CODE, '01023');
         }
 
         $body_params = (array)$req->getParsedBody();
@@ -171,13 +174,13 @@ final class Users
         // Check requested roles are valid
         foreach($body_params['roles'] as $requested_roles) {
             if (!in_array($requested_roles, Roles::_ALL)) {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Role does not exist', ErrorMessage::BAD_REQUEST_TEXT, '01024');
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Role does not exist', ErrorMessage::BAD_REQUEST_CODE, '01024');
             }
         }
 
         // Check requested state is valid
         if (!in_array($body_params['state'], States::_LIST_ALL)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'State does not exist', ErrorMessage::BAD_REQUEST_TEXT, '01025');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'State does not exist', ErrorMessage::BAD_REQUEST_CODE, '01025');
         }
 
         // List the requested roles
@@ -211,13 +214,14 @@ final class Users
 
     public static function resetUser(AppConfig $config, string $user_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00000');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
         }
 
         if (!Roles::roleCheck($roles, Roles::user()::reset())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '01001');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01001');
         }
 
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -227,22 +231,22 @@ final class Users
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01031');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01031');
         }
 
         // Check if user exists
         if (!property_exists($users_data->users, $user_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01032');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01032');
         }
 
         // Cannot modify the admin user
         if ($users_data->users->$user_id->username === 'admin') {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid call', ErrorMessage::BAD_REQUEST_TEXT, '01033');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid call', ErrorMessage::BAD_REQUEST_CODE, '01033');
         }
 
         // A pending user cannot be reset
         if ($users_data->users->$user_id->state === States::PENDING) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid call', ErrorMessage::BAD_REQUEST_TEXT, '01034');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid call', ErrorMessage::BAD_REQUEST_CODE, '01034');
         }
 
         $link_id = Uuid::uuid4()->toString();
@@ -264,13 +268,14 @@ final class Users
 
     public static function deleteUser(AppConfig $config, string $user_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00000');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
         }
 
         if (!Roles::roleCheck($roles, Roles::user()::delete())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '01001');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01001');
         }
 
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -280,7 +285,7 @@ final class Users
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01041');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01041');
         }
 
         // Check if user already delete
@@ -290,7 +295,7 @@ final class Users
 
         // Cannot delete the admin user
         if ($users_data->users->$user_id->username === 'admin') {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid call', ErrorMessage::BAD_REQUEST_TEXT, '010042');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid call', ErrorMessage::BAD_REQUEST_CODE, '010042');
         }
 
         $username = $users_data->users->$user_id->username;

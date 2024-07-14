@@ -10,11 +10,13 @@ use Slim\Middleware\ContentLengthMiddleware;
 
 use VBCompetitions\CompetitionsAPI\API\API;
 use VBCompetitions\CompetitionsAPI\UI\UI;
+use VBCompetitions\CompetitionsAPI\Middleware\AddContextMiddleware;
 use VBCompetitions\CompetitionsAPI\Middleware\AuthByKeyOrSessionMiddleware;
 use VBCompetitions\CompetitionsAPI\Middleware\LocalDevCORSMiddleware;
 
 class CompetitionsAPI {
     private AppConfig $config;
+    private Context $context;
 
     private App $app;
 
@@ -38,6 +40,7 @@ class CompetitionsAPI {
         }
 
         $this->config = new AppConfig($config);
+        $this->context = new Context($this->config);
 
         $this->app = AppFactory::create();
         $this->app->setBasePath($config['url_base_path']);
@@ -45,8 +48,8 @@ class CompetitionsAPI {
         $this->app->addRoutingMiddleware();
         // TODO - prod should set error handler to be quiet to the client
         $this->app->addErrorMiddleware($developer_mode, $developer_mode, $developer_mode);
-        $contentLengthMiddleware = new ContentLengthMiddleware();
-        $this->app->add($contentLengthMiddleware);
+        $this->app->add(new ContentLengthMiddleware());
+        $this->app->add(new AddContextMiddleware($this->context));
 
         if ($developer_mode) {
             $this->app->add(new LocalDevCORSMiddleware());

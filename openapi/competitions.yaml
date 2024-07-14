@@ -12,6 +12,7 @@ externalDocs:
   url: https://github.com/VBCompetitions
 servers:
   - url: https://example.com/api/v1
+  - url: http://localhost/competitions-api-php/example/vbc/api/v1
 security:
   - ApiKeyAuth: []
   - SessionTokenAuth: []
@@ -25,7 +26,7 @@ tags:
     description: Everything about a club in a competition
   - name: teams
     description: Everything about a team in a competition
-  - name: contacts
+  - name: team contacts
     description: Everything about a contact in a team
   - name: players
     description: Everything about a player in a team
@@ -43,29 +44,29 @@ paths:
       summary: List competitions
       description: Get a list of all competitions
       operationId: getCompetitions
+      parameters:
+        - in: query
+          name: meta
+          schema:
+            type: array
+            items:
+              type: string
+          explode: false
+          description: The metadata key-values that must be in the comeptition for it to be included. Each entry should be of the form "key=value" with the "=" URI encoded as "%3d".  For example to include competitions with "key1=value1" and "key2=value2", the query parameters should include "withmeta=key1%3dvalue1,key2%3dvalue2"
+        - in: query
+          name: notmeta
+          schema:
+            type: array
+            items:
+              type: string
+          description: The metadata key-values that must not be in the comeptition for it to be included.  This may be because the key is no there, or the value is different. Each entry should be of the form "key=value" with the "=" URI encoded as "%3d".  For example to exclude competitions with "key1=value1" and "key2=value2", the query parameters should include "withmeta=key1%3dvalue1&withmeta=key2%3dvalue2"
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  - type: object
-                    properties:
-                      id:
-                        description: A unique identifier for the competition
-                        type: string
-                      name:
-                        description: The name of the competition, taken from the Comeptition data
-                        type: string
-                      complete:
-                        description: Whether the competition is compelte (all matches have been played)
-                        type: bool
-                      required:
-                        - id
-                        - name
-                        - complete
+                $ref: '#/components/schemas/CompetitionList'
               examples:
                 list:
                   summary: A list of competition identifiers
@@ -74,6 +75,12 @@ paths:
                       name: 'The local league'
                     - id: 'tournament-2024-03-17'
                       name: 'County Mixed Tournament, Sunday 17th March 2024'
+                      complete: true
+                      metadata:
+                        - key: published
+                          value: 'true'
+                        - key: season
+                          value: '2023-2024'
                     - id: 'ee49f369-fae4-4bf4-9380-e406b38d72bb'
                       name: 'Some other competition'
         '500':
@@ -93,15 +100,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition'
+              $ref: '#/components/schemas/CompetitionWithID'
       responses:
         '200':
           description: success
           content:
             application/text:
               schema:
-                description: The unique ID of the new competition
-                type: string
+                $ref: '#/components/schemas/NewResourceDetails'
         '400':
           description: bad request
           content:
@@ -143,47 +149,10 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: no such competition ID
-        '500':
-          description: server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - competitions
-      summary: Create a competition
-      description: Create a new competition
-      operationId: createCompetitionByID
-      parameters:
-        - name: competitionID
-          in: path
-          description: ID of the Competition to add
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The Competition definition
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Competition'
-      responses:
-        '200':
-          description: success
-          content:
-            application/text:
-              schema:
-                description: The unique ID of the new competition
-                type: string
-        '400':
-          description: bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: conflicting competition ID
         '500':
           description: server error
           content:
@@ -214,6 +183,12 @@ paths:
           description: success
         '400':
           description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition ID
           content:
             application/json:
               schema:
@@ -281,6 +256,10 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: no such competition ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: server error
           content:
@@ -305,15 +284,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/properties/clubs/items'
+              $ref: '#/components/schemas/CreateClubDetails'
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                description: The unique ID of the new club
-                type: string
+                $ref: '#/components/schemas/NewResourceDetails'
         '400':
           description: bad request
           content:
@@ -362,54 +340,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: no such competition ID
-        '500':
-          description: server error
+          description: no such competition or club ID
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - clubs
-      summary: Add a club
-      description: Add a new club in the competition
-      operationId: addClubByID
-      parameters:
-        - name: competitionID
-          in: path
-          description: ID of the Competition to add the Club to
-          required: true
-          schema:
-            type: string
-        - name: clubID
-          in: path
-          description: ID of the Club to add
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The Club definition
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Competition/properties/clubs/items'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                description: The unique ID of the new club
-                type: string
-        '400':
-          description: bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: conflicting club ID
         '500':
           description: server error
           content:
@@ -440,12 +375,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClubDetails'
+              $ref: '#/components/schemas/UpdateClubDetails'
       responses:
         '200':
           description: success
         '400':
           description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or club ID
           content:
             application/json:
               schema:
@@ -519,6 +460,10 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: no such competition ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: server error
           content:
@@ -543,15 +488,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items'
+              $ref: '#/components/schemas/CreateTeamDetails'
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                description: The unique ID of the new team
-                type: string
+                $ref: '#/components/schemas/NewResourceDetails'
         '400':
           description: bad request
           content:
@@ -600,54 +544,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: no such competition ID
-        '500':
-          description: server error
+          description: no such competition or team ID
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - teams
-      summary: Add a team
-      description: Add a new team in the competition
-      operationId: addTeamByID
-      parameters:
-        - name: competitionID
-          in: path
-          description: ID of the Competition to add the Team to
-          required: true
-          schema:
-            type: string
-        - name: teamID
-          in: path
-          description: ID of the Team to add
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The Team definition
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                description: The unique ID of the new team
-                type: string
-        '400':
-          description: bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: conflicting team ID
         '500':
           description: server error
           content:
@@ -678,12 +579,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TeamDetails'
+              $ref: '#/components/schemas/UpdateTeamDetails'
       responses:
         '200':
           description: success
         '400':
           description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or team ID
           content:
             application/json:
               schema:
@@ -731,7 +638,7 @@ paths:
   /c/{competitionID}/t/{teamID}/c:
     get:
       tags:
-        - contacts
+        - team contacts
       summary: List contacts
       description: Get a list of all contacts in a team
       operationId: getContacts
@@ -762,7 +669,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: no such competition ID or team ID
+          description: no such competition or team ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: server error
           content:
@@ -771,7 +682,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       tags:
-        - contacts
+        - team contacts
       summary: Add a contact
       description: Add a new contact to the team
       operationId: addContact
@@ -793,15 +704,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items/properties/contacts/items'
+              $ref: '#/components/schemas/CreateContactDetails'
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                description: The unique ID of the new team
-                type: string
+                $ref: '#/components/schemas/NewResourceDetails'
         '400':
           description: bad request
           content:
@@ -819,7 +729,7 @@ paths:
   /c/{competitionID}/t/{teamID}/c/{contactID}:
     get:
       tags:
-        - contacts
+        - team contacts
       summary: Get a Contact
       description: Get the contact with the specified ID
       operationId: getContactByID
@@ -856,60 +766,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: no such competition ID
-        '500':
-          description: server error
+          description: no such competition, team or contact ID
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - contacts
-      summary: Add a contact
-      description: Add a new contact to the team
-      operationId: addContactByID
-      parameters:
-        - name: competitionID
-          in: path
-          description: ID of the Competition to add the Contact to
-          required: true
-          schema:
-            type: string
-        - name: teamID
-          in: path
-          description: ID of the Team to add the Contact to
-          required: true
-          schema:
-            type: string
-        - name: contactID
-          in: path
-          description: ID of the Contact to add
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The Contact definition
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items/properties/contacts/items'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                description: The unique ID of the new contact
-                type: string
-        '400':
-          description: bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: conflicting team ID
         '500':
           description: server error
           content:
@@ -918,7 +779,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     put:
       tags:
-        - contacts
+        - team contacts
       summary: Update a Contact
       description: Update a Contact's basic details
       operationId: updateContactByID
@@ -946,12 +807,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items/properties/contacts/items'
+              $ref: '#/components/schemas/UpdateContactDetails'
       responses:
         '200':
           description: success
         '400':
           description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition, team or contact ID
           content:
             application/json:
               schema:
@@ -964,7 +831,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       tags:
-        - contacts
+        - team contacts
       summary: Delete the Contact
       description: Delete the Contact with the specified ID
       operationId: deleteContactByID
@@ -1002,23 +869,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /c/{competitionID}/t/{teamID}/p:
+  /c/{competitionID}/p:
     get:
       tags:
         - players
       summary: List players
-      description: Get a list of all players in a team
+      description: Get a list of all players in a competition
       operationId: getPlayers
       parameters:
         - name: competitionID
           in: path
           description: ID of the Competition the Team is in
-          required: true
-          schema:
-            type: string
-        - name: teamID
-          in: path
-          description: ID of the Team the Players are in
           required: true
           schema:
             type: string
@@ -1028,7 +889,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Competition/properties/teams/items/properties/players'
+                $ref: '#/components/schemas/Competition/properties/players'
         '400':
           description: bad request
           content:
@@ -1036,7 +897,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: no such competition ID or team ID
+          description: no such competition ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: server error
           content:
@@ -1047,7 +912,7 @@ paths:
       tags:
         - players
       summary: Add a player
-      description: Add a new player to the team
+      description: Add a new player to the competition
       operationId: addPlayer
       parameters:
         - name: competitionID
@@ -1056,18 +921,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: teamID
-          in: path
-          description: ID of the Team to add the Player to
-          required: true
-          schema:
-            type: string
       requestBody:
         description: The Player definition
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items/properties/players/items'
+              $ref: '#/components/schemas/CreatePlayerDetails'
       responses:
         '200':
           description: success
@@ -1090,7 +949,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /c/{competitionID}/t/{teamID}/p/{playerID}:
+  /c/{competitionID}/p/{playerID}:
     get:
       tags:
         - players
@@ -1101,12 +960,6 @@ paths:
         - name: competitionID
           in: path
           description: ID of the Competition the Player is in
-          required: true
-          schema:
-            type: string
-        - name: teamID
-          in: path
-          description: ID of the Team the Player is in
           required: true
           schema:
             type: string
@@ -1122,7 +975,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Competition/properties/teams/items/properties/players/items'
+                $ref: '#/components/schemas/Competition/properties/players/items'
         '400':
           description: bad request
           content:
@@ -1130,60 +983,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: no such competition ID
-        '500':
-          description: server error
+          description: no such competition or player ID
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - players
-      summary: Add a player to a team
-      description: Add a new player to the team
-      operationId: addPlayerByID
-      parameters:
-        - name: competitionID
-          in: path
-          description: ID of the Competition to add the Player to
-          required: true
-          schema:
-            type: string
-        - name: teamID
-          in: path
-          description: ID of the Team to add the Player to
-          required: true
-          schema:
-            type: string
-        - name: playerID
-          in: path
-          description: ID of the Player to add
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: The Player definition
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items/properties/players/items'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                description: The unique ID of the new player
-                type: string
-        '400':
-          description: bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: conflicting team ID
         '500':
           description: server error
           content:
@@ -1203,12 +1007,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: teamID
-          in: path
-          description: ID of the Team containing the Player
-          required: true
-          schema:
-            type: string
         - name: playerID
           in: path
           description: ID of the Player to update
@@ -1220,7 +1018,47 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/properties/teams/items/properties/players/items'
+              $ref: '#/components/schemas/UpdatePlayerDetails'
+      responses:
+        '200':
+          description: success
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or player ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - players
+      summary: Delete the Player
+      description: Delete the Player with the specified ID
+      operationId: deletePlayerByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition containing the Team
+          required: true
+          schema:
+            type: string
+        - name: playerID
+          in: path
+          description: ID of the Player to delete
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: success
@@ -1236,36 +1074,101 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    delete:
+  /c/{competitionID}/p/{playerID}/t/{teamID}:
+    put:
       tags:
         - players
-      summary: Delete the Player
-      description: Delete the Competition with the specified ID
-      operationId: deletePlayerByID
+      summary: Add a player to a team, transferring them from any existing team
+      description: Add a player to a team, transferring them from any existing team
+      operationId: addPlayerToTeamByID
       parameters:
         - name: competitionID
           in: path
-          description: ID of the Competition containing the Team
-          required: true
-          schema:
-            type: string
-        - name: teamID
-          in: path
-          description: ID of the Team containing the CoPlayerntact
+          description: ID of the Competition the Player is in
           required: true
           schema:
             type: string
         - name: playerID
           in: path
-          description: ID of the Player to delete
+          description: ID of the Player to add to a team
+          required: true
+          schema:
+            type: string
+        - name: teamID
+          in: path
+          description: ID of the Team to add the Player to
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The Player definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerTransferDetails'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                description: The unique ID of the new player
+                type: string
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition, player or team ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: player already in specified team
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /c/{competitionID}/t/{teamID}/p:
+    get:
+      tags:
+        - players
+      summary: List players in team
+      description: Get a list of all players in a team
+      operationId: getPlayersInTeam
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition the Team is in
+          required: true
+          schema:
+            type: string
+        - name: teamID
+          in: path
+          description: ID of the Team the Players are in
           required: true
           schema:
             type: string
       responses:
         '200':
           description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Competition/properties/players'
         '400':
           description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or team ID
           content:
             application/json:
               schema:
@@ -1673,10 +1576,39 @@ components:
       in: cookie
       name: VBCSESSION
   schemas:
+    CompetitionWithID:
+      description: This document contains the Competition definition with an additional field for the competition ID
+      type: object
+      properties:
+        id:
+          description: An ID for the team.  This is equivalent to the file name for the competition JSON file.  Teh value can only contain ASCII cahracters a-z, A-Z, 0-9, -, _, "(", ")" and "SPACE"
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: "^[a-zA-Z0-9 -_().=]+$"
+        version:
+          $ref: '#/components/schemas/Competition/properties/version'
+        metadata:
+          $ref: '#/components/schemas/Competition/properties/metadata'
+        name:
+          $ref: '#/components/schemas/Competition/properties/name'
+        notes:
+          $ref: '#/components/schemas/Competition/properties/notes'
+        clubs:
+          $ref: '#/components/schemas/Competition/properties/clubs'
+        teams:
+          $ref: '#/components/schemas/Competition/properties/teams'
+        players:
+          $ref: '#/components/schemas/Competition/properties/players'
+        stages:
+          $ref: '#/components/schemas/Competition/properties/stages'
+      required:
+        - name
+        - teams
+        - stages
     Competition:
       title: Definition of a competition in VolleyTourney
-      description: This document contains the teams, the competition structure, the matches
-        and the results of a volleyball competition
+      description: This document contains the teams, the competition structure, the matches and the results of a volleyball competition
       type: object
       properties:
         version:
@@ -1742,7 +1674,7 @@ components:
                 description: Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use
                 type: string
                 minLength: 1
-            required: 
+            required:
               - id
               - name
         teams:
@@ -1823,38 +1755,6 @@ components:
                   required:
                     - id
                     - roles
-              players:
-                description: A list of players for a team
-                type: array
-                items:
-                  description: A single player in a team
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    id:
-                      description: "A unique ID for this player. This may be the player's registration number.  This must be unique within the team.  It must contain only ASCII printable characters excluding \" : { } ? ="
-                      type: string
-                      minLength: 1
-                      maxLength: 100
-                      pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
-                    name:
-                      description: The name of this contact
-                      type: string
-                      minLength: 1
-                      maxLength: 1000
-                    number:
-                      description: The player's shirt number
-                      type: integer
-                      minimum: 1
-                    notes:
-                      description: Free form string to add notes about the player.  This
-                        can be used for arbitrary content that various implementations can
-                        use
-                      type: string
-                      minLength: 1
-                  required:
-                    - id
-                    - name
               club:
                 description: The ID of the club this team is in
                 type: string
@@ -1865,6 +1765,64 @@ components:
                   for arbitrary content that various implementations can use
                 type: string
                 minLength: 1
+            required:
+              - id
+              - name
+        players:
+          description: A list of players
+          type: array
+          items:
+            description: A single player
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                description: "A unique ID for this player. This may be the player's registration number.  This must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? ="
+                type: string
+                minLength: 1
+                maxLength: 100
+                pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+              name:
+                description: The name of this contact
+                type: string
+                minLength: 1
+                maxLength: 1000
+              number:
+                description: The player's shirt number
+                type: integer
+                minimum: 1
+              teams:
+                description: An ordered list of teams the player is/has been registered for in this competition, in the order that they have been registered (and therefore transferred in the case of more than one entry).  A player can only be registered with one team at any time within this competition, meaning that if there are multiple teams listed, either all but the last entry MUST have an "until" value, or there must be no "from" or "until" values in any entry
+                type: array
+                items:
+                  description: A Player's team registration entry, linking them to the specified team, potentially for the time period covered by "from" to "until"
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      description: The team ID that the player is/was registered with
+                      type: string
+                      minLength: 1
+                      maxLength: 100
+                      pattern": "^((?![\":{}?=])[\\x20-\\x7F])+$"
+                    from:
+                      description: The date from which the player is/was registered with this team.  When this is not present, there should not be any "from" or "until" values in any entry in this player's "teams" array
+                      type: string
+                      format: date
+                    until:
+                      description: The date up to which the player was registered with this team.  When a "from" date is specified and this is not, it should be taken that a player is still registered with this team
+                      type: string
+                      format: date
+                    notes:
+                      description: Free form string to add notes about this player's team entry.  This can be used for arbitrary content that various implementations can use
+                      type: string
+                      minLength: 1
+                  required:
+                    - id
+                notes:
+                  description: Free form string to add notes about the player.  This can be used for arbitrary content that various implementations can use
+                  type: string
+                  minLength: 1
             required:
               - id
               - name
@@ -2164,9 +2122,9 @@ components:
               - id
               - groups
       required:
-          - name
-          - teams
-          - stages
+        - name
+        - teams
+        - stages
       defs:
         team:
           description: A team playing in the match
@@ -2188,7 +2146,7 @@ components:
                 type: integer
                 minimum: 0
             mvp:
-              description: This team's most valuable player award.  This can either be a name or a player reference
+              description: This team's most valuable player award.  This can either be a name or a reference to a player ID.  A reference takes the form {PLAYER_ID}
               type: string
               minLength: 1
             forfeit:
@@ -2216,10 +2174,10 @@ components:
               type: string
               minLength: 1
             players:
-              description: The list of players from this team that played in this match
+              description: The list of players from this team that played in this match.  This can be either a player's name or a reference to a player ID
               type: array
               items:
-                description: The ID of the player as a player reference
+                description: Either the name of the player or a reference to a player ID.  A reference takes the form {PLAYER_ID}.  Not all entries need to be references, meaning that the document can allow a mix of registered players with a player ID, and unregistered players indicated just by name
                 type: string
                 minLength: 1
           required:
@@ -2353,7 +2311,7 @@ components:
                         required:
                           - first
                   mvp:
-                    description: A most valuable player award for the match. This can either be a name a player reference of the form {TEAM-ID:PLAYER-ID}
+                    description: A most valuable player award for the match. This can either be a name or a reference to a player ID.  A reference takes the form {PLAYER_ID}
                     type: string
                     minLength: 1
                     maxLength: 203
@@ -2421,17 +2379,379 @@ components:
                     maxLength: 1000
                 required:
                   - type
+    CompetitionList:
+      description: A list of competitions that can be accessed
+      type: array
+      items:
+        description: A competition that can be accessed
+        type: object
+        additionalProperties: false
+        properties:
+          id:
+            description: A unique identifier for the competition
+            type: string
+          name:
+            description: The name of the competition, taken from the Comeptition data
+            type: string
+          complete:
+            description: Whether the competition is compelte (all matches have been played)
+            type: boolean
+          metadata:
+            description: The array of metadata keys and values
+            type: array
+            items:
+              description: A key-value pair
+              type: object
+              additionalProperties: false
+              properties:
+                key:
+                  description: The key for a metadata entry
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                value:
+                  description: The value for a metadata entry.  Note that this must be a string, so values such as "true", "false" or "null" must be represented as a string
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+              required:
+                - key
+                - value
+        required:
+          - id
+          - name
+          - complete
     CompetitionDetails:
-      description: Basic details on a competition
+      description: Update details on a competition
       type: object
       properties:
         name:
           description: A name for the competition
           type: string
           minLength: 1
+          maxLength: 10000
         notes:
-          description: Free form string to add notes about the competition.  This can be
-            used for arbitrary content that various implementations can use
+          description: Free form string to add notes about the competition.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+        metadata:
+          description: A list of key-value pairs representing metadata about the competition, where each key must be unique.  This replaces any existing metadata so if you want to append metadata you must include the original metadata.  When this is an empty array all current metadata for the competition is deleted
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            description: A key-value pair
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                description: The key for a metadata entry.  The key must be unique within the Competition
+                type: string
+                minLength: 1
+                maxLength: 100
+              value:
+                description: The value for a metadata entry.  Note that this must be a string, so values such as "true", "false" or "null" must be represented as a string
+                type: string
+                minLength: 1
+                maxLength: 1000
+            required:
+              - key
+              - value
+    CreateClubDetails:
+      description: The details of the new club
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: "An ID for the club, e.g. 'CLUB1'.  This must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? ="
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+        name:
+          description: The name for the club
+          type: string
+          minLength: 1
+          maxLength: 1000
+        notes:
+          description: Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+      required:
+        - name
+    UpdateClubDetails:
+      description: Details on a club
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name for the club
+          type: string
+          minLength: 1
+          maxLength: 1000
+        notes:
+          description: Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+    CreateTeamDetails:
+      description: The details of the new team
+      additionalProperties: false
+      type: object
+      properties:
+        id:
+          description: "An ID for the team, e.g. 'TM1'.  This is used in the rest of the instance document to specify the team so must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? ="
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+        name:
+          description: The name for the team
+          type: string
+          minLength: 1
+        club:
+          description: The ID of the club this team is in
+          type: string
+          minLength: 1
+          maxLength: 100
+        notes:
+          description: Free form string to add notes about a team.  This can be used
+            for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+      required:
+        - name
+    UpdateTeamDetails:
+      description: A team definition
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name for the team
+          type: string
+          minLength: 1
+        club:
+          description: The ID of the club this team is in
+          type: string
+          minLength: 1
+          maxLength: 100
+        notes:
+          description: Free form string to add notes about a team.  This can be used
+            for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+    CreateContactDetails:
+      description: The details of the new contact
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: "A unique ID for this contact, e.g. 'TM1Contact1'.  This must be unique within the team.  It must contain only ASCII printable characters excluding \" : { } ? ="
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        roles:
+          description: The roles of this contact within the team
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A role of this contact
+            type: string
+            default: secretary
+            enum:
+              - secretary
+              - treasurer
+              - manager
+              - captain
+              - coach
+              - assistantCoach
+              - medic
+        emails:
+          description: The email addresses for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: An email address for this contact
+            type: string
+            format: email
+            minLength: 3
+        phones:
+          description: The telephone numbers for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A telephone number for this contact
+            type: string
+            minLength: 1
+            maxLength: 50
+      required:
+        - roles
+    UpdateContactDetails:
+      description: Details on a contact
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        roles:
+          description: The roles of this contact within the team
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A role of this contact
+            type: string
+            default: secretary
+            enum:
+              - secretary
+              - treasurer
+              - manager
+              - captain
+              - coach
+              - assistantCoach
+              - medic
+        emails:
+          description: The email addresses for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: An email address for this contact
+            type: string
+            format: email
+            minLength: 3
+        phones:
+          description: The telephone numbers for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A telephone number for this contact
+            type: string
+            minLength: 1
+            maxLength: 50
+    CreatePlayerDetails:
+      description: The details of the new player
+      additionalProperties: false
+      type: object
+      properties:
+        id:
+          description: "A unique ID for this player. This may be the player's registration number.  This must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? ="
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        number:
+          description: The player's shirt number
+          type: integer
+          minimum: 1
+        teams:
+          description: An ordered list of teams the player is/has been registered for in this competition, in the order that they have been registered (and therefore transferred in the case of more than one entry).  A player can only be registered with one team at any time within this competition, meaning that if there are multiple teams listed, either all but the last entry MUST have an "until" value, or there must be no "from" or "until" values in any entry
+          type: array
+          items:
+            description: A Player's team registration entry, linking them to the specified team, potentially for the time period covered by "from" to "until"
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                description: The team ID that the player is/was registered with
+                type: string
+                minLength: 1
+                maxLength: 100
+                pattern": "^((?![\":{}?=])[\\x20-\\x7F])+$"
+              from:
+                description: The date from which the player is/was registered with this team.  When this is not present, there should not be any "from" or "until" values in any entry in this player's "teams" array
+                type: string
+                format: date
+              until:
+                description: The date up to which the player was registered with this team.  When a "from" date is specified and this is not, it should be taken that a player is still registered with this team
+                type: string
+                format: date
+              notes:
+                description: Free form string to add notes about this player's team entry.  This can be used for arbitrary content that various implementations can use
+                type: string
+                minLength: 1
+            required:
+              - id
+        notes:
+          description: Free form string to add notes about the player.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+      required:
+        - name
+    UpdatePlayerDetails:
+      description: A single player
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        number:
+          description: The player's shirt number
+          type: integer
+          minimum: 1
+        teams:
+          description: An ordered list of teams the player is/has been registered for in this competition, in the order that they have been registered (and therefore transferred in the case of more than one entry).  A player can only be registered with one team at any time within this competition, meaning that if there are multiple teams listed, either all but the last entry MUST have an "until" value, or there must be no "from" or "until" values in any entry
+          type: array
+          items:
+            description: A Player's team registration entry, linking them to the specified team, potentially for the time period covered by "from" to "until"
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                description: The team ID that the player is/was registered with
+                type: string
+                minLength: 1
+                maxLength: 100
+                pattern": "^((?![\":{}?=])[\\x20-\\x7F])+$"
+              from:
+                description: The date from which the player is/was registered with this team.  When this is not present, there should not be any "from" or "until" values in any entry in this player's "teams" array
+                type: string
+                format: date
+              until:
+                description: The date up to which the player was registered with this team.  When a "from" date is specified and this is not, it should be taken that a player is still registered with this team
+                type: string
+                format: date
+              notes:
+                description: Free form string to add notes about this player's team entry.  This can be used for arbitrary content that various implementations can use
+                type: string
+                minLength: 1
+            required:
+              - id
+        notes:
+          description: Free form string to add notes about the player.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+    PlayerTransferDetails:
+      description: A Player's team registration entry, linking them to the specified team, potentially for the time period covered by "from" to "until"
+      type: object
+      additionalProperties: false
+      properties:
+        date:
+          description: The date from which the player is registering with this team.  Any exiting team registration is updated such that the "until" field is set to this value.  When this is not present, this is taken as today's date.
+          type: string
+          format: date
+        notes:
+          description: Free form string to add notes about this player's team entry.  This can be used for arbitrary content that various implementations can use
           type: string
           minLength: 1
     StageDetails:
@@ -2444,14 +2764,11 @@ components:
           type: string
           minLength: 1
         notes:
-          description: Free form string to add notes about this stage.  This can be
-            used for arbitrary content that various implementations can use
+          description: Free form string to add notes about this stage.  This can be used for arbitrary content that various implementations can use
           type: string
           minLength: 1
         description:
-          description: An array of string values as a verbose description of the nature
-            of the stage, e.g. 'The first stage of the competition will consist of
-            separate pools, where....'
+          description: An array of string values as a verbose description of the nature of the stage, e.g. 'The first stage of the competition will consist of separate pools, where....'
           type: array
           items:
             description: A part of the description of this stage
@@ -2467,15 +2784,11 @@ components:
           type: string
           minLength: 1
         notes:
-          description: Free form string to add notes about this group.  This
-            can be used for arbitrary content that various implementations can
-            use
+          description: Free form string to add notes about this group.  This can be used for arbitrary content that various implementations can use
           type: string
           minLength: 1
         description:
-          description: An array of string values as a verbose description of
-            the nature of the group, e.g. 'For the pool stage, teams will play
-            each other once, with the top 2 teams going through to....'
+          description: An array of string values as a verbose description of the nature of the group, e.g. 'For the pool stage, teams will play each other once, with the top 2 teams going through to....'
           type: array
           items:
             description: A part of the description of this stage
@@ -2495,18 +2808,11 @@ components:
                 additionalProperties: false
                 properties:
                   position:
-                    description: The text description of the position, e.g.
-                      "1st", "2nd".  Having this field allows multiple teams
-                      to have the same "position", for example if there are
-                      no play-off games then two entries can have the value
-                      "3rd"
+                    description: The text description of the position, e.g. "1st", "2nd".  Having this field allows multiple teams to have the same "position", for example if there are no play-off games then two entries can have the value "3rd"
                     type: string
                     minLength: 1
                   id:
-                    description: The identifier for the team.  This must be
-                      a team reference (see the documentation), for example
-                      for the team in "1st", this would refer to the winner
-                      of the final in this stage->group
+                    description: The identifier for the team.  This must be a team reference (see the documentation), for example for the team in "1st", this would refer to the winner of the final in this stage->group
                     type: string
                     minLength: 1
                 required:
@@ -2521,21 +2827,7 @@ components:
           additionalProperties: false
           properties:
             ordering:
-              description: An array of parameters that define how the league
-                positions are worked out, where the array position determines
-                the precedence of that parameter, e.g. [ "PTS", "SD" ] means
-                that league position is determined by league points, with ties
-                decided by set difference.  Valid parameters are 'PTS'=league
-                points, 'WINS'=wins, 'LOSSES'=losses, 'H2H'=head to head, PF'=points
-                for, 'PA'=points against, 'PD'=points difference, 'SF'=sets
-                for, 'SA'=sets against, 'SD'=set difference.  When comparing
-                teams, a higher value for a parameter results in a higher league
-                position except when comparing 'LOSSES', 'PA' and 'SA' (where
-                a lower value results in a higher league position).  Note that
-                'H2H' only considers wins and losses between two teams; this
-                means that, depending on whether draws are allowed or whether
-                teams play each other multiple times, the head to head comparison
-                may not be able to distinguish between two teams
+              description: An array of parameters that define how the league positions are worked out, where the array position determines the precedence of that parameter, e.g. [ "PTS", "SD" ] means that league position is determined by league points, with ties decided by set difference.  Valid parameters are 'PTS'=league points, 'WINS'=wins, 'LOSSES'=losses, 'H2H'=head to head, PF'=points for, 'PA'=points against, 'PD'=points difference, 'SF'=sets for, 'SA'=sets against, 'SD'=set difference.  When comparing teams, a higher value for a parameter results in a higher league position except when comparing 'LOSSES', 'PA' and 'SA' (where a lower value results in a higher league position).  Note that 'H2H' only considers wins and losses between two teams; this means that, depending on whether draws are allowed or whether teams play each other multiple times, the head to head comparison may not be able to distinguish between two teams
               type: array
               items:
                 description: A parameter that defines the league position
@@ -2553,13 +2845,12 @@ components:
                   - SD
               minItems: 1
             points:
-              description: Properties defining how to calculate the league points
-                based on match results
+              description: Properties defining how to calculate the league points based on match results
               type: object
               additionalProperties: false
               properties:
                 played:
-                  description: Number of league points for playing the match
+                  description: Number of league points for playing the match.  Note that a forfeit counts as a "played" match, so if this has a non-zero value and the desire is for a forfeit to yield zero points then the "forfeit" value should be set to the same as this value
                   type: integer
                   default: 0
                 perSet:
@@ -2567,8 +2858,7 @@ components:
                   type: integer
                   default: 0
                 win:
-                  description: Number of league points for winning (by 2 sets
-                    or more if playing sets)
+                  description: Number of league points for winning (by 2 sets or more if playing sets)
                   type: integer
                   default: 3
                 winByOne:
@@ -2576,8 +2866,7 @@ components:
                   type: integer
                   default: 0
                 lose:
-                  description: Number of league points for losing (by 2 sets
-                    or more if playing sets)
+                  description: Number of league points for losing (by 2 sets or more if playing sets)
                   type: integer
                   default: 0
                 loseByOne:
@@ -2585,17 +2874,14 @@ components:
                   type: integer
                   default: 0
                 forfeit:
-                  description: Number of league penalty points for forfeiting
-                    a match.  This should be a positive number and will be subtracted
-                    from a team's league points for each forfeited match
+                  description: Number of league penalty points for forfeiting a match.  This should be a positive number and will be subtracted from a team's league points for each forfeited match
                   type: integer
                   default: 0
           required:
             - ordering
             - points
         matchType:
-          description: Are the matches played in sets or continuous points.  If
-            this has the value 'sets' then the property 'sets' must be defined
+          description: Are the matches played in sets or continuous points.  If this has the value 'sets' then the property 'sets' must be defined
           type: string
           enum:
             - sets
@@ -2611,52 +2897,37 @@ components:
               default: 5
               minimum: 1
             setsToWin:
-              description: The number of sets that must be won to win the match.  This
-                is usually one more than half the 'maxSets', but may be needed
-                if draws are allowed, e.g. if a competition dictates that exactly
-                2 sets must be played (by setting 'maxSets' to '2') and that
-                draws are allowed, then 'setsToWin' should still be set to '2'
-                to indicate that 2 sets are needed to win the match
+              description: The number of sets that must be won to win the match.  This is usually one more than half the 'maxSets', but may be needed if draws are allowed, e.g. if a competition dictates that exactly 2 sets must be played (by setting 'maxSets' to '2') and that draws are allowed, then 'setsToWin' should still be set to '2' to indicate that 2 sets are needed to win the match
               type: integer
               default: 3
               minimum: 1
             clearPoints:
-              description: The number of points lead that the winning team must
-                have, e.g. if this has the value '2' then teams must 'win by
-                2 clear points'.  Note that if 'maxPoints' has a value then
-                that takes precedence, i.e. if 'maxPoints' is set to '35' then
-                a team can win '35-34' irrespective of the value of 'clearPoints'
+              description: The number of points lead that the winning team must have, e.g. if this has the value '2' then teams must 'win by 2 clear points'.  Note that if 'maxPoints' has a value then that takes precedence, i.e. if 'maxPoints' is set to '35' then a team can win '35-34' irrespective of the value of 'clearPoints'
               type: integer
               default: 2
               minimum: 1
             minPoints:
-              description: The minimum number of points that either team must
-                score for a set to count as valid.  Usually only used for time-limited
-                matches
+              description: The minimum number of points that either team must score for a set to count as valid.  Usually only used for time-limited matches
               type: integer
               default: 1
               minimum: 1
             pointsToWin:
-              description: The minimum number of points required to win all
-                but the last set
+              description: The minimum number of points required to win all but the last set
               type: integer
               default: 25
               minimum: 1
             lastSetPointsToWin:
-              description: The minimum number of points required to win the
-                last set
+              description: The minimum number of points required to win the last set
               type: integer
               default: 15
               minimum: 1
             maxPoints:
-              description: The upper limit of points that can be scored in a
-                set
+              description: The upper limit of points that can be scored in a set
               type: integer
               default: 1000
               minimum: 1
             lastSetMaxPoints:
-              description: The upper limit of points that can be scored in the
-                last set
+              description: The upper limit of points that can be scored in the last set
               type: integer
               default: 1000
               minimum: 1
@@ -2664,43 +2935,16 @@ components:
           description: Sets whether drawn matches are allowed
           default: false
           type: boolean
-    TeamDetails:
-      description: A team definition
+    NewResourceDetails:
+      description: Information on the new resource
       type: object
       additionalProperties: false
       properties:
-        name:
-          description: The name for the team
+        id:
+          description: The unique ID of the new resource
           type: string
-          minLength: 1
-        club:
-          description: The ID of the club this team is in
-          type: string
-          minLength: 1
-          maxLength: 100
-        notes:
-          description: Free form string to add notes about a team.  This can be used
-            for arbitrary content that various implementations can use
-          type: string
-          minLength: 1
-    ClubDetails:
-      description: A club definition
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          description: The name for the club
-          type: string
-          minLength: 1
-          maxLength: 1000
-        notes:
-          description: Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use
-          type: string
-          minLength: 1
     Error:
-      description: Details on an error from the server when handling the request.  This should
-        always be printable to an end user, i.e. they should be non-specific but informative
-        and there shuld be more specific information useful to a developer/administrator in any server logs
+      description: Details on an error from the server when handling the request.  This should always be printable to an end user, i.e. they should be non-specific but informative and there shuld be more specific information useful to a developer/administrator in any server logs
       type: object
       properties:
         text:

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/monkeysppp/VBCompetitions-API/1.0.0/clubCreate",
+  "description": "The details of the new club",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "An ID for the club, e.g. 'CLUB1'.  This must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? =",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^((?![\":{}?=])[\\x20-\\x7F])+$"
+    },
+    "name": {
+      "description": "The name for the club",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "notes": {
+      "description": "Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use",
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["name"]
+}

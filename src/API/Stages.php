@@ -13,11 +13,20 @@ use VBCompetitions\CompetitionsAPI\AppConfig;
 final class Stages
 {
     public static function createStage(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
-    {}
+    {
+        $context = $req->getAttribute('context');
+        return $res;
+    }
 
-    public static function updateStageByID(AppConfig $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
-    {}
+    public static function updateStage(AppConfig $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
+    {
+        $context = $req->getAttribute('context');
+        return $res;
+    }
 
-    public static function deleteStageByID(AppConfig $config, string $competition_id, string $stage_id, Response $res) : Response
-    {}
+    public static function deleteStage(AppConfig $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
+    {
+        $context = $req->getAttribute('context');
+        return $res;
+    }
 }

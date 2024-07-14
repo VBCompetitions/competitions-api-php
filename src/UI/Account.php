@@ -12,8 +12,9 @@ use VBCompetitions\CompetitionsAPI\ErrorMessage;
 // Errorcodes 011FN
 final class Account
 {
-    public static function getAccount(AppConfig $config, Request $_, Response $res) : Response
+    public static function getAccount(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
         $h = fopen($users_file, 'r');
         $json = fread($h, filesize($users_file));
@@ -21,14 +22,14 @@ final class Account
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users') || !property_exists($users_data, 'pending')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01110');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01110');
         }
 
         $user_id = $_SESSION['user_id'];
 
         // Check if user exists
         if (!property_exists($users_data->users, $user_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01111');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01111');
         }
 
         $user_info = $users_data->users->$user_id;
@@ -40,6 +41,7 @@ final class Account
 
     public static function getUsernameFromLinkID(AppConfig $config, string $link_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
         $h = fopen($users_file, 'r');
         $json = fread($h, filesize($users_file));
@@ -47,11 +49,11 @@ final class Account
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users') || !property_exists($users_data, 'pending')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01120');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01120');
         }
 
         if (!property_exists($users_data->pending, $link_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No matching link ID', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01121');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No matching link ID', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01121');
         }
 
         $user = new stdClass();
@@ -63,6 +65,12 @@ final class Account
 
     public static function updateAccount(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
+
+
+        // TODO - log a username change
+
+
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
         $h = fopen($users_file, 'r');
         $json = fread($h, filesize($users_file));
@@ -70,14 +78,14 @@ final class Account
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users') || !property_exists($users_data, 'pending')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01130');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01130');
         }
 
         $user_id = $_SESSION['user_id'];
 
         // Check if user exists
         if (!property_exists($users_data->users, $user_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01131');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such user', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01131');
         }
 
         $body_params = (array)$req->getParsedBody();
@@ -88,15 +96,15 @@ final class Account
             $new_username = $body_params['newUsername'];
 
             if (strlen($new_username) <= 0 || strlen($new_username) > 50 || !preg_match('/^((?![":{}?= ])[\x20-\x7F])+$/', $new_username)) {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid username', ErrorMessage::BAD_REQUEST_TEXT, '01132');
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username', ErrorMessage::BAD_REQUEST_CODE, '01132');
             }
 
             if ($users_data->users->$user_id->username === 'admin') {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Cannot change name of "admin" user', ErrorMessage::BAD_REQUEST_TEXT, '01133');
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Cannot change name of "admin" user', ErrorMessage::BAD_REQUEST_CODE, '01133');
             }
 
             if (property_exists($users_data->lookup, $new_username)) {
-                return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_EXISTS_CODE, 'Username already taken', ErrorMessage::RESOURCE_EXISTS_TEXT, '01134');
+                return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_EXISTS_HTTP, 'Username already taken', ErrorMessage::RESOURCE_EXISTS_CODE, '01134');
             }
 
             $users_data->users->$user_id->username = $new_username;
@@ -110,7 +118,7 @@ final class Account
 
             // The regex imposes the length limits of min 8, max 50
             if (!preg_match('/^[a-zA-Z0-9!"#£$%&\'()*+,.:;<=>?@[^_`{|}~\/\-\\]]{8,50}$/', $new_password)) {
-                return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid password', ErrorMessage::BAD_REQUEST_TEXT, '0135');
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid password', ErrorMessage::BAD_REQUEST_CODE, '0135');
             }
 
             $users_data->users->$user_id->{'hash-v1'} = password_hash($new_password, PASSWORD_BCRYPT);
@@ -127,6 +135,7 @@ final class Account
 
     public static function activateAccount(AppConfig $config, string $link_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
         $h = fopen($users_file, 'r');
         $json = fread($h, filesize($users_file));
@@ -134,18 +143,18 @@ final class Account
         $users_data = json_decode($json);
 
         if ($users_data == null || !property_exists($users_data, 'lookup') || !property_exists($users_data, 'users') || !property_exists($users_data, 'pending')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01140');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01140');
         }
 
         if (!property_exists($users_data->pending, $link_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No matching link ID', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01141');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No matching link ID', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01141');
         }
 
         $body_params = (array)$req->getParsedBody();
         $password = $body_params['password'];
 
         if (!preg_match('/^[a-zA-Z0-9!"#£$%&\'()*+,.:;<=>?@[^_`{|}~\/\-\\]]{8,50}$/', $password)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Bad password', ErrorMessage::BAD_REQUEST_TEXT, '01142');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Bad password', ErrorMessage::BAD_REQUEST_CODE, '01142');
         }
 
         $username = $users_data->pending->$link_id;
