@@ -23,6 +23,7 @@ final class API
     /**
      * @param AppConfig $config The configuration container
      */
+
     function __construct(AppConfig $config)
     {
         $this->config = $config;
@@ -33,7 +34,9 @@ final class API
         $get_post_mode = $this->config->getGetPostMode();
 
         return function (RouteCollectorProxy $group) use ($get_post_mode) {
-            /************ Competitions ************/
+            /*********************
+             * COMPETITIONS
+             ********************/
             $group->get('/c', function (Request $req, Response $res) {
                 return Competitions::getCompetitions($this->config, $req, $res);
             });
@@ -66,7 +69,9 @@ final class API
                 });
             }
 
-            /************ Clubs ************/
+            /*********************
+             * CLUBS
+             ********************/
             $group->get('/c/{competition_id}/c', function (Request $req, Response $res, $args) {
                 return Clubs::getClubs($this->config, $args['competition_id'], $req, $res);
             });
@@ -99,7 +104,9 @@ final class API
                 });
             }
 
-            /************ Teams ************/
+            /*********************
+             * TEAMS
+             ********************/
             $group->get('/c/{competition_id}/t', function (Request $req, Response $res, $args) {
                 return Teams::getTeams($this->config, $args['competition_id'], $req, $res);
             });
@@ -132,7 +139,9 @@ final class API
                 });
             }
 
-            /************ Contacts ************/
+            /*********************
+             * CONTACTS
+             ********************/
             $group->get('/c/{competition_id}/t/{team_id}/c', function (Request $req, Response $res, $args) {
                 return Contacts::getContacts($this->config, $args['competition_id'], $args['team_id'], $req, $res);
             });
@@ -165,7 +174,9 @@ final class API
                 });
             }
 
-            /************ Players ************/
+            /*********************
+             * PLAYERS
+             ********************/
             $group->get('/c/{competition_id}/p', function (Request $req, Response $res, $args) {
                 return Players::getPlayers($this->config, $args['competition_id'], $req, $res);
             });
@@ -212,9 +223,11 @@ final class API
                 return Players::getPlayersForTeam($this->config, $args['competition_id'], $args['team_id'], $req, $res);
             });
 
-            /************ Stages ************/
+            /*********************
+             * STAGES
+             ********************/
             $group->post('/c/{competition_id}/s', function (Request $req, Response $res, $args) {
-                return Stages::createStage($this->config, $args['competition_id'], $req, $res);
+                return Stages::appendStage($this->config, $args['competition_id'], $req, $res);
             });
 
             if ($get_post_mode) {
@@ -237,7 +250,9 @@ final class API
                 });
             }
 
-            /************ Groups ************/
+            /*********************
+             * GROUPS
+             ********************/
             $group->post('/c/{competition_id}/s/{stage_id}/g', function (Request $req, Response $res, $args) {
                 return Groups::createGroup($this->config, $args['competition_id'], $args['stage_id'], $req, $res);
             });
@@ -262,7 +277,9 @@ final class API
                 });
             }
 
-            /************ Matches ************/
+            /*********************
+             * MATCHES
+             ********************/
             $group->post('/c/{competition_id}/s/{stage_id}/g/{group_id}/m', function (Request $req, Response $res, $args) {
                 return Matches::createMatch($this->config, $args['competition_id'], $args['stage_id'], $args['group_id'], $req, $res);
             });

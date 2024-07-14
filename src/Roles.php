@@ -124,8 +124,49 @@ final class PlayerRoles
     }
 }
 
+final class StageRoles
+{
+    public static function append() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
+final class GroupRoles
+{
+    public static function append() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
 final class MatchRoles
 {
+    public static function append() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
     public static function delete() : array
     {
         return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
@@ -228,6 +269,16 @@ final class Roles
     public static function player() : PlayerRoles
     {
         return new PlayerRoles();
+    }
+
+    public static function stage() : StageRoles
+    {
+        return new StageRoles();
+    }
+
+    public static function group() : GroupRoles
+    {
+        return new GroupRoles();
     }
 
     public static function match() : MatchRoles

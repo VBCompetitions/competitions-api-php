@@ -19,6 +19,8 @@ final class AppConfig
     public const VALIDATE_PLAYER_CREATE = 'playerCreate';
     public const VALIDATE_PLAYER_UPDATE = 'playerUpdate';
     public const VALIDATE_PLAYER_TRANSFER = 'playerTransfer';
+    public const VALIDATE_STAGE_APPEND = 'stageAppend';
+    public const VALIDATE_STAGE_UPDATE = 'stageUpdate';
 
     private string $base_path;
     private string $data_dir;
