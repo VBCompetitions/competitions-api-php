@@ -1,0 +1,152 @@
+{
+    "version": "1.0.0",
+    "metadata": [
+        {
+            "key": "active",
+            "value": "true"
+        },
+        {
+            "key": "published",
+            "value": "true"
+        }
+    ],
+    "name": "Competition from API Testing",
+    "clubs": [
+        {
+            "id": "CLBA",
+            "name": "Club Alpha",
+            "notes": "A simple club for simple folk"
+        },
+        {
+            "id": "CLBO",
+            "name": "Club Omega",
+            "notes": "The end of the road"
+        }
+    ],
+    "teams": [
+        {
+            "id": "TMA",
+            "name": "Team A",
+            "contacts": [
+                {
+                    "id": "C1",
+                    "name": "Alice Alison",
+                    "roles": [
+                        "secretary"
+                    ]
+                },
+                {
+                    "id": "C2",
+                    "name": "Bill Brown",
+                    "roles": [
+                        "coach"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "TMB",
+            "name": "Team B",
+            "contacts": [
+                {
+                    "id": "C1",
+                    "name": "Chris Collins",
+                    "roles": [
+                        "treasurer"
+                    ],
+                    "emails": [
+                        "teambtreasurer@example.com"
+                    ],
+                    "phones": [
+                        "01234 567890"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "TMO",
+            "name": "Team Omega"
+        }
+    ],
+    "stages": [
+        {
+            "id": "MCG",
+            "name": "Local Cup Group Stages",
+            "groups": [
+                {
+                    "id": "MA",
+                    "name": "Group stage - Pool A",
+                    "description": [
+                        "The top team will go through to the final"
+                    ],
+                    "type": "league",
+                    "league": {
+                        "ordering": [
+                            "PTS",
+                            "SD",
+                            "PD"
+                        ],
+                        "points": {
+                            "played": 0,
+                            "perSet": 1,
+                            "win": 1,
+                            "winByOne": 1,
+                            "lose": 0,
+                            "loseByOne": 0,
+                            "forfeit": 0
+                        }
+                    },
+                    "matchType": "sets",
+                    "sets": {
+                        "maxSets": 3,
+                        "setsToWin": 2,
+                        "clearPoints": 2,
+                        "minPoints": 5,
+                        "pointsToWin": 21,
+                        "lastSetPointsToWin": 15,
+                        "maxPoints": 23,
+                        "lastSetMaxPoints": 17
+                    },
+                    "drawsAllowed": false,
+                    "matches": [
+                        {
+                            "id": "M1",
+                            "venue": "St Mary's LC",
+                            "type": "match",
+                            "date": "2018-11-16",
+                            "warmup": "19:20",
+                            "start": "19:30",
+                            "duration": "0:50",
+                            "complete": true,
+                            "homeTeam": {
+                                "id": "TMA",
+                                "scores": [
+                                    21,
+                                    21
+                                ],
+                                "mvp": "J Bloggs",
+                                "forfeit": false,
+                                "bonusPoints": 0,
+                                "penaltyPoints": 0
+                            },
+                            "awayTeam": {
+                                "id": "TMB",
+                                "scores": [
+                                    6,
+                                    7
+                                ],
+                                "forfeit": false,
+                                "bonusPoints": 0,
+                                "penaltyPoints": 0
+                            },
+                            "officials": {
+                                "team": "TMO"
+                            },
+                            "friendly": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

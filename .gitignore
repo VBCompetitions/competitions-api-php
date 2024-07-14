@@ -5,7 +5,9 @@
 /coverage/*
 /vendor/*
 /pkg/
-!/example/data/sessions/.htaccess
 /example/data/sessions/*
-!/example/data/users/.htaccess
+!/example/data/sessions/.htaccess
 /example/data/users/*
+!/example/data/users/.htaccess
+/example/data/competitions/*
+!/example/data/competitions/api-test-competition.json
