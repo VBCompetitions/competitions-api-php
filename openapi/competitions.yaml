@@ -1183,13 +1183,13 @@ paths:
     post:
       tags:
         - stages
-      summary: Add a Stage
-      description: Add a Stage to the Competition with the given competition ID
-      operationId: createStage
+      summary: Append a Stage
+      description: Append a Stage to the Competition with the given competition ID
+      operationId: appendStage
       parameters:
         - name: competitionID
           in: path
-          description: ID of the Competition to add the Stage to
+          description: ID of the Competition to append the Stage to
           required: true
           schema:
             type: string
@@ -1240,7 +1240,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StageDetails'
+              $ref: '#/components/schemas/UpdateStageDetails'
       responses:
         '200':
           description: success
@@ -2119,7 +2119,6 @@ components:
                 required:
                   - description
             required:
-              - id
               - groups
       required:
         - name
@@ -2754,26 +2753,48 @@ components:
           description: Free form string to add notes about this player's team entry.  This can be used for arbitrary content that various implementations can use
           type: string
           minLength: 1
-    StageDetails:
+    UpdateStageDetails:
       description: A single competition stage
       type: object
       additionalProperties: false
       properties:
         name:
-          description: Descriptive title for the stage, e.g. 'Pools'
+          description: Descriptive title for the stage, e.g. 'Pools'.  If not present then the current name is removed
           type: string
           minLength: 1
         notes:
-          description: Free form string to add notes about this stage.  This can be used for arbitrary content that various implementations can use
+          description: Free form string to add notes about this stage.  This can be used for arbitrary content that various implementations can use.  If not present then the current notes are removed
           type: string
           minLength: 1
         description:
-          description: An array of string values as a verbose description of the nature of the stage, e.g. 'The first stage of the competition will consist of separate pools, where....'
+          description: An array of string values as a verbose description of the nature of the stage, e.g. 'The first stage of the competition will consist of separate pools, where....'.  If not present then the current description is removed
           type: array
           items:
             description: A part of the description of this stage
             type: string
             minLength: 1
+        ifUnknown:
+          description: It can be useful to still present something to the user about
+            the later stages of a competition, even if the teams playing in that stage
+            is not yet known.  This defines what should be presented in any application
+            handling this competition's data in such cases.  If not present then the current ifUnknown is removed
+          type: object
+          additionalProperties: false
+          properties:
+            description:
+              description: An array of string values to be presented in the case that
+                the teams in this stage are not yet known, typically as an explanation
+                of what this stage will contain (e.g. 'The crossover games will be
+                between the top two teams in each pool')
+              type: array
+              items:
+                description: A part of the description of this stage
+                type: string
+                minLength: 1
+            matches:
+              $ref: '#/components/schemas/Competition/defs/matches'
+          required:
+            - description
     GroupDetails:
       description: A group within this stage of the competition
       type: object
