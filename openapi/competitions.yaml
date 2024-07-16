@@ -1361,7 +1361,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GroupDetails'
+              $ref: '#/components/schemas/UpdateGroupDetails'
       responses:
         '200':
           description: success
@@ -2091,6 +2091,107 @@ components:
                       type: boolean
                     matches:
                       $ref: '#/components/schemas/Competition/defs/matches'
+                  allOf:
+                    - if:
+                        properties:
+                          type:
+                            const: league
+                        required:
+                          - type
+                      then:
+                        required:
+                          - league
+                    - if:
+                        properties:
+                          type:
+                            const: crossover
+                        required:
+                          - type
+                      then:
+                        anyOf:
+                          - properties:
+                              drawsAllowed:
+                                enum:
+                                  - false
+                          - not:
+                              required:
+                                - drawsAllowed
+                    - if:
+                        properties:
+                          type:
+                            const: knockout
+                        required:
+                          - type
+                      then:
+                        anyOf:
+                          - properties:
+                              drawsAllowed:
+                                enum:
+                                  - false
+                          - not:
+                              required:
+                                - drawsAllowed
+                    - if:
+                        properties:
+                          matchType:
+                            const: continuous
+                        required:
+                          - matchType
+                      then:
+                        properties:
+                          matches:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                homeTeam:
+                                  type: object
+                                  properties:
+                                    scores:
+                                      type: array
+                                      maxItems: 1
+                                awayTeam:
+                                  type: object
+                                  properties:
+                                    scores:
+                                      type: array
+                                      maxItems: 1
+                        allOf:
+                          - not:
+                              required:
+                                - sets
+                    - if:
+                        properties:
+                          matchType:
+                            const: continuous
+                        required:
+                          - matchType
+                      then:
+                        allOf:
+                          - not:
+                              required:
+                                - sets
+                    - if:
+                        properties:
+                          matchType:
+                            const: continuous
+                          matches:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  const: match
+                        required:
+                          - matchType
+                      then:
+                        properties:
+                          matches:
+                            type: array
+                            items:
+                              type: object
+                              required:
+                                - complete
                   required:
                     - id
                     - type
@@ -2795,28 +2896,28 @@ components:
               $ref: '#/components/schemas/Competition/defs/matches'
           required:
             - description
-    GroupDetails:
+    UpdateGroupDetails:
       description: A group within this stage of the competition
       type: object
       additionalProperties: false
       properties:
         name:
-          description: Descriptive title for the group, e.g. 'Pool 1'
+          description: Descriptive title for the group, e.g. 'Pool 1'. If not present then the current name is removed
           type: string
           minLength: 1
         notes:
-          description: Free form string to add notes about this group.  This can be used for arbitrary content that various implementations can use
+          description: Free form string to add notes about this group.  This can be used for arbitrary content that various implementations can use. If not present then the current notes are removed
           type: string
           minLength: 1
         description:
-          description: An array of string values as a verbose description of the nature of the group, e.g. 'For the pool stage, teams will play each other once, with the top 2 teams going through to....'
+          description: An array of string values as a verbose description of the nature of the group, e.g. 'For the pool stage, teams will play each other once, with the top 2 teams going through to....'.  If not present then the current description is removed
           type: array
           items:
             description: A part of the description of this stage
             type: string
             minLength: 1
         knockout:
-          description: Configuration for the knockout group
+          description: Configuration for the knockout group.  If not present then the current data is removed
           type: object
           additionalProperties: false
           properties:
@@ -2843,7 +2944,7 @@ components:
           required:
             - standing
         league:
-          description: Configuration for the league
+          description: Configuration for the league. If not present then the current data is removed
           type: object
           additionalProperties: false
           properties:
@@ -2901,14 +3002,8 @@ components:
           required:
             - ordering
             - points
-        matchType:
-          description: Are the matches played in sets or continuous points.  If this has the value 'sets' then the property 'sets' must be defined
-          type: string
-          enum:
-            - sets
-            - continuous
         sets:
-          description: Configuration defining the nature of a set
+          description: Configuration defining the nature of a set. If not present then the current data is removed
           type: object
           additionalProperties: false
           properties:

@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/monkeysppp/VBCompetitions-API/1.0.0/groupUpdate",
+  "description": "Details on a group",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "The name for the group",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "notes": {
+      "description": "Free form string to add notes about this group.  This can be used for arbitrary content that various implementations can use",
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "description": "An array of string values as a verbose description of the nature of the group, e.g. 'For the pool stage, teams will play each other once, with the top 2 teams going through to....'",
+      "type": "array",
+      "items": {
+        "description": "A part of the description of this group",
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "knockout": {
+      "description": "Configuration for the knockout group",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "standing": {
+          "description": "Configuration for the knockout group",
+          "type": "array",
+          "items": {
+            "description": "An ordered mapping from a position to a team ID",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "position": {
+                "description": "The text description of the position, e.g. \"1st\", \"2nd\".  Having this field allows multiple teams to have the same \"position\", for example if there are no play-off games then two entries can have the value \"3rd\"",
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "description": "The identifier for the team.  This must be a team reference (see the documentation), for example for the team in \"1st\", this would refer to the winner of the final in this stage->group",
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "position",
+              "id"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "standing"
+      ]
+    },
+    "league": {
+      "description": "Configuration for the league",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ordering": {
+          "description": "An array of parameters that define how the league positions are worked out, where the array position determines the precedence of that parameter, e.g. [ \"PTS\", \"SD\" ] means that league position is determined by league points, with ties decided by set difference.  Valid parameters are 'PTS'=league points, 'WINS'=wins, 'LOSSES'=losses, 'H2H'=head to head, PF'=points for, 'PA'=points against, 'PD'=points difference, 'SF'=sets for, 'SA'=sets against, 'SD'=set difference, 'BP'=bonus points, 'PP'=penalty points.  When comparing teams, a higher value for a parameter results in a higher league position except when comparing 'LOSSES', 'PA', 'SA', and 'PP' (where a lower value results in a higher league position).  Note that 'H2H' only considers wins and losses between two teams; this means that, depending on whether draws are allowed or whether teams play each other multiple times, the head to head comparison may not be able to distinguish between two teams",
+          "type": "array",
+          "items": {
+            "description": "A parameter that defines the league position",
+            "type": "string",
+            "enum": [
+              "PTS",
+              "WINS",
+              "LOSSES",
+              "H2H",
+              "PF",
+              "PA",
+              "PD",
+              "SF",
+              "SA",
+              "SD",
+              "BP",
+              "PP"
+            ]
+          },
+          "minItems": 1
+        },
+        "points": {
+          "description": "Properties defining how to calculate the league points based on match results",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "played": {
+              "description": "Number of league points for playing the match.  Note that a forfeit counts as a \"played\" match, so if this has a non-zero value and the desire is for a forfeit to yield zero points then the \"forfeit\" value should be set to the same as this value",
+              "type": "integer",
+              "default": 0
+            },
+            "perSet": {
+              "description": "Number of league points for each set won",
+              "type": "integer",
+              "default": 0
+            },
+            "win": {
+              "description": "Number of league points for winning (by 2 sets or more if playing sets)",
+              "type": "integer",
+              "default": 3
+            },
+            "winByOne": {
+              "description": "Number of league points for winning by 1 set",
+              "type": "integer",
+              "default": 0
+            },
+            "lose": {
+              "description": "Number of league points for losing (by 2 sets or more if playing sets)",
+              "type": "integer",
+              "default": 0
+            },
+            "loseByOne": {
+              "description": "Number of league points for losing by 1 set",
+              "type": "integer",
+              "default": 0
+            },
+            "forfeit": {
+              "description": "Number of league penalty points for forfeiting a match.  This should be a positive number and will be subtracted from a team's league points for each forfeited match",
+              "type": "integer",
+              "default": 0
+            }
+          }
+        }
+      },
+      "required": [
+        "ordering",
+        "points"
+      ]
+    },
+    "matchType": {
+      "description": "Are the matches played in sets or continuous points.  If this has the value 'sets' then the property 'sets' must be defined",
+      "type": "string",
+      "enum": [
+        "sets",
+        "continuous"
+      ]
+    },
+    "sets": {
+      "description": "Configuration defining the nature of a set",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxSets": {
+          "description": "The maximum number of sets that could be played, often known as 'best of', e.g. if this has the value '5' then the match is played as 'best of 5 sets'",
+          "type": "integer",
+          "default": 5,
+          "minimum": 1
+        },
+        "setsToWin": {
+          "description": "The number of sets that must be won to win the match.  This is usually one more than half the 'maxSets', but may be needed if draws are allowed, e.g. if a competition dictates that exactly 2 sets must be played (by setting 'maxSets' to '2') and that draws are allowed, then 'setsToWin' should still be set to '2' to indicate that 2 sets are needed to win the match",
+          "type": "integer",
+          "default": 3,
+          "minimum": 1
+        },
+        "clearPoints": {
+          "description": "The number of points lead that the winning team must have, e.g. if this has the value '2' then teams must 'win by 2 clear points'.  Note that if 'maxPoints' has a value then that takes precedence, i.e. if 'maxPoints' is set to '35' then a team can win '35-34' irrespective of the value of 'clearPoints'",
+          "type": "integer",
+          "default": 2,
+          "minimum": 1
+        },
+        "minPoints": {
+          "description": "The minimum number of points that either team must score for a set to count as valid.  Usually only used for time-limited matches",
+          "type": "integer",
+          "default": 1,
+          "minimum": 1
+        },
+        "pointsToWin": {
+          "description": "The minimum number of points required to win all but the last set",
+          "type": "integer",
+          "default": 25,
+          "minimum": 1
+        },
+        "lastSetPointsToWin": {
+          "description": "The minimum number of points required to win the last set",
+          "type": "integer",
+          "default": 15,
+          "minimum": 1
+        },
+        "maxPoints": {
+          "description": "The upper limit of points that can be scored in a set",
+          "type": "integer",
+          "default": 1000,
+          "minimum": 1
+        },
+        "lastSetMaxPoints": {
+          "description": "The upper limit of points that can be scored in the last set",
+          "type": "integer",
+          "default": 1000,
+          "minimum": 1
+        }
+      }
+    },
+    "drawsAllowed": {
+      "description": "Sets whether drawn matches are allowed",
+      "default": false,
+      "type": "boolean"
+    }
+  }
+}

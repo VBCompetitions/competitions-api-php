@@ -64,6 +64,14 @@
             ]
         },
         {
+            "id": "TMC",
+            "name": "Team C"
+        },
+        {
+            "id": "TMD",
+            "name": "Team D"
+        },
+        {
             "id": "TMO",
             "name": "Team Omega"
         }
