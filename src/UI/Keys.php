@@ -13,8 +13,9 @@ use VBCompetitions\CompetitionsAPI\ErrorMessage;
 // Errorcodes 012FN
 final class Keys
 {
-    public static function getKeys(AppConfig $config, Response $res) : Response
+    public static function getKeys(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
         $h = fopen($keys_file, 'r');
         $json = fread($h, filesize($keys_file));
@@ -22,7 +23,7 @@ final class Keys
         $keys_data = json_decode($json);
 
         if ($keys_data == null || !property_exists($keys_data, 'lookup') || !property_exists($keys_data, 'keys')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01200');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01200');
         }
 
         $user_id = $_SESSION['user_id'];
@@ -41,6 +42,7 @@ final class Keys
 
     public static function createKey(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
         $h = fopen($keys_file, 'r');
         $json = fread($h, filesize($keys_file));
@@ -48,19 +50,19 @@ final class Keys
         $keys_data = json_decode($json);
 
         if ($keys_data == null || !property_exists($keys_data, 'lookup') || !property_exists($keys_data, 'keys')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01210');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01210');
         }
 
         $body_params = (array)$req->getParsedBody();
         $description = $body_params['description'];
 
         if (strlen($description) > 1000) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Description must ne no longer than 1000 characters', ErrorMessage::BAD_REQUEST_TEXT, '01211');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Description must ne no longer than 1000 characters', ErrorMessage::BAD_REQUEST_CODE, '01211');
         }
 
         // check description is valid must contain only ASCII printable characters excluding " : { } ? =
         if (!preg_match('/^[a-zA-Z0-9!"#£$%&\'()*+,-.\/\\\:;<=>?@[\]^_`{|}~ ]*$/', $description)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid description: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_TEXT, '01212');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid description: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01212');
         }
 
         $user_id = $_SESSION['user_id'];
@@ -94,6 +96,7 @@ final class Keys
 
     public static function updateKey(AppConfig $config, string $key_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
         $h = fopen($keys_file, 'r');
         $json = fread($h, filesize($keys_file));
@@ -101,24 +104,24 @@ final class Keys
         $keys_data = json_decode($json);
 
         if ($keys_data == null || !property_exists($keys_data, 'lookup') || !property_exists($keys_data, 'keys')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01220');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01220');
         }
 
         // Check if key exists
         if (!property_exists($keys_data->keys, $key_id)) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'No such key', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '01221');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such key', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01221');
         }
 
         $body_params = (array)$req->getParsedBody();
         $description = $body_params['description'];
 
         if (strlen($description) > 1000) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Description must ne no longer than 1000 characters', ErrorMessage::BAD_REQUEST_TEXT, '01222');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Description must ne no longer than 1000 characters', ErrorMessage::BAD_REQUEST_CODE, '01222');
         }
 
         // check description is valid must contain only ASCII printable characters excluding " : { } ? =
         if (!preg_match('/^[a-zA-Z0-9!"#£$%&\'()*+,-.\/\\\:;<=>?@[\]^_`{|}~ ]*$/', $description)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid description: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_TEXT, '01223');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid description: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01223');
         }
 
         $keys_data->keys->$key_id->description = $body_params['description'];
@@ -134,8 +137,9 @@ final class Keys
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
-    public static function deleteKey(AppConfig $config, string $key_id, Response $res) : Response
+    public static function deleteKey(AppConfig $config, string $key_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
         $h = fopen($keys_file, 'r');
         $json = fread($h, filesize($keys_file));
@@ -143,7 +147,7 @@ final class Keys
         $keys_data = json_decode($json);
 
         if ($keys_data == null || !property_exists($keys_data, 'lookup') || !property_exists($keys_data, 'keys')) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '01230');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01230');
         }
 
         // Check if key already delete

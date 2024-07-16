@@ -78,35 +78,31 @@ function TeamAndScoreBox ({ match, homeTeam, awayTeam }) {
     )
   }
 
-            //
+  let homeMVP
+  if (match.getHomeTeam().getMVP()) {
+    homeMVP = <Typography className='team-and-score-mvp' variant='body2' component='span'>Team MPV: {match.getHomeTeam().getMVP().getName()}</Typography>
+  } else {
+    homeMVP = <Typography className='team-and-score-mvp' variant='body2' component='span'></Typography>
+  }
+  let awayMVP
+  if (match.getAwayTeam().getMVP()) {
+    awayMVP = <Typography className='team-and-score-mvp' variant='body2' component='span'>Team MPV: {match.getAwayTeam().getMVP().getName()}</Typography>
+  } else {
+    awayMVP = <Typography className='team-and-score-mvp' variant='body2' component='span'></Typography>
+  }
+
   return (
     <Box sx={{ padding: '10px 0px 0px 0px', display: 'flex' }}>
       <Box sx={{ display: 'inline' }}>
         <Typography className='team-and-score-team' variant='h6' component='span'>{homeTeam.getName()}</Typography>
-        {
-          match.getHomeTeam().getMVP()
-          ?
-          <>
-            <br />
-            <Typography className='team-and-score-mvp' variant='body2' component='span'>Team MPV: {match.getHomeTeam().getMVP()}</Typography>
-          </>
-          :
-          null
-        }
+        <br />
+        {homeMVP}
       </Box>
       {result}
       <Box sx={{ display: 'inline' }}>
         <Typography className='team-and-score-team' variant='h6' component='span'>{awayTeam.getName()}</Typography>
-        {
-          match.getAwayTeam().getMVP()
-          ?
-          <>
-            <br />
-            <Typography className='team-and-score-mvp' variant='body2' component='span'>Team MPV: {match.getAwayTeam().getMVP()}</Typography>
-          </>
-          :
-          null
-        }
+        <br />
+        {awayMVP}
       </Box>
     </Box>
   )

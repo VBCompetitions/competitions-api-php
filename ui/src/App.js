@@ -17,6 +17,7 @@ import ErrorPage from './pages/ErrorPage.js'
 import Login from './pages/Login.js'
 import Account, { accountLoader } from './pages/Account.js'
 import Activate, { loadUserActivation } from './pages/Activate.js'
+import System from './pages/System.js'
 import Users, { userListLoader } from './pages/Users.js'
 
 export default function App () {
@@ -54,6 +55,11 @@ export default function App () {
         {
           path: '/login',
           element: <Login />,
+          errorElement: <ErrorPage />
+        },
+        {
+          path: '/system',
+          element: <System setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />,
           errorElement: <ErrorPage />
         },
         {

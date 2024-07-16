@@ -1,0 +1,288 @@
+{
+    "version": "1.0.0",
+    "metadata": [
+        {
+            "key": "active",
+            "value": "true"
+        },
+        {
+            "key": "published",
+            "value": "true"
+        }
+    ],
+    "name": "Competition from API Testing",
+    "clubs": [
+        {
+            "id": "CLBA",
+            "name": "Club Alpha",
+            "notes": "A simple club for simple folk"
+        },
+        {
+            "id": "CLBO",
+            "name": "Club Omega",
+            "notes": "The end of the road"
+        }
+    ],
+    "teams": [
+        {
+            "id": "TMA",
+            "name": "Team A",
+            "contacts": [
+                {
+                    "id": "C1",
+                    "name": "Alice Alison",
+                    "roles": [
+                        "secretary"
+                    ]
+                },
+                {
+                    "id": "C2",
+                    "name": "Bill Brown",
+                    "roles": [
+                        "coach"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "TMB",
+            "name": "Team B",
+            "contacts": [
+                {
+                    "id": "C1",
+                    "name": "Chris Collin",
+                    "roles": [
+                        "treasurer"
+                    ],
+                    "emails": [
+                        "teambtreasurer@example.com"
+                    ],
+                    "phones": [
+                        "01234 567890"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "TMC",
+            "name": "Team C"
+        },
+        {
+            "id": "TMD",
+            "name": "Team D"
+        },
+        {
+            "id": "TMO",
+            "name": "Team Omega"
+        }
+    ],
+    "players": [
+        {
+            "id": "PL0001",
+            "name": "A Ackers",
+            "number": 1,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0002",
+            "name": "A Addams",
+            "number": 2,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0003",
+            "name": "A Atkins",
+            "number": 4,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0004",
+            "name": "B Baines",
+            "number": 6,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0005",
+            "name": "B Barker",
+            "number": 5,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0006",
+            "name": "B Bettis",
+            "number": 9,
+            "teams": [
+                {
+                    "id": "TMA"
+                }
+            ]
+        },
+        {
+            "id": "PL0007",
+            "name": "C Collin",
+            "number": 3,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0008",
+            "name": "C Courts",
+            "number": 2,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0009",
+            "name": "C Curtis",
+            "number": 1,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0010",
+            "name": "D Davies",
+            "number": 7,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0011",
+            "name": "D Dennis",
+            "number": 9,
+            "teams": [
+                {
+                    "id": "TMB"
+                }
+            ]
+        },
+        {
+            "id": "PL0012",
+            "name": "D Dobins",
+            "number": 4,
+            "teams": [
+                {
+                    "id": "TMB",
+                    "until": "2024-03-02"
+                },
+                {
+                    "id": "TMO",
+                    "from": "2024-03-02",
+                    "notes": "Emergency transfer"
+                }
+            ]
+        }
+    ],
+    "stages": [
+        {
+            "id": "MCG",
+            "name": "Local Cup Group Stages",
+            "groups": [
+                {
+                    "id": "MA",
+                    "name": "Group stage - Pool A",
+                    "description": [
+                        "The top team will go through to the final"
+                    ],
+                    "type": "league",
+                    "league": {
+                        "ordering": [
+                            "PTS",
+                            "SD",
+                            "PD"
+                        ],
+                        "points": {
+                            "played": 0,
+                            "perSet": 1,
+                            "win": 1,
+                            "winByOne": 1,
+                            "lose": 0,
+                            "loseByOne": 0,
+                            "forfeit": 0
+                        }
+                    },
+                    "matchType": "sets",
+                    "sets": {
+                        "maxSets": 3,
+                        "setsToWin": 2,
+                        "clearPoints": 2,
+                        "minPoints": 5,
+                        "pointsToWin": 21,
+                        "lastSetPointsToWin": 15,
+                        "maxPoints": 23,
+                        "lastSetMaxPoints": 17
+                    },
+                    "drawsAllowed": false,
+                    "matches": [
+                        {
+                            "id": "M1",
+                            "venue": "St Mary's LC",
+                            "type": "match",
+                            "date": "2018-11-16",
+                            "warmup": "19:20",
+                            "start": "19:30",
+                            "duration": "0:50",
+                            "complete": true,
+                            "homeTeam": {
+                                "id": "TMA",
+                                "scores": [
+                                    21,
+                                    21
+                                ],
+                                "mvp": "J Bloggs",
+                                "forfeit": false,
+                                "bonusPoints": 0,
+                                "penaltyPoints": 0
+                            },
+                            "awayTeam": {
+                                "id": "TMB",
+                                "scores": [
+                                    6,
+                                    7
+                                ],
+                                "forfeit": false,
+                                "bonusPoints": 0,
+                                "penaltyPoints": 0
+                            },
+                            "officials": {
+                                "team": "TMO"
+                            },
+                            "friendly": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

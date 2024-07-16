@@ -1,3 +1,4 @@
+import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded'
@@ -18,6 +19,7 @@ export default function MenuDrawer ( { drawerOpen, toggleDrawer }) {
   // TODO - If not logged in - show only the login?
 
   let users = null
+  let systemSettings = null
   if (Roles.roleCheck(userInfo.roles, [Roles.ADMIN])) {
     users = (
       <Link to='/users' key='users'>
@@ -27,6 +29,19 @@ export default function MenuDrawer ( { drawerOpen, toggleDrawer }) {
               <GroupRoundedIcon />
             </ListItemIcon>
             <ListItemText primary={'Users'} />
+          </ListItemButton>
+        </ListItem>
+      </Link>
+    )
+
+    systemSettings = (
+      <Link to='/system' key='admin'>
+        <ListItem>
+          <ListItemButton>
+            <ListItemIcon>
+              <AdminPanelSettingsRoundedIcon />
+            </ListItemIcon>
+            <ListItemText primary={'System'} />
           </ListItemButton>
         </ListItem>
       </Link>
@@ -66,6 +81,7 @@ export default function MenuDrawer ( { drawerOpen, toggleDrawer }) {
           {home}
           {competitions}
           {users}
+          {systemSettings}
         </List>
       </Box>
     </Drawer>

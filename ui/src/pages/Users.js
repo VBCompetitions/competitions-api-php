@@ -290,7 +290,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
 
   const DeleteUserDialog = (
     <Dialog open={deleteUserOpen} onClose={deleteUserDialogClose} aria-labelledby='delete user'>
-      <DialogTitle id='add-user-dialog-title' className='dialog-top'>Delete User</DialogTitle>
+      <DialogTitle id='delete-user-dialog-title' className='dialog-top'>Delete User</DialogTitle>
       <DialogContent>
         <DialogContentText>Are you sure you want to delete user "{ deleteUserUser ? deleteUserUser.username : ''}"?</DialogContentText>
       </DialogContent>

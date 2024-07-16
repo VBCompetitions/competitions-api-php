@@ -18,16 +18,21 @@ final class Competitions
 {
     public static function getCompetitions(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
+        $context->getLogger()->info('Request to get competitions list');
+
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00000');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
         }
 
         if (!Roles::roleCheck($roles, Roles::competition()::get())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '00001');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00001');
         }
 
-        $competition_list = Competition::competitionList($config->getCompetitionsDir());
+        $query_params = Utils::processQueryParams($req);
+
+        $competition_list = Competition::competitionList($config->getCompetitionsDir(), $query_params->meta);
 
         $competitions = [];
         foreach ($competition_list as $competition) {
@@ -42,205 +47,159 @@ final class Competitions
                 array_push($competitions, $competition_details);
             }
         }
+
+        $context->getLogger()->info('Competitions list returning '.count($competitions).' competitions');
         $res->getBody()->write(json_encode($competitions));
         return $res->withHeader('Content-Type', 'application/json');
     }
 
     public static function createCompetition(AppConfig $config, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
+        $context->getLogger()->info('Request to create competition');
+
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00010');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00010');
         }
 
         if (!Roles::roleCheck($roles, Roles::competition()::create())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '00011');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00011');
         }
 
         $competition_data = json_decode($req->getBody());
 
         if (property_exists($competition_data, 'version') && version_compare($competition_data->version, '1.0.0', 'ne')) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Document version '.$competition_data->version.' not supported', ErrorMessage::BAD_DATA_TEXT, '00012');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_DATA_HTTP, 'Document version '.$competition_data->version.' not supported', ErrorMessage::BAD_DATA_CODE, '00012');
         }
 
-        try {
-            Competition::validateJSON($competition_data);
-        } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Bad competition data: '.$th->getMessage(), ErrorMessage::BAD_DATA_TEXT, '00013');
-        }
-
-        try {
-            $competition = Competition::loadFromCompetitionJSON($req->getBody());
+        if (property_exists($competition_data, 'id')) {
+            $competition_id = $competition_data->id;
+            $context->getLogger()->info('Competition ID specified as '.$competition_id);
+        } else {
             $competition_id = Uuid::uuid4()->toString();
-            $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
-        } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to create the competition', ErrorMessage::INTERNAL_ERROR_TEXT, '00014');
+            $context->getLogger()->info('Competition ID not specified, so setting to '.$competition_id);
         }
 
-        $res->getBody()->write($competition_id);
-        return $res;
-    }
-
-    public static function getCompetitionByID(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
-    {
-        $roles = $req->getAttribute('roles');
-        if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00020');
-        }
-
-        if (!Roles::roleCheck($roles, Roles::competition()::get())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '00021');
-        }
-
-        $requested_file = $config->getCompetitionsDir().DIRECTORY_SEPARATOR.$competition_id.'.json';
-
-        if (Utils::checkPathTraversal($config->getCompetitionsDir(), $requested_file)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition ID', ErrorMessage::BAD_REQUEST_TEXT, '00022');
-        }
-
-        $competition_file = realpath($requested_file);
-        if ($competition_file === false) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'Competition does not exist', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '00023');
-        }
-
-        try {
-            $competition = Competition::loadFromFile($config->getCompetitionsDir(), $competition_id.'.json');
-            $res->getBody()->write(json_encode($competition));
-            return $res->withHeader('Content-Type', 'application/json');
-        } catch (Throwable $_) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to load the competition', ErrorMessage::INTERNAL_ERROR_TEXT, '00024');
-        }
-    }
-
-    public static function createCompetitionByID(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
-    {
-        $roles = $req->getAttribute('roles');
-        if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00030');
-        }
-
-        if (!Roles::roleCheck($roles, Roles::competition()::create())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '00031');
-        }
-
-        $requested_file = $config->getCompetitionsDir().DIRECTORY_SEPARATOR.$competition_id.'.json';
-        if (Utils::checkPathTraversal($config->getCompetitionsDir(), $requested_file)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition ID', ErrorMessage::BAD_REQUEST_TEXT, '00032');
-        }
-
-        $competition_file = realpath($requested_file);
-        if ($competition_file !== false) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_EXISTS_CODE, 'Competition with matching ID already exists', ErrorMessage::RESOURCE_EXISTS_TEXT, '00033');
-        }
-
-        try {
-            $competition_data = json_decode($req->getBody());
-        } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition data, must be JSON', ErrorMessage::BAD_REQUEST_TEXT, '00034');
-        }
-
-        if (property_exists($competition_data, 'version') && version_compare($competition_data->version, '1.0.0', 'ne')) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Document version '.$competition_data->version.' not supported', ErrorMessage::BAD_DATA_TEXT, '00035');
-        }
+        unset($competition_data->id);
 
         try {
             Competition::validateJSON($competition_data);
         } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_DATA_CODE, 'Bad competition data: '.$th->getMessage(), ErrorMessage::BAD_DATA_TEXT, '00036');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_DATA_HTTP, 'Bad competition data: '.$th->getMessage(), ErrorMessage::BAD_DATA_CODE, '00013');
         }
 
         try {
             $competition = Competition::loadFromCompetitionJSON($req->getBody());
+            $context->getLogger()->info('Competition created with name ['.$competition->getName().'] and ID ['.$competition_id.']');
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to create the competition', ErrorMessage::INTERNAL_ERROR_TEXT, '00037');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to create the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00014');
         }
 
         $res->getBody()->write($competition_id);
         return $res;
     }
 
-    public static function updateCompetitionByID(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function getCompetition(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
     {
-        $roles = $req->getAttribute('roles');
-        if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00040');
-        }
-
-        if (!Roles::roleCheck($roles, Roles::competition()::update())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '00041');
-        }
-
-        $requested_file = $config->getCompetitionsDir().DIRECTORY_SEPARATOR.$competition_id.'.json';
-        if (Utils::checkPathTraversal($config->getCompetitionsDir(), $requested_file)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition ID', ErrorMessage::BAD_REQUEST_TEXT, '00042');
-        }
-
-        $competition_file = realpath($requested_file);
-        if ($competition_file === false) {
-            return ErrorMessage::respondWithError(ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, 'Competition does not exist', ErrorMessage::RESOURCE_DOES_NOT_EXIST_TEXT, '00043');
-        }
+        $context = $req->getAttribute('context');
+        $context->getLogger()->info('Request to get competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Competition::loadFromFile($config->getCompetitionsDir(), $competition_id.'.json');
-        } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to load the competition', ErrorMessage::INTERNAL_ERROR_TEXT, '00044');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::competition()::get(), $competition_id, '0070');
+        } catch (ErrorMessage $err) {
+            return $err->respond($context);
+        }
+
+        $context->getLogger()->info('Competition with ID ['.$competition_id.'] returned');
+        $res->getBody()->write(json_encode($competition));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    public static function updateCompetition(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    {
+        $context = $req->getAttribute('context');
+        $context->getLogger()->info('Request to update competition with ID ['.$competition_id.']');
+
+        try {
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::competition()::update(), $competition_id, '0070');
+        } catch (ErrorMessage $err) {
+            return $err->respond($context);
         }
 
         $competition_update = json_decode($req->getBody());
         try {
             if (property_exists($competition_update, 'name')) {
+                $original_name = $competition->getName();
                 $competition->setName($competition_update->name);
+                $context->getLogger()->info('Competition with ID ['.$competition_id.'] name changed from ['.$original_name.'] to ['.$competition->getName().']');
             }
         } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition name: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_TEXT, '00045');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid competition name: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00045');
         }
 
         try {
             if (property_exists($competition_update, 'notes')) {
+                $original_notes = $competition->getNotes();
                 $competition->setNotes($competition_update->notes);
+                $context->getLogger()->info('Competition with ID ['.$competition_id.'] notes changed from ['.$original_notes.'] to ['.$competition->getNotes().']');
             }
         } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition notes: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_TEXT, '00046');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid competition notes: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00046');
+        }
+
+        try {
+            if (property_exists($competition_update, 'metadata')) {
+                // TODO
+                // $original_notes = $competition->getNotes();
+                // $competition->setNotes($competition_update->notes);
+                // $context->getLogger()->info('Competition with ID ['.$competition_id.'] notes changed from ['.$original_notes.'] to ['.$competition->getNotes().']');
+            }
+        } catch (Throwable $th) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid competition metadata: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00047');
         }
 
         try {
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $th) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Failed to update the competition', ErrorMessage::INTERNAL_ERROR_TEXT, '00047');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to update the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00048');
         }
-
-        // TODO handle when setting set config but not setting matchType to "sets" etc...
 
         $res->getBody()->write(json_encode($competition));
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function deleteCompetitionByID(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function deleteCompetition(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
+        $context->getLogger()->info('Request to delete competition with ID ['.$competition_id.']');
+
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
-            return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_TEXT, '00050');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00050');
         }
 
         if (!Roles::roleCheck($roles, Roles::competition()::delete())) {
-            return ErrorMessage::respondWithError(ErrorMessage::FORBIDDEN_CODE, 'Insufficient roles', ErrorMessage::FORBIDDEN_TEXT, '00051');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00051');
         }
 
         $requested_file = $config->getCompetitionsDir().DIRECTORY_SEPARATOR.$competition_id.'.json';
         if (Utils::checkPathTraversal($config->getCompetitionsDir(), $requested_file)) {
-            return ErrorMessage::respondWithError(ErrorMessage::BAD_REQUEST_CODE, 'Invalid competition ID', ErrorMessage::BAD_REQUEST_TEXT, '00052');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid competition ID', ErrorMessage::BAD_REQUEST_CODE, '00052');
         }
 
         $competition_file = realpath($requested_file);
         if ($competition_file === false) {
+            $context->getLogger()->info('Competition with ID ['.$competition_id.'] not found anyway');
             return $res->withStatus(200);
         }
 
         if (unlink($competition_file)) {
+            $context->getLogger()->info('Competition with ID ['.$competition_id.'] deleted');
             return $res->withStatus(200);
         }
 
-        return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'There was a problem deleting the competition.  Maybe try again?', ErrorMessage::INTERNAL_ERROR_TEXT, '00053');
+        return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'There was a problem deleting the competition.  Maybe try again?', ErrorMessage::INTERNAL_ERROR_CODE, '00053');
     }
 }

@@ -20,10 +20,11 @@ class AuthBySessionMiddleware implements MiddlewareInterface
         $this->redirect_to_login = $redirect_to_login;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $req, RequestHandlerInterface $handler) : ResponseInterface
     {
+        $context = $req->getAttribute('context');
         // session tokens are in a cookie with the name defined by AppConfig::SESSION_COOKIE
-        $cookies = $request->getCookieParams();
+        $cookies = $req->getCookieParams();
         if (array_key_exists(AppConfig::SESSION_COOKIE, $cookies)) {
             session_save_path($this->config->getSessionDir());
             session_name(AppConfig::SESSION_COOKIE);
@@ -32,7 +33,7 @@ class AuthBySessionMiddleware implements MiddlewareInterface
                 session_unset();
                 session_destroy();
                 setcookie(session_name(), "", time() - 3600, '/');
-                return ErrorMessage::respondWithError(ErrorMessage::UNAUTHORIZED_CODE, 'Authentication Error', ErrorMessage::UNAUTHORIZED_TEXT, null);
+                return ErrorMessage::respondWithError($context, ErrorMessage::UNAUTHORIZED_HTTP, 'Authentication Error', ErrorMessage::UNAUTHORIZED_CODE, null);
             }
 
             $users_file = $this->config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -41,7 +42,7 @@ class AuthBySessionMiddleware implements MiddlewareInterface
             fclose($h);
             $users_data = json_decode($json);
             if ($users_data === null) {
-                return ErrorMessage::respondWithError(ErrorMessage::INTERNAL_ERROR_CODE, 'Authentication Error', ErrorMessage::INTERNAL_ERROR_TEXT, null);
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Authentication Error', ErrorMessage::INTERNAL_ERROR_CODE, null);
             }
 
             if (!property_exists($users_data->users, $_SESSION['user_id'])) {
@@ -49,11 +50,13 @@ class AuthBySessionMiddleware implements MiddlewareInterface
                 session_unset();
                 session_destroy();
                 setcookie(session_name(), "", time() - 3600, '/');
-                return ErrorMessage::respondWithError(ErrorMessage::UNAUTHORIZED_CODE, 'Authentication Error', ErrorMessage::UNAUTHORIZED_TEXT, null);
+                return ErrorMessage::respondWithError($context, ErrorMessage::UNAUTHORIZED_HTTP, 'Authentication Error', ErrorMessage::UNAUTHORIZED_CODE, null);
             }
 
-            $request = $request->withAttribute('roles', $users_data->users->{$_SESSION['user_id']}->roles);
-            return $handler->handle($request);
+            $context->setUserID($_SESSION['user_id']);
+            $context->setUserName($_SESSION['username']);
+            $req = $req->withAttribute('roles', $users_data->users->{$_SESSION['user_id']}->roles);
+            return $handler->handle($req);
         }
 
         // No valid key + no session = access denied
@@ -62,7 +65,7 @@ class AuthBySessionMiddleware implements MiddlewareInterface
             // UI webpage call, redirect to login
             $response = new Response();
             $return_to = '/ui/c';
-            $request_path = $request->getUri()->getPath();
+            $request_path = $req->getUri()->getPath();
             if (str_starts_with($request_path, $this->config->getBasePath())) {
                 $return_to = substr($request_path, strlen($this->config->getBasePath()));
             }
@@ -71,6 +74,6 @@ class AuthBySessionMiddleware implements MiddlewareInterface
         }
 
         // UI Data call, return 401
-        return ErrorMessage::respondWithError(ErrorMessage::UNAUTHORIZED_CODE, 'Authentication Error', ErrorMessage::UNAUTHORIZED_TEXT, null);
+        return ErrorMessage::respondWithError($context, ErrorMessage::UNAUTHORIZED_HTTP, 'Authentication Error', ErrorMessage::UNAUTHORIZED_CODE, null);
     }
 }

@@ -10,8 +10,6 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { MatchType } from '@vbcompetitions/competitions'
 import { updateMatch } from '../apis/competitionAPI.js'
@@ -26,8 +24,11 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
   const [scores, setScores] = useState(initialScoresData)
   let homeWin = ''
   let awayWin = ''
-  const [perTeamMVP, setPerTeamMVP] = useState(true)
-  const [mvpList, setMVPs] = useState(['', '', ''])
+  const [mvpList, setMVPs] = useState([
+    match.getHomeTeam().getMVP() ? match.getHomeTeam().getMVP() :'',
+    match.getAwayTeam().getMVP() ? match.getAwayTeam().getMVP() :'',
+    match.getMVP() ? match.getMVP() : ''
+  ])
 
   const handleScoreChange = (e, homeTeam, set) => {
     if (isNaN(parseInt(e.target.value)) && e.target.value !== '') {
@@ -103,6 +104,7 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
       setUpdating(false)
       setSuccessMessage('Match updated')
     } catch (error) {
+      closeDialog()
       setUpdating(false)
       setErrorMessage(error.message)
     }

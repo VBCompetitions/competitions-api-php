@@ -24,17 +24,18 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
 import ClubCard from '../components/ClubCard.js'
+import PlayerTable from '../components/PlayerTable.js'
 import TeamCard from '../components/TeamCard.js'
 import GroupMatchSimple from '../components/GroupMatchSimple.js'
 import GroupBreak from '../components/GroupBreak.js'
 import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 
-import { getCompetitionByID } from '../apis/competitionAPI.js'
+import { getCompetition } from '../apis/competitionAPI.js'
 
 export async function competitionLoader (url) {
   const competitionID = url.params.competitionID
   try {
-    const competition = await getCompetitionByID(competitionID)
+    const competition = await getCompetition(competitionID)
     return { competitionID, competition }
   } catch (err) {
     if (err.status === 401) {
@@ -202,6 +203,14 @@ export default function CompetitionViewer ({ selectCompetition, setSuccessMessag
                 <Button aria-label="Add Team" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addTeamDialogOpen} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Team</Button>
               </Box>
             </Grid>
+          </AccordionDetails>
+        </Accordion>
+      </Box>
+      <Box padding="10px">
+        <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Players</Typography></AccordionSummary>
+          <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
+            <PlayerTable competition={competition} competitionID={competitionID} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           </AccordionDetails>
         </Accordion>
       </Box>

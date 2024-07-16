@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/monkeysppp/VBCompetitions-API/1.0.0/playerTransfer",
+  "description": "A Player's team registration entry, linking them to the specified team",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "date": {
+      "description": "The date from which the player is registering with this team.  Any exiting team registration is updated such that the \"until\" field is set to this value.  When this is not present, this is taken as today's date.",
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "description": "Free form string to add notes about this player's team entry.  This can be used for arbitrary content that various implementations can use",
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
