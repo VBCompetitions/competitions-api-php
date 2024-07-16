@@ -13,7 +13,7 @@ import { useRouteLoaderData } from 'react-router-dom'
 
 // import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 import TeamAndScoreBox from './TeamAndScoreBox.js'
-import MatchResultDialog from './MatchResultDialog.js'
+import MatchResultDialog from '../dialogs/MatchResultDialog.js'
 import Roles from './Roles.js'
 
 function GroupMatchSimple ({ competition, competitionID, match, setSuccessMessage, setErrorMessage }) {
@@ -58,8 +58,8 @@ function GroupMatchSimple ({ competition, competitionID, match, setSuccessMessag
   //   setEditMatchOpen(false)
   // }
 
-  const awayTeam = competition.getTeamByID(match.getAwayTeam().getID())
-  const homeTeam = competition.getTeamByID(match.getHomeTeam().getID())
+  const awayTeam = competition.getTeam(match.getAwayTeam().getID())
+  const homeTeam = competition.getTeam(match.getHomeTeam().getID())
 
   const matchID = <div><Typography variant='subtitle2' component='span'>Match ID: </Typography><Typography variant='caption text' component='span'>{match.getID()}</Typography><br /></div>
 

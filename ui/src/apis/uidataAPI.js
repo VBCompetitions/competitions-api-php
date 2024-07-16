@@ -176,7 +176,7 @@ export async function updateKey (keyID, description) {
     let url = `${window.VBC_UIDATA_URL}/k/${keyID}`
     if (window.VBC_GET_POST_MODE) {
       method = 'POST'
-      url = `${window.VBC_UIDATA_URL}/k/${keyID}/patch`
+      url = `${url}/patch`
     }
     const response = await fetch(url, {
       method,
@@ -197,7 +197,7 @@ export async function deleteKey (keyID) {
     let url = `${window.VBC_UIDATA_URL}/k/${keyID}`
     if (window.VBC_GET_POST_MODE) {
       method = 'POST'
-      url = `${window.VBC_UIDATA_URL}/k/${keyID}/delete`
+      url = `${url}/delete`
     }
     const response = await fetch(url, {
       method,
@@ -205,6 +205,21 @@ export async function deleteKey (keyID) {
       credentials: 'include'
     })
     await checkResponse(response)
+  } catch (error) {
+    throw error
+  }
+}
+
+//#endregion
+
+//#region System /s
+
+export async function getSystemLogs () {
+  try {
+    const response = await fetch(`${window.VBC_UIDATA_URL}/s/logs`, { credentials: 'include' })
+    await checkResponse(response)
+    const logs = await response.text()
+    return logs
   } catch (error) {
     throw error
   }

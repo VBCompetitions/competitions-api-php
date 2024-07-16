@@ -23,9 +23,11 @@ import Typography from '@mui/material/Typography'
 import { Link, useRouteLoaderData } from 'react-router-dom'
 
 import { deleteCompetition, updateCompetition } from '../apis/competitionAPI'
+import EditCompetitionDialog from '../dialogs/competitions/EditCompetitionDialog'
+import DeleteCompetitionDialog from '../dialogs/competitions/DeleteCompetitionDialog'
 import Roles from './Roles'
 
-export default function CompetitionCard ({ competition, setErrorMessage, triggerLoading, triggerRefresh }) {
+export default function CompetitionCard ({ competition, setSuccessMessage, setErrorMessage, triggerRefresh }) {
   const [menuWindow, setMenuWindow] = useState(null)
   const [deleteCompetitionOpen, setDeleteCompetitionOpen] = useState(false)
   const [editCompetitionOpen, setEditCompetitionOpen] = useState(false)
@@ -41,68 +43,32 @@ export default function CompetitionCard ({ competition, setErrorMessage, trigger
     setMenuWindow(null)
   }
 
-  const deleteCompetitionAction = async () => {
-    triggerLoading()
-    setUpdating(true)
-    deleteCompetitionDialogClose()
-    try {
-      await deleteCompetition(competition.id)
-      setUpdating(false)
-    } catch (error) {
-      setUpdating(false)
-      setErrorMessage(error.message)
-    }
-    await triggerRefresh()
-  }
-
-  const deleteCompetitionDialogOpen = () => {
+  const openDeleteCompetition = () => {
     setDeleteCompetitionOpen(true)
     closeMenu()
   }
 
-  const deleteCompetitionDialogClose = () => {
+  const closeDeleteCompetition = () => {
     setDeleteCompetitionOpen(false)
   }
 
-  const editCompetitionDialogOpen = () => {
+  const openEditCompetition = () => {
     setEditCompetitionOpen(true)
     closeMenu()
   }
 
-  const editCompetitionDialogClose = () => {
+  const closeEditCompetition = () => {
     setEditCompetitionOpen(false)
-  }
-
-  const editCompetitionDialogUpdate = async () => {
-    triggerLoading()
-    setUpdating(true)
-    editCompetitionDialogClose()
-    const updatedCompetition = {
-      name: newCompetitionName,
-    //   teams: [],
-    //   stages: []
-    }
-    try {
-      await updateCompetition(competition.id, updatedCompetition)
-    } catch (error) {
-      setErrorMessage(error.message)
-    }
-    await triggerRefresh()
-    setUpdating(false)
-  }
-
-  const editCompetitionDialogNameChange = e => {
-    setNewCompetitionName(e.target.value)
   }
 
   const competitionMenuActions = []
 
   if (Roles.roleCheck(userInfo.roles, Roles.Competition.update)) {
-    competitionMenuActions.push(<MenuItem onClick={editCompetitionDialogOpen}>Edit</MenuItem>)
+    competitionMenuActions.push(<MenuItem onClick={openEditCompetition}>Edit</MenuItem>)
   }
 
   if (Roles.roleCheck(userInfo.roles, Roles.Competition.delete)) {
-    competitionMenuActions.push(<MenuItem onClick={deleteCompetitionDialogOpen}>Delete</MenuItem>)
+    competitionMenuActions.push(<MenuItem onClick={openDeleteCompetition}>Delete</MenuItem>)
   }
 
   let competitionActions = ( <CardActions></CardActions> )
@@ -150,28 +116,20 @@ export default function CompetitionCard ({ competition, setErrorMessage, trigger
           {competitionActions}
         </Card>
       </Box>
-      <Dialog open={deleteCompetitionOpen} onClose={deleteCompetitionDialogClose} aria-labelledby="delete competition">
-        <DialogTitle id="delete-competition-dialog-title">Delete Competition</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Are you sure you want to delete the competition?</DialogContentText>
-          <DialogContentText>Name: {competition.name}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={deleteCompetitionDialogClose} variant="outlined" color="primary">Cancel</Button>
-          <Button onClick={deleteCompetitionAction} variant="contained" color="primary">Delete</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={editCompetitionOpen} onClose={editCompetitionDialogClose} aria-labelledby="edit competition">
-        <DialogTitle id="edit-competition-dialog-title">Edit Competition</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Edit the name for the competition</DialogContentText>
-          <TextField autoFocus margin="dense" id="add-competition-name" onChange={editCompetitionDialogNameChange} label="Competition name" type="text" fullWidth defaultValue={competition.name} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={editCompetitionDialogClose} variant="outlined" color="primary">Cancel</Button>
-          <Button onClick={editCompetitionDialogUpdate} variant="contained" color="primary">Update</Button>
-        </DialogActions>
-      </Dialog>
+      {
+        deleteCompetitionOpen
+        ?
+        <DeleteCompetitionDialog competition={competition} closeDialog={closeDeleteCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+        :
+        null
+      }
+      {
+        editCompetitionOpen
+        ?
+        <EditCompetitionDialog competition={competition} closeDialog={closeEditCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+        :
+        null
+      }
     </Grid>
   )
 }

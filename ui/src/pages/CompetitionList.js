@@ -4,24 +4,18 @@ import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoad
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Unstable_Grid2'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
 import IconButton from '@mui/material/IconButton'
 import LinearProgress from '@mui/material/LinearProgress'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
-import { createCompetition, getCompetitions } from '../apis/competitionAPI.js'
+import { getCompetitions } from '../apis/competitionAPI.js'
 import CompetitionCard from '../components/CompetitionCard.js'
 import Roles from '../components/Roles.js'
-
+import NewCompetitionDialog from '../dialogs/competitions/NewCompetitionDialog.js'
 
 export async function competitionListLoader() {
   try {
@@ -41,65 +35,23 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
   const navigate = useNavigate()
   const navigation = useNavigation()
 
-  // const [data, setData] = useState([])
-  // const [loading, setLoading] = useState(false)
-  const [addCompetitionOpen, setAddCompetitionOpen] = useState(false)
-  const [newCompetitionName, setNewCompetitionName] = useState(null)
+  const [newCompetitionOpen, setNewCompetitionOpen] = useState(false)
 
-  // useEffect(() => {
-  //   refreshCompetitionList()
-  // }, [])
-
-  // async function refreshCompetitionList () {
-  //   setLoading(true)
-  //   try {
-  //     let competitionList = await fetch('http://localhost/competitions-api-php/example/vbc/api/v1/c')
-  //     competitionList = await competitionList.json()
-  //     setData(competitionList)
-  //     setLoading(false)
-  //   } catch (error) {
-  //     setError(error)
-  //     setLoading(false)
-  //   }
-  // }
-
-  function triggerLoading () {
-    // setLoading(true)
+  function openNewCompetition () {
+    setNewCompetitionOpen(true)
   }
 
-  function newCompetitionDialogOpen () {
-    setAddCompetitionOpen(true)
+  function closeNewCompetition () {
+    setNewCompetitionOpen(false)
   }
 
-  function newCompetitionDialogClose () {
-    setAddCompetitionOpen(false)
+  function refreshList () {
+    navigate('.', { replace: true })
   }
 
-  async function newCompetitionAction () {
-    // setLoading(true)
-    newCompetitionDialogClose()
-    const newCompetition = {
-      name: newCompetitionName,
-      teams: [],
-      stages: []
-    }
-    try {
-      //const newC =
-      await createCompetition(newCompetition)
-    } catch (error) {
-      setErrorMessage(error.message)
-      // setLoading(false)
-    }
-    // refreshCompetitionList()
+  function loadCompetition (competitionID) {
+    navigate(`./${competitionID}`)
   }
-
-  function newCompetitionDialogNameChange (e) {
-    setNewCompetitionName(e.target.value)
-  }
-
-  // if (error) {
-  //   return <div>Error: {error.message}</div>
-  // }
 
   if (navigation.state !== 'idle') {
     return  (
@@ -120,7 +72,7 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
   if (Roles.roleCheck(userInfo.roles, Roles.Competition.create)) {
     newCompetitionButton = (
       <Box textAlign="left" paddingLeft="10px">
-        <Button aria-label="New competition" variant="outlined" startIcon={<AddRoundedIcon />} onClick={newCompetitionDialogOpen}>New Competition</Button>
+        <Button aria-label="New competition" variant="outlined" startIcon={<AddRoundedIcon />} onClick={openNewCompetition}>New Competition</Button>
       </Box>
     )
   }
@@ -153,21 +105,17 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
             }
             return a.name.localeCompare(b.name)
           }).map(item => (
-            <CompetitionCard key={item.id} competition={item} setErrorMessage={setErrorMessage} triggerLoading={triggerLoading} triggerRefresh={ () => {} /*refreshCompetitionList*/} />
+            <CompetitionCard key={item.id} competition={item} triggerRefresh={refreshList} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           ))}
         </Grid>
       </Box>
-      <Dialog open={addCompetitionOpen} onClose={newCompetitionDialogClose} aria-labelledby="add new competition">
-        <DialogTitle id="add-competition-dialog-title">New Competition</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Enter the name for the new competition</DialogContentText>
-          <TextField autoFocus margin="dense" id="add-competition-name" onChange={newCompetitionDialogNameChange} label="Competition name" type="text" fullWidth/>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={newCompetitionDialogClose} variant="outlined" color="primary">Cancel</Button>
-          <Button onClick={newCompetitionAction} variant="contained" color="primary">Create</Button>
-        </DialogActions>
-      </Dialog>
+      {
+        newCompetitionOpen
+        ?
+        <NewCompetitionDialog closeDialog={closeNewCompetition} loadCompetition={loadCompetition} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+        :
+        null
+      }
     </Box>
   )
 }
