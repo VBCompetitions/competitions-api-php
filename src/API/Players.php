@@ -2,6 +2,7 @@
 
 namespace VBCompetitions\CompetitionsAPI\API;
 
+use stdClass;
 use Ramsey\Uuid\Uuid;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -96,7 +97,11 @@ final class Players
         }
 
         $context->getLogger()->info('Player with name ['.$player_data->name.'] and ID ['.$player_id.'] created');
-        $res->getBody()->write(json_encode('{"id":"'.$player_id.'"}'));
+
+        // encode bad id chards for JSON
+        $res_body = new stdClass();
+        $res_body->id = $player_id;
+        $res->getBody()->write(json_encode($res_body));
         return $res->withHeader('Content-Type', 'application/json');
     }
 

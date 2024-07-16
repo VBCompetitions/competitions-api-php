@@ -2,7 +2,7 @@
 
 namespace VBCompetitions\CompetitionsAPI\API;
 
-
+use stdClass;
 use Ramsey\Uuid\Uuid;
 use Throwable;
 use Slim\Psr7\Request;
@@ -63,7 +63,10 @@ final class Stages
         }
 
         $context->getLogger()->info('Stage with ID ['.$stage_id.'] created');
-        $res->getBody()->write(json_encode('{"id":"'.$stage_id.'"}'));
+        // encode bad id chards for JSON
+        $res_body = new stdClass();
+        $res_body->id = $stage_id;
+        $res->getBody()->write(json_encode($res_body));
         return $res->withHeader('Content-Type', 'application/json');
     }
 

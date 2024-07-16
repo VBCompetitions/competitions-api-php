@@ -2,6 +2,7 @@
 
 namespace VBCompetitions\CompetitionsAPI\API;
 
+use stdClass;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Throwable;
@@ -112,7 +113,10 @@ final class Contacts
         }
 
         $context->getLogger()->info('Contact with ID ['.$contact_id.'] created in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
-        $res->getBody()->write(json_encode('{"id":"'.$contact_id.'"}'));
+        // encode bad id chards for JSON
+        $res_body = new stdClass();
+        $res_body->id = $contact_id;
+        $res->getBody()->write(json_encode($res_body));
         return $res->withHeader('Content-Type', 'application/json');
     }
 
