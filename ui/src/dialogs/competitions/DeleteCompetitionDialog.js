@@ -7,14 +7,15 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { deleteCompetition } from '../../apis/competitionAPI.js'
+import CompetitionAPI from '../../apis/competitionAPI'
 
 function DeleteCompetitionDialog ({ competition, closeDialog, triggerRefresh, setSuccessMessage, setErrorMessage }) {
 
   async function deleteCompetitionAction () {
+    const competitionAPI = new CompetitionAPI()
     try {
       closeDialog()
-      await deleteCompetition(competition.id)
+      await competitionAPI.deleteCompetition(competition.id)
       setSuccessMessage('Competition deleted')
       triggerRefresh()
     } catch (error) {

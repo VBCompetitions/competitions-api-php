@@ -295,6 +295,16 @@ final class API
             }
 
             if ($get_post_mode) {
+                $group->post('/c/{competition_id}/s/{stage_id}/g/{group_id}/m/{match_id}/patch', function (Request $req, Response $res, $args) {
+                    return Matches::updateMatchResult($this->config, $args['competition_id'], $args['stage_id'], $args['group_id'], $args['match_id'], $req, $res);
+                });
+            } else {
+                $group->patch('/c/{competition_id}/s/{stage_id}/g/{group_id}/m/{match_id}', function (Request $req, Response $res, $args) {
+                    return Matches::updateMatchResult($this->config, $args['competition_id'], $args['stage_id'], $args['group_id'], $args['match_id'], $req, $res);
+                });
+            }
+
+            if ($get_post_mode) {
                 $group->post('/c/{competition_id}/s/{stage_id}/g/{group_id}/m/{match_id}/delete', function (Request $req, Response $res, $args) {
                     return Matches::deleteMatch($this->config, $args['competition_id'], $args['stage_id'], $args['group_id'], $args['match_id'], $req, $res);
                 });

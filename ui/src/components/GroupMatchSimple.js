@@ -159,7 +159,7 @@ function GroupMatchSimple ({ competition, competitionID, match, setSuccessMessag
           </Box>
         </CardContent>
       </Card>
-      <MatchResultDialog competitionID={competitionID} match={match} homeTeam={homeTeam} awayTeam={awayTeam} dialogOpen={updateScoreOpen} closeDialog={closeUpdateScore} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+      <MatchResultDialog competition={competition} competitionID={competitionID} match={match} homeTeam={homeTeam} awayTeam={awayTeam} dialogOpen={updateScoreOpen} closeDialog={closeUpdateScore} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
     </Box>
   )
 }

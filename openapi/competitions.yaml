@@ -1505,7 +1505,58 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Competition/defs/matches/items'
+              $ref: '#/components/schemas/UpdateMatchDetails'
+      responses:
+        '200':
+          description: success
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - matches
+      summary: Update a Match's result
+      operationId: updateMatchResultByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition containing the Stage
+          required: true
+          schema:
+            type: string
+        - name: stageID
+          in: path
+          description: ID of the Stage containing the Group
+          required: true
+          schema:
+            type: string
+        - name: groupID
+          in: path
+          description: ID of the Group containing the Match to update
+          required: true
+          schema:
+            type: string
+        - name: matchID
+          in: path
+          description: ID of the Match to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The Match result information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMatchResult'
       responses:
         '200':
           description: success
@@ -3051,6 +3102,344 @@ components:
           description: Sets whether drawn matches are allowed
           default: false
           type: boolean
+    UpdateMatchDetails:
+      oneOf:
+        - description: A match between two teams
+          type: object
+          additionalProperties: false
+          properties:
+            court:
+              description: The court that a match takes place on
+              type: string
+              minLength: 1
+              maxLength: 1000
+            venue:
+              description: The venue that a match takes place at
+              type: string
+              minLength: 1
+              maxLength: 10000
+            date:
+              description: The date of the match in the format YYYY-MM-DD
+              type: string
+              format: date
+            warmup:
+              description: The start time for the warmup in the format HH:mm using a
+                24 hour clock
+              type: string
+              pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
+            start:
+              description: The start time for the match in the format HH:mm using a
+                24 hour clock
+              type: string
+              pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
+            duration:
+              description: The maximum duration of the match in the format HH:mm
+              type: string
+              pattern: "^[0-9]+:[0-5][0-9]$"
+            complete:
+              description: Whether the match is complete.  This must be set when a match
+                has a "duration" or when the matchType is "continuous".  What about
+                a "continuous" match with no "duration" and a target score?  This can
+                be represented by a "sets" match with "maxSets" = 1
+              type: boolean
+            homeTeam:
+              allOf:
+                - $ref: '#/components/schemas/Competition/defs/team'
+                - description: The 'home' team for the match
+            awayTeam:
+              allOf:
+                - $ref: '#/components/schemas/Competition/defs/team'
+                - description: The 'away' team for the match
+            officials:
+              oneOf:
+                - description: The officials for this match
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    team:
+                      description: The team assigned to referee the match.  This can either be a team ID or a team reference
+                      type: string
+                      minLength: 1
+                      maxLength: 1000
+                  required:
+                    - team
+                - description: The officials for this match
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    first:
+                      description: The first referee
+                      type: string
+                      minLength: 1
+                    second:
+                      description: The second referee
+                      type: string
+                      minLength: 1
+                    challenge:
+                      description: The challenge referee, responsible for resolving challenges from the teams
+                      type: string
+                      minLength: 1
+                    assistantChallenge:
+                      description: The assistant challenge referee, who assists the challenge referee
+                      type: string
+                      minLength: 1
+                    reserve:
+                      description: The reserve referee
+                      type: string
+                      minLength: 1
+                    scorer:
+                      description: The scorer
+                      type: string
+                      minLength: 1
+                    assistantScorer:
+                      description: The assistant scorer
+                      type: string
+                      minLength: 1
+                    linespersons:
+                      description: The list of linespersons
+                      type: array
+                      maxItems: 4
+                      items:
+                        description: A linesperson
+                        type: string
+                        minLength: 1
+                    ballCrew:
+                      description: The list of people in charge of managing the game balls
+                      type: array
+                      items:
+                        description: A ball person
+                        type: string
+                        minLength: 1
+                  required:
+                    - first
+            mvp:
+              description: A most valuable player award for the match. This can either be a name or a reference to a player ID.  A reference takes the form {PLAYER_ID}
+              type: string
+              minLength: 1
+              maxLength: 203
+            manager:
+              oneOf:
+                - description: The court manager in charge of this match
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                - description: The court managers for this match.  This can either be a team ID or a team reference
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    team:
+                      description: The team assigned to manage the match
+                      type: string
+                      minLength: 1
+                      maxLength: 1000
+                  required:
+                    - team
+            friendly:
+              description: Whether the match is a friendly.  These matches do not contribute toward a league position.  If a team only participates in friendly matches then they are not included in the league table at all
+              type: boolean
+              default: false
+            notes:
+              description: Free form string to add notes about a match
+              type: string
+              minLength: 1
+        - description: A break in play, possibly while other matches are going on in other competitions running in parallel
+          type: object
+          additionalProperties: false
+          properties:
+            start:
+              description: The start time for the break in the format HH:mm using a
+                24 hour clock
+              type: string
+              pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
+            date:
+              description: The date of the break in the format YYYY-MM-DD
+              type: string
+              format: date
+            duration:
+              description: The duration of the break
+              type: string
+              pattern: "^[0-9]+:[0-5][0-9]$"
+            name:
+              description: The name for the break, e.g. 'Lunch break'
+              default: Break
+              type: string
+              minLength: 1
+              maxLength: 1000
+    UpdateMatchResult:
+      description: Result info on a match between two teams
+      type: object
+      additionalProperties: false
+      properties:
+        complete:
+          description: Whether the match is complete.  This must be set when a match
+            has a "duration" or when the matchType is "continuous".  What about
+            a "continuous" match with no "duration" and a target score?  This can
+            be represented by a "sets" match with "maxSets" = 1
+          type: boolean
+        homeTeam:
+          description: The home team playing in the match
+          type: object
+          additionalProperties: false
+          properties:
+            scores:
+              description: The array of set scores.  If the matchType is 'continuous' then
+                only the first value in the array is used
+              type: array
+              items:
+                description: The set score
+                type: integer
+                minimum: 0
+            mvp:
+              description: This team's most valuable player award.  This can either be a name or a reference to a player ID.  A reference takes the form {PLAYER_ID}.  An empty string deletes the value
+              type: string
+            forfeit:
+              description: Did this team forfeit the match
+              type: boolean
+              default: false
+            bonusPoints:
+              description: Does this team get any bonus points in the league.  This is separate
+                from any league points calculated from the match result, and is added to
+                their league points
+              type: integer
+              default: 0
+              minimum: 0
+            penaltyPoints:
+              description: Does this team receive any penalty points in the league.  This
+                is separate from any league points calculated from the match result, and
+                is subtracted from their league points
+              type: integer
+              default: 0
+              minimum: 0
+            notes:
+              description: Free form string to add notes about the team relating to this
+                match.  This can be used for arbitrary content that various implementations
+                can use
+              type: string
+              minLength: 1
+            players:
+              description: The list of players from this team that played in this match.  This can be either a player's name or a reference to a player ID
+              type: array
+              items:
+                description: Either the name of the player or a reference to a player ID.  A reference takes the form {PLAYER_ID}.  Not all entries need to be references, meaning that the document can allow a mix of registered players with a player ID, and unregistered players indicated just by name
+                type: string
+                minLength: 1
+        awayTeam:
+          description: The away team playing in the match
+          type: object
+          additionalProperties: false
+          properties:
+            scores:
+              description: The array of set scores.  If the matchType is 'continuous' then
+                only the first value in the array is used
+              type: array
+              items:
+                description: The set score
+                type: integer
+                minimum: 0
+            mvp:
+              description: This team's most valuable player award.  This can either be a name or a reference to a player ID.  A reference takes the form {PLAYER_ID}.  An empty string deletes the value
+              type: string
+            forfeit:
+              description: Did this team forfeit the match
+              type: boolean
+              default: false
+            bonusPoints:
+              description: Does this team get any bonus points in the league.  This is separate
+                from any league points calculated from the match result, and is added to
+                their league points
+              type: integer
+              default: 0
+              minimum: 0
+            penaltyPoints:
+              description: Does this team receive any penalty points in the league.  This
+                is separate from any league points calculated from the match result, and
+                is subtracted from their league points
+              type: integer
+              default: 0
+              minimum: 0
+            notes:
+              description: Free form string to add notes about the team relating to this
+                match.  This can be used for arbitrary content that various implementations
+                can use
+              type: string
+              minLength: 1
+            players:
+              description: The list of players from this team that played in this match.  This can be either a player's name or a reference to a player ID
+              type: array
+              items:
+                description: Either the name of the player or a reference to a player ID.  A reference takes the form {PLAYER_ID}.  Not all entries need to be references, meaning that the document can allow a mix of registered players with a player ID, and unregistered players indicated just by name
+                type: string
+                minLength: 1
+        officials:
+          oneOf:
+            - description: The officials for this match
+              type: object
+              additionalProperties: false
+              properties:
+                team:
+                  description: The team assigned to referee the match.  This can either be a team ID or a team reference
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+              required:
+                - team
+            - description: The officials for this match
+              type: object
+              additionalProperties: false
+              properties:
+                first:
+                  description: The first referee
+                  type: string
+                  minLength: 1
+                second:
+                  description: The second referee
+                  type: string
+                  minLength: 1
+                challenge:
+                  description: The challenge referee, responsible for resolving challenges from the teams
+                  type: string
+                  minLength: 1
+                assistantChallenge:
+                  description: The assistant challenge referee, who assists the challenge referee
+                  type: string
+                  minLength: 1
+                reserve:
+                  description: The reserve referee
+                  type: string
+                  minLength: 1
+                scorer:
+                  description: The scorer
+                  type: string
+                  minLength: 1
+                assistantScorer:
+                  description: The assistant scorer
+                  type: string
+                  minLength: 1
+                linespersons:
+                  description: The list of linespersons
+                  type: array
+                  maxItems: 4
+                  items:
+                    description: A linesperson
+                    type: string
+                    minLength: 1
+                ballCrew:
+                  description: The list of people in charge of managing the game balls
+                  type: array
+                  items:
+                    description: A ball person
+                    type: string
+                    minLength: 1
+              required:
+                - first
+        mvp:
+          description: A most valuable player award for the match. This can either be a name or a reference to a player ID.  A reference takes the form {PLAYER_ID}.  An empty string deletes the value
+          type: string
+          maxLength: 203
+        notes:
+          description: Free form string to add notes about a match
+          type: string
+          minLength: 1
     NewResourceDetails:
       description: Information on the new resource
       type: object

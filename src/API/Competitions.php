@@ -97,7 +97,10 @@ final class Competitions
             return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to create the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00014');
         }
 
-        $res->getBody()->write($competition_id);
+        // encode bad id chards for JSON
+        $res_body = new stdClass();
+        $res_body->id = $competition_id;
+        $res->getBody()->write(json_encode($res_body));
         return $res;
     }
 

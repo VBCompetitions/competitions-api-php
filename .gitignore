@@ -5,6 +5,8 @@
 /coverage/*
 /vendor/*
 /pkg/
+/example/data/logs/*
+!/example/data/logs/.htaccess
 /example/data/sessions/*
 !/example/data/sessions/.htaccess
 /example/data/users/*

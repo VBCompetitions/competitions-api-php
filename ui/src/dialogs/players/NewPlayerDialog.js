@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
 
-import { createPlayer } from '../../apis/competitionAPI'
+import CompetitionAPI from '../../apis/competitionAPI'
 import Roles, { InsufficientRoles } from '../../components/Roles'
 
 function NewPlayerDialog ({ competitionID, setLoading, closeDialog, setSuccessMessage, setErrorMessage }) {
@@ -55,6 +55,7 @@ function NewPlayerDialog ({ competitionID, setLoading, closeDialog, setSuccessMe
   }
 
   async function newPlayerAction () {
+    const competitionAPI = new CompetitionAPI()
     setLoading(true)
     closeDialog(false)
 
@@ -69,7 +70,7 @@ function NewPlayerDialog ({ competitionID, setLoading, closeDialog, setSuccessMe
       player.notes = newPlayerNotes
     }
     try {
-      const newPlayer = await createPlayer(competitionID, player)
+      const newPlayer = await competitionAPI.createPlayer(competitionID, player)
       setSuccessMessage(`New player added with ID ${newPlayer.id}`)
     } catch (error) {
       setErrorMessage(error.message)

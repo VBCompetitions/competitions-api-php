@@ -9,6 +9,7 @@ use Slim\Psr7\Response;
 use Throwable;
 use VBCompetitions\Competitions\Competition;
 // use VBCompetitions\Competitions\CompetitionTeam;
+use VBCompetitions\Competitions\Player;
 use VBCompetitions\CompetitionsAPI\Utils;
 use VBCompetitions\CompetitionsAPI\AppConfig;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
@@ -25,6 +26,13 @@ final class Matches
 
     public static function updateMatch(AppConfig $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
     {
+        $context = $req->getAttribute('context');
+        return $res;
+    }
+
+    public static function updateMatchResult(AppConfig $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
+    {
+        // TODO server end schema validation
         $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
@@ -91,7 +99,15 @@ final class Matches
 
         if (property_exists($match_data->homeTeam, 'mvp')) {
             try {
-                $match->getHomeTeam()->setMVP(strlen($match_data->homeTeam->mvp) > 0 ? $match_data->homeTeam->mvp : null);
+                if (strlen($match_data->homeTeam->mvp) > 0) {
+                    if (preg_match('/^{(.*)}$/', $match_data->homeTeam->mvp, $player_matches)) {
+                        $match->getHomeTeam()->setMVP($competition->getPlayer($player_matches[1]));
+                    } else {
+                        $match->getHomeTeam()->setMVP(new Player($competition, Player::UNREGISTERED_PLAYER_ID, $match_data->homeTeam->mvp));
+                    }
+                } else {
+                    $match->getHomeTeam()->setMVP(null);
+                }
             } catch (Throwable $th) {
                 return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid match data, invalid home team MVP: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00341');
             }
@@ -99,7 +115,15 @@ final class Matches
 
         if (property_exists($match_data->awayTeam, 'mvp')) {
             try {
-                $match->getAwayTeam()->setMVP(strlen($match_data->awayTeam->mvp) > 0 ? $match_data->awayTeam->mvp : null);
+                if (strlen($match_data->awayTeam->mvp) > 0) {
+                    if (preg_match('/^{(.*)}$/', $match_data->awayTeam->mvp, $player_matches)) {
+                        $match->getAwayTeam()->setMVP($competition->getPlayer($player_matches[1]));
+                    } else {
+                        $match->getAwayTeam()->setMVP(new Player($competition, Player::UNREGISTERED_PLAYER_ID, $match_data->awayTeam->mvp));
+                    }
+                } else {
+                    $match->getAwayTeam()->setMVP(null);
+                }
             } catch (Throwable $th) {
                 return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid match data, invalid away team MVP: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00342');
             }
@@ -107,7 +131,15 @@ final class Matches
 
         if (property_exists($match_data, 'mvp')) {
             try {
-                $match->setMVP(strlen($match_data->mvp) > 0 ? $match_data->mvp : null);
+                if (strlen($match_data->mvp) > 0) {
+                    if (preg_match('/^{(.*)}$/', $match_data->mvp, $player_matches)) {
+                        $match->setMVP($competition->getPlayer($match_data->mvp));
+                    } else {
+                        $match->setMVP(new Player($competition, Player::UNREGISTERED_PLAYER_ID, $match_data->mvp));
+                    }
+                } else {
+                    $match->setMVP(null);
+                }
             } catch (Throwable $th) {
                 return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid match data, invalid match MVP: '.$th->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00343');
             }

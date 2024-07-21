@@ -6,17 +6,18 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { deletePlayer } from '../../apis/competitionAPI'
+import CompetitionAPI from '../../apis/competitionAPI'
 import Roles, { InsufficientRoles } from '../../components/Roles'
 
 function DeletePlayerDialog ({ competitionID, player, closeDialog, setLoading, setSuccessMessage, setErrorMessage }) {
 
   async function deletePlayerAction () {
+    const competitionAPI = new CompetitionAPI()
     setLoading(true)
     closeDialog()
 
     try {
-      await deletePlayer(competitionID, player.getID())
+      await competitionAPI.deletePlayer(competitionID, player.getID())
       setSuccessMessage('Player deleted')
     } catch (error) {
       setErrorMessage(error.message)

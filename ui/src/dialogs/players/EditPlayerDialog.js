@@ -33,7 +33,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 
-import { updatePlayer } from '../../apis/competitionAPI'
+import CompetitionAPI from '../../apis/competitionAPI'
 import Roles, { InsufficientRoles } from '../../components/Roles'
 
 function EditPlayerDialog ({ closeDialog, setSuccessMessage, setErrorMessage }) {

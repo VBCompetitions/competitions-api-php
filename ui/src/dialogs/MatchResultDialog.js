@@ -11,10 +11,10 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
 
-import { MatchType } from '@vbcompetitions/competitions'
-import { updateMatch } from '../apis/competitionAPI.js'
+import { MatchType, Player } from '@vbcompetitions/competitions'
+import CompetitionAPI from '../apis/competitionAPI'
 
-function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOpen, closeDialog, setUpdating, setSuccessMessage, setErrorMessage }) {
+function MatchResultDialog ({ competition, competitionID, match, homeTeam, awayTeam, dialogOpen, closeDialog, setUpdating, setSuccessMessage, setErrorMessage }) {
   const initialScoresData = { homeScores: [], awayScores: [] }
   for (let i = 0; i < match.getHomeTeamScores().length; i++) {
     initialScoresData.homeScores.push(match.getHomeTeamScores()[i])
@@ -25,9 +25,9 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
   let homeWin = ''
   let awayWin = ''
   const [mvpList, setMVPs] = useState([
-    match.getHomeTeam().getMVP() ? match.getHomeTeam().getMVP() :'',
-    match.getAwayTeam().getMVP() ? match.getAwayTeam().getMVP() :'',
-    match.getMVP() ? match.getMVP() : ''
+    match.getHomeTeam().getMVP() ? match.getHomeTeam().getMVP().getName() : '',
+    match.getAwayTeam().getMVP() ? match.getAwayTeam().getMVP().getName() : '',
+    match.getMVP() ? match.getMVP().getName() : ''
   ])
 
   const handleScoreChange = (e, homeTeam, set) => {
@@ -61,16 +61,17 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
   }
 
   const handleMVPChange = (e, matchMVP, homeTeam) => {
+    const mvpUpdate = [...mvpList]
     if (matchMVP) {
-      mvpList[2] = e.target.value
+      mvpUpdate[2] = e.target.value
     } else {
       if (homeTeam) {
-        mvpList[0] = e.target.value
+        mvpUpdate[0] = e.target.value
       } else {
-        mvpList[1] = e.target.value
+        mvpUpdate[1] = e.target.value
       }
     }
-    setMVPs(mvpList)
+    setMVPs(mvpUpdate)
   }
 
   if (match.isComplete() && !match.isDraw()) {
@@ -82,6 +83,7 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
   }
 
   const resultEntrySave = async () => {
+    const competitionAPI = new CompetitionAPI()
     const stageID = match.getGroup().getStage().getID()
     const groupID = match.getGroup().getID()
 
@@ -92,15 +94,44 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
       return
     }
 
-    match.getHomeTeam().setMVP(mvpList[0])
-    match.getAwayTeam().setMVP(mvpList[1])
-    match.setMVP(mvpList[2])
+    if (mvpList[0].length > 0) {
+      match.getHomeTeam().setMVP(new Player(competition, Player.UNREGISTERED_PLAYER_ID, mvpList[0]))
+    }
+    if (mvpList[1].length > 0) {
+      match.getAwayTeam().setMVP(new Player(competition, Player.UNREGISTERED_PLAYER_ID, mvpList[1]))
+    }
+    if (mvpList[2].length > 0) {
+      match.setMVP(new Player(competition, Player.UNREGISTERED_PLAYER_ID, mvpList[2]))
+    }
 
     const matchData = match.serialize()
+
+    if (!mvpList[0]) {
+      matchData.homeTeam.mvp = ''
+    }
+    if (!mvpList[1]) {
+      matchData.awayTeam.mvp = ''
+    }
+    if (!mvpList[2]) {
+      matchData.mvp = ''
+    }
+
+    delete matchData.id
+    delete matchData.date
+    delete matchData.friendly
+    delete matchData.manager
+    delete matchData.start
+    delete matchData.duration
+    delete matchData.type
+    delete matchData.venue
+    delete matchData.warmup
+    delete matchData.homeTeam.id
+    delete matchData.awayTeam.id
+
     try {
       setUpdating(true)
       closeDialog()
-      await updateMatch(competitionID, stageID, groupID, match.getID(), matchData)
+      await competitionAPI.updateMatchResult(competitionID, stageID, groupID, match.getID(), matchData)
       setUpdating(false)
       setSuccessMessage('Match updated')
     } catch (error) {
@@ -147,10 +178,10 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
       </Box>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', width: '50%', borderStyle: 'solid', borderWidth: '0px 1px 0px 0px', borderColor: '#d7d7d7', padding: '0px 5px' }}>
-          <TextField sx={{ width: '200px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-home-team" defaultValue={match.getHomeTeam().getMVP()} onChange={e => { handleMVPChange(e, false, true) }} type="text"/>
+          <TextField sx={{ width: '200px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-home-team" defaultValue={mvpList[0]} onChange={e => { handleMVPChange(e, false, true) }} type="text"/>
         </Box>
         <Box sx={{ display: 'flex', width: '50%', padding: '0px 5px' }}>
-          <TextField sx={{ width: '200px', minWidth: '100px' }} margin="dense" size="small" id="mvp-away-team" defaultValue={match.getAwayTeam().getMVP()} onChange={e => { handleMVPChange(e, false, false)} } type="text"/>
+          <TextField sx={{ width: '200px', minWidth: '100px' }} margin="dense" size="small" id="mvp-away-team" defaultValue={mvpList[1]} onChange={e => { handleMVPChange(e, false, false)} } type="text"/>
         </Box>
       </Box>
       <Box>
@@ -158,7 +189,7 @@ function MatchResultDialog ({ competitionID, match, homeTeam, awayTeam, dialogOp
       </Box>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', padding: '5px' }}>
-          <TextField sx={{ width: '400px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-match" defaultValue={match.getMVP()} onChange={e => { handleMVPChange(e, true, false) }} type="text"/>
+          <TextField sx={{ width: '400px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-match" defaultValue={mvpList[2]} onChange={e => { handleMVPChange(e, true, false) }} type="text"/>
         </Box>
       </Box>
     </Box>
