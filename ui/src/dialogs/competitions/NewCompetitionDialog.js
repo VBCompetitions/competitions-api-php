@@ -13,7 +13,7 @@ import Divider from '@mui/material/Divider'
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import { createCompetition } from '../../apis/competitionAPI.js'
+import CompetitionAPI from '../../apis/competitionAPI'
 
 function NewCompetitionDialog ({ closeDialog, loadCompetition, setSuccessMessage, setErrorMessage }) {
 
@@ -21,6 +21,7 @@ function NewCompetitionDialog ({ closeDialog, loadCompetition, setSuccessMessage
   const [competitionNotes, setCompetitionNotes] = useState(null)
 
   async function newCompetitionAction (e) {
+    const competitionAPI = new CompetitionAPI()
     const newCompetition = {
       name: competitionName,
       teams: [],
@@ -31,10 +32,10 @@ function NewCompetitionDialog ({ closeDialog, loadCompetition, setSuccessMessage
     }
 
     try {
-      const competitionID = await createCompetition(newCompetition)
+      const competition = await competitionAPI.createCompetition(newCompetition)
       setSuccessMessage('New competition created')
       closeDialog()
-      loadCompetition(competitionID)
+      loadCompetition(competition.id)
     } catch (error) {
       setErrorMessage(error.message)
       closeDialog()

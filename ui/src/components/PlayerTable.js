@@ -34,8 +34,6 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 
-import { createPlayer, deletePlayer, updatePlayer } from '../apis/competitionAPI'
-import Roles, { InsufficientRoles } from '../components/Roles'
 import DeletePlayerDialog from '../dialogs/players/DeletePlayerDialog.js'
 import EditPlayerDialog from '../dialogs/players/EditPlayerDialog.js'
 import NewPlayerDialog from '../dialogs/players/NewPlayerDialog.js'

@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { updateCompetition } from '../../apis/competitionAPI.js'
+import CompetitionAPI from '../../apis/competitionAPI'
 
 function EditCompetitionDialog ({ competition, closeDialog, triggerRefresh, setSuccessMessage, setErrorMessage }) {
 
@@ -20,8 +20,9 @@ function EditCompetitionDialog ({ competition, closeDialog, triggerRefresh, setS
       teams: [],
       stages: []
     }
+    const competitionAPI = new CompetitionAPI()
     try {
-      await updateCompetition(competition.id, updatedCompetition)
+      await competitionAPI.updateCompetition(competition.id, updatedCompetition)
       closeDialog()
       setSuccessMessage('Competition updated')
       triggerRefresh()

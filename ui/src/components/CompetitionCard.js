@@ -22,7 +22,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link, useRouteLoaderData } from 'react-router-dom'
 
-import { deleteCompetition, updateCompetition } from '../apis/competitionAPI'
+import { CompetitionAPI } from '../apis/competitionAPI'
 import EditCompetitionDialog from '../dialogs/competitions/EditCompetitionDialog'
 import DeleteCompetitionDialog from '../dialogs/competitions/DeleteCompetitionDialog'
 import Roles from './Roles'

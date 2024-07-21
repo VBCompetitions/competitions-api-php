@@ -30,12 +30,13 @@ import GroupMatchSimple from '../components/GroupMatchSimple.js'
 import GroupBreak from '../components/GroupBreak.js'
 import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 
-import { getCompetition } from '../apis/competitionAPI.js'
+import CompetitionAPI from '../apis/competitionAPI'
 
 export async function competitionLoader (url) {
+  const competitionAPI = new CompetitionAPI()
   const competitionID = url.params.competitionID
   try {
-    const competition = await getCompetition(competitionID)
+    const competition = await competitionAPI.getCompetition(competitionID)
     return { competitionID, competition }
   } catch (err) {
     if (err.status === 401) {

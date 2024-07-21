@@ -10,19 +10,19 @@ use VBCompetitions\CompetitionsAPI\AppConfig;
 
 final class Page
 {
-    public static function root(AppConfig $config, Response $res)
+    public static function root(AppConfig $config, Response $res) : Response
     {
         $body = '<!DOCTYPE html><html><head><title>VBCompetitions API</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script defer="defer" src="'.$config->getBasePath().'/ui/api-url.js"></script>
-        <script defer="defer" src="'.$config->getBasePath().'/ui/static/js/main.e3b990f9.js"></script>
+        <script defer="defer" src="'.$config->getBasePath().'/ui/static/js/main.6cb25f65.js"></script>
         <link href="'.$config->getBasePath().'/ui/static/css/main.9fb33361.css" rel="stylesheet">
         </head><body><div id="root"></div></body></html>';
         $res->getBody()->write($body);
         return $res;
     }
 
-    public static function public(AppConfig $config, Response $res, array $file)
+    public static function public(AppConfig $config, Response $res, array $file) : Response
     {
         $requested_file = __DIR__.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.join(DIRECTORY_SEPARATOR, $file);
 
@@ -50,7 +50,7 @@ final class Page
         return $res->withHeader('content-type', $content_type);
     }
 
-    public static function static(AppConfig $config, Response $res, array $file)
+    public static function static(AppConfig $config, Response $res, array $file) : Response
     {
         $requested_file = __DIR__.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'static'.DIRECTORY_SEPARATOR.join(DIRECTORY_SEPARATOR, $file);
 
@@ -78,7 +78,7 @@ final class Page
         return $res->withHeader('content-type', $content_type);
     }
 
-    public static function apiRoute(AppConfig $config, Response $res)
+    public static function apiRoute(AppConfig $config, Response $res) : Response
     {
         $vbc_base_path = 'window.VBC_BASE_PATH=\''.$config->getBasePath().'\'';
         $vbc_api_url = 'window.VBC_API_URL=\''.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$config->getBasePath().'/api/v1\'';
@@ -89,7 +89,7 @@ final class Page
         return $res->withHeader('content-type', 'text/javascript');
     }
 
-    public static function githubMark(Response $res)
+    public static function githubMark(Response $res) : Response
     {
         $res->getBody()->write(file_get_contents(realpath(__DIR__.'/public/github-mark-white.png')));
         return $res->withHeader('Content-type', 'image/png');

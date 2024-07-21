@@ -12,14 +12,15 @@ import LinearProgress from '@mui/material/LinearProgress'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import Typography from '@mui/material/Typography'
 
-import { getCompetitions } from '../apis/competitionAPI.js'
+import CompetitionAPI from '../apis/competitionAPI'
 import CompetitionCard from '../components/CompetitionCard.js'
 import Roles from '../components/Roles.js'
 import NewCompetitionDialog from '../dialogs/competitions/NewCompetitionDialog.js'
 
 export async function competitionListLoader() {
+  const competitionAPI = new CompetitionAPI()
   try {
-    const competitionList = await getCompetitions()
+    const competitionList = await competitionAPI.getCompetitions()
     return competitionList
   } catch (err) {
     if (err.status === 401) {
