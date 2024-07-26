@@ -11,26 +11,26 @@ use VBCompetitions\Competitions\Competition;
 // use VBCompetitions\Competitions\CompetitionTeam;
 use VBCompetitions\Competitions\Player;
 use VBCompetitions\CompetitionsAPI\Utils;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
 use VBCompetitions\CompetitionsAPI\Roles;
 
 // Errorcodes 003FN
 final class Matches
 {
-    public static function createMatch(AppConfig $config, string $competition_id, string $stage_id, string $group_id, Request $req, Response $res) : Response
+    public static function createMatch(Config $config, string $competition_id, string $stage_id, string $group_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         return $res;
     }
 
-    public static function updateMatch(AppConfig $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
+    public static function updateMatch(Config $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         return $res;
     }
 
-    public static function updateMatchResult(AppConfig $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
+    public static function updateMatchResult(Config $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
     {
         // TODO server end schema validation
         $context = $req->getAttribute('context');
@@ -154,7 +154,7 @@ final class Matches
         return $res;
     }
 
-    public static function deleteMatch(AppConfig $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
+    public static function deleteMatch(Config $config, string $competition_id, string $stage_id, string $group_id, string $match_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         return $res;

@@ -15,7 +15,7 @@ use VBCompetitions\CompetitionsAPI\Middleware\AuthByKeyOrSessionMiddleware;
 use VBCompetitions\CompetitionsAPI\Middleware\LocalDevCORSMiddleware;
 
 class CompetitionsAPI {
-    private AppConfig $config;
+    private Config $config;
     private Context $context;
 
     private App $app;
@@ -26,7 +26,7 @@ class CompetitionsAPI {
 
 
     /**
-     * @param string $logo_path (optional) Path to an SVG file containing an SVG expecte to be 300px wide and 90 px high
+     * @param array $config Config options
      */
     function __construct(array $config)
     {
@@ -39,7 +39,7 @@ class CompetitionsAPI {
             $config['get_post_mode'] = false;
         }
 
-        $this->config = new AppConfig($config);
+        $this->config = new Config($config);
         $this->context = new Context($this->config);
 
         $this->app = AppFactory::create();
@@ -81,7 +81,7 @@ class CompetitionsAPI {
         return $this->app;
     }
 
-    function getConfig() : AppConfig
+    function getConfig() : Config
     {
         return $this->config;
     }

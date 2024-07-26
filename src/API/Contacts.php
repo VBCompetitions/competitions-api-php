@@ -10,7 +10,7 @@ use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use VBCompetitions\Competitions\ContactRole;
 use VBCompetitions\CompetitionsAPI\{
-    AppConfig,
+    Config,
     ErrorMessage,
     Roles,
     Utils
@@ -21,7 +21,7 @@ use VBCompetitions\Competitions\Contact;
 // Errorcodes 001FN
 final class Contacts
 {
-    public static function getContacts(AppConfig $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
+    public static function getContacts(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the contacts in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
@@ -42,7 +42,7 @@ final class Contacts
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function createContact(AppConfig $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
+    public static function createContact(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to create a contact in competition with ID ['.$competition_id.']');
@@ -59,7 +59,7 @@ final class Contacts
         }
 
         try {
-            $contact_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_CONTACT_CREATE, '0011');
+            $contact_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_CONTACT_CREATE, '0011');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -120,7 +120,7 @@ final class Contacts
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function getContact(AppConfig $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
+    public static function getContact(Config $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
@@ -147,7 +147,7 @@ final class Contacts
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateContact(AppConfig $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
+    public static function updateContact(Config $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
@@ -170,7 +170,7 @@ final class Contacts
         }
 
         try {
-            $contact_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_CONTACT_UPDATE, '0013');
+            $contact_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_CONTACT_UPDATE, '0013');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -218,7 +218,7 @@ final class Contacts
         return $res->withStatus(200);
     }
 
-    public static function deleteContact(AppConfig $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
+    public static function deleteContact(Config $config, string $competition_id, string $team_id, string $contact_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');

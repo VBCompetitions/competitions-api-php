@@ -8,7 +8,7 @@ use Throwable;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use VBCompetitions\CompetitionsAPI\{
-    AppConfig,
+    Config,
     ErrorMessage,
     Roles,
     Utils
@@ -18,7 +18,7 @@ use VBCompetitions\Competitions\CompetitionTeam;
 // Errorcodes 006FN
 final class Teams
 {
-    public static function getTeams(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function getTeams(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the teams in competition with ID ['.$competition_id.']');
@@ -34,7 +34,7 @@ final class Teams
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function createTeam(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function createTeam(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to create a team in competition with ID ['.$competition_id.']');
@@ -46,7 +46,7 @@ final class Teams
         }
 
         try {
-            $team_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_TEAM_CREATE, '0061');
+            $team_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_TEAM_CREATE, '0061');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -87,7 +87,7 @@ final class Teams
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function getTeam(AppConfig $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
+    public static function getTeam(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
@@ -108,7 +108,7 @@ final class Teams
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateTeam(AppConfig $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
+    public static function updateTeam(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
@@ -126,7 +126,7 @@ final class Teams
         }
 
         try {
-            $team_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_TEAM_UPDATE, '0063');
+            $team_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_TEAM_UPDATE, '0063');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -158,7 +158,7 @@ final class Teams
         return $res->withStatus(200);
     }
 
-    public static function deleteTeam(AppConfig $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
+    public static function deleteTeam(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');

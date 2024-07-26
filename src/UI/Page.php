@@ -6,23 +6,23 @@ use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Throwable;
 use VBCompetitions\CompetitionsAPI\Utils;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 
 final class Page
 {
-    public static function root(AppConfig $config, Response $res) : Response
+    public static function root(Config $config, Response $res) : Response
     {
         $body = '<!DOCTYPE html><html><head><title>VBCompetitions API</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script defer="defer" src="'.$config->getBasePath().'/ui/api-url.js"></script>
-        <script defer="defer" src="'.$config->getBasePath().'/ui/static/js/main.6cb25f65.js"></script>
+        <script defer="defer" src="'.$config->getBasePath().'/ui/static/js/main.4e36003a.js"></script>
         <link href="'.$config->getBasePath().'/ui/static/css/main.9fb33361.css" rel="stylesheet">
         </head><body><div id="root"></div></body></html>';
         $res->getBody()->write($body);
         return $res;
     }
 
-    public static function public(AppConfig $config, Response $res, array $file) : Response
+    public static function public(Config $config, Response $res, array $file) : Response
     {
         $requested_file = __DIR__.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.join(DIRECTORY_SEPARATOR, $file);
 
@@ -50,7 +50,7 @@ final class Page
         return $res->withHeader('content-type', $content_type);
     }
 
-    public static function static(AppConfig $config, Response $res, array $file) : Response
+    public static function static(Config $config, Response $res, array $file) : Response
     {
         $requested_file = __DIR__.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'static'.DIRECTORY_SEPARATOR.join(DIRECTORY_SEPARATOR, $file);
 
@@ -78,7 +78,7 @@ final class Page
         return $res->withHeader('content-type', $content_type);
     }
 
-    public static function apiRoute(AppConfig $config, Response $res) : Response
+    public static function apiRoute(Config $config, Response $res) : Response
     {
         $vbc_base_path = 'window.VBC_BASE_PATH=\''.$config->getBasePath().'\'';
         $vbc_api_url = 'window.VBC_API_URL=\''.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$config->getBasePath().'/api/v1\'';

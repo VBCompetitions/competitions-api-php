@@ -34,9 +34,9 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 
-import DeletePlayerDialog from '../dialogs/players/DeletePlayerDialog.js'
-import EditPlayerDialog from '../dialogs/players/EditPlayerDialog.js'
-import NewPlayerDialog from '../dialogs/players/NewPlayerDialog.js'
+import DeletePlayer from '../dialogs/players/DeletePlayer'
+import UpdatePlayer from '../dialogs/players/UpdatePlayer'
+import NewPlayer from '../dialogs/players/NewPlayer'
 
 function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorMessage }) {
   const [loadingNewPlayer, setLoadingNewPlayer] = useState(false)
@@ -142,9 +142,9 @@ function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorM
           </Table>
         </TableContainer>
       </Box>
-      { newPlayerOpen ? <NewPlayerDialog competitionID={competitionID} setLoading={setLoadingNewPlayer} closeDialog={closeNewPlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
-      { deletePlayerOpen ? <DeletePlayerDialog competitionID={competitionID} player={deletePlayerPlayer} setLoading={setLoadingUpdatePlayer} closeDialog={closeDeletePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
-      { updatePlayerOpen ? <EditPlayerDialog setLoading={setLoadingUpdatePlayer} closeDialog={closeUpdatePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
+      { newPlayerOpen ? <NewPlayer competitionID={competitionID} setLoading={setLoadingNewPlayer} closeDialog={closeNewPlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
+      { deletePlayerOpen ? <DeletePlayer competitionID={competitionID} player={deletePlayerPlayer} setLoading={setLoadingUpdatePlayer} closeDialog={closeDeletePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
+      { updatePlayerOpen ? <UpdatePlayer setLoading={setLoadingUpdatePlayer} closeDialog={closeUpdatePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Box>
   )
 }

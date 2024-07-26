@@ -56,7 +56,7 @@ final class Utils
         return $query_parts;
     }
 
-    public static function loadCompetition(AppConfig $config, Request $req, Context $context, array $roles, string $competition_id, string $action_id) : ?Competition
+    public static function loadCompetition(Config $config, Request $req, Context $context, array $roles, string $competition_id, string $action_id) : ?Competition
     {
         $roles = $req->getAttribute('roles');
         if ($roles === null) {
@@ -93,7 +93,7 @@ final class Utils
         return $competition;
     }
 
-    public static function getAndValidateData(AppConfig $config, Request $req, Context $context, string $schema_id, $action_id) : object
+    public static function getAndValidateData(Config $config, Request $req, Context $context, string $schema_id, $action_id) : object
     {
         $size = $req->getBody()->getSize();
         if ($size !== null && $size < 10000000) {

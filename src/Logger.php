@@ -16,7 +16,7 @@ final class Logger
 
     // TODO add a log level - this would be a "system" setting
 
-    public function __construct(AppConfig $config, Context $context)
+    public function __construct(Config $config, Context $context)
     {
         $this->log_file = $config->getLogDir().DIRECTORY_SEPARATOR.'logs.jsonl';
         $this->context = $context;

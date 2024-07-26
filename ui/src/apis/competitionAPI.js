@@ -1,16 +1,26 @@
-import Ajv from 'ajv'
-import addFormats from 'ajv-formats'
+// import Ajv from 'ajv'
+// import addFormats from 'ajv-formats'
 
 import { Competition } from '@vbcompetitions/competitions'
-import { matchResultUpdate } from './schema/schema'
+import { validateClubCreate,
+  validateClubUpdate,
+  validateContactCreate,
+  validateContactUpdate,
+  validateGroupAppend,
+  validateGroupUpdate,
+  validateMatchResultUpdate,
+  validateMatchUpdate,
+  validatePlayerCreate,
+  validatePlayerTransfer,
+  validatePlayerUpdate,
+  validateStageAppend,
+  validateStageUpdate,
+  validateTeamCreate,
+  validateTeamUpdate
+} from './competitionSchema'
 
 export default class CompetitionAPI {
-  #ajv
-
-  constructor() {
-    this.#ajv = new Ajv()
-    addFormats(this.#ajv)
-  }
+  constructor() {}
 
   async #checkResponse(response) {
     if (!response.ok) {
@@ -170,11 +180,9 @@ export default class CompetitionAPI {
 
   // #region Match /c/{c}/s/{s}/g/{g}/m
   async updateMatchResult(competitionID, stageID, groupID, matchID, matchUpdate) {
-    // TODO pre-compile these schemas
-    const validator = this.#ajv.compile(matchResultUpdate)
-    if (!validator(matchUpdate)) {
+    if (!validateMatchResultUpdate(matchUpdate)) {
       let errors = ''
-      validator.errors.forEach(e => {
+      validateMatchResultUpdate.errors.forEach(e => {
         errors += `[${e.schemaPath}] [${e.instancePath}] ${e.message}\n`
       })
       throw new Error(`Match result update data failed schema validation:\n${errors}`)

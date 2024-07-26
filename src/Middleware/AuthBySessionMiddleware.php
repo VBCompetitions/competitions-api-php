@@ -7,15 +7,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Psr7\Response;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
 
 class AuthBySessionMiddleware implements MiddlewareInterface
 {
-    private AppConfig $config;
+    private Config $config;
     private bool $redirect_to_login;
 
-    public function __construct(AppConfig $config, bool $redirect_to_login = false) {
+    public function __construct(Config $config, bool $redirect_to_login = false) {
         $this->config = $config;
         $this->redirect_to_login = $redirect_to_login;
     }
@@ -23,11 +23,11 @@ class AuthBySessionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $req, RequestHandlerInterface $handler) : ResponseInterface
     {
         $context = $req->getAttribute('context');
-        // session tokens are in a cookie with the name defined by AppConfig::SESSION_COOKIE
+        // session tokens are in a cookie with the name defined by Config::SESSION_COOKIE
         $cookies = $req->getCookieParams();
-        if (array_key_exists(AppConfig::SESSION_COOKIE, $cookies)) {
+        if (array_key_exists(Config::SESSION_COOKIE, $cookies)) {
             session_save_path($this->config->getSessionDir());
-            session_name(AppConfig::SESSION_COOKIE);
+            session_name(Config::SESSION_COOKIE);
             session_start();
             if (!isset($_SESSION['valid']) || $_SESSION['valid'] != true) {
                 session_unset();

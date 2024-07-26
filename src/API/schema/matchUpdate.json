@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/monkeysppp/VBCompetitions-API/1.0.0/matchUpdate",
+  "description": "Details on a stage",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "TODOOOO",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+}
