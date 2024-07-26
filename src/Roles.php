@@ -211,9 +211,37 @@ final class UserRoles
     }
 }
 
-final class SystemRoles
+final class LogRoles
 {
-    public static function logs() : array
+    public static function get() : array
+    {
+        return [Roles::ADMIN];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN];
+    }
+}
+
+final class AppRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN];
+    }
+
+    public static function get() : array
+    {
+        return [Roles::ADMIN];
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN];
+    }
+
+    public static function delete() : array
     {
         return [Roles::ADMIN];
     }
@@ -291,8 +319,13 @@ final class Roles
         return new UserRoles();
     }
 
-    public static function system() : SystemRoles
+    public static function log() : LogRoles
     {
-        return new SystemRoles();
+        return new LogRoles();
+    }
+
+    public static function app() : AppRoles
+    {
+        return new AppRoles();
     }
 }

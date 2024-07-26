@@ -6,13 +6,13 @@ use DateTime;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use stdClass;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
 
 // Errorcodes 011FN
 final class Account
 {
-    public static function getAccount(AppConfig $config, Request $req, Response $res) : Response
+    public static function getAccount(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -39,7 +39,7 @@ final class Account
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function getUsernameFromLinkID(AppConfig $config, string $link_id, Request $req, Response $res) : Response
+    public static function getUsernameFromLinkID(Config $config, string $link_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
@@ -63,7 +63,7 @@ final class Account
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateAccount(AppConfig $config, Request $req, Response $res) : Response
+    public static function updateAccount(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
 
@@ -133,7 +133,7 @@ final class Account
         return $res->withStatus(200);
     }
 
-    public static function activateAccount(AppConfig $config, string $link_id, Request $req, Response $res) : Response
+    public static function activateAccount(Config $config, string $link_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';

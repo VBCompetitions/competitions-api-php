@@ -32,8 +32,10 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 
-import { States, createUser, deleteUser, getUsers, resetUser, updateUser } from '../apis/uidataAPI'
+import { States, createUser, deleteUser, getApps, getUsers, resetUser, updateUser } from '../apis/uidataAPI'
 import Roles, { InsufficientRoles } from '../components/Roles'
+import NewUser from '../dialogs/users/NewUser'
+import DeleteUser from '../dialogs/users/DeleteUser'
 
 export async function userListLoader() {
   try {
@@ -54,11 +56,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
   const [loading, setLoading] = useState(false)
 
   const [newUserOpen, setNewUserDialogOpen] = useState(false)
-  const [newUserNameBadLength, setNewUserNameBadLength] = useState(true)
-  const [newUserNameExists, setNewUserNameExists] = useState(false)
-  const [newUserNameInvalid, setNewUserNameInvalid] = useState(false)
-  const [newUserName, setNewUserName] = useState(null)
-  const [newUserRoles, setNewUserRoles] = React.useState({ admin: false, fixturesSec: false, resultsEntry: false })
+  const [apps, setApps] = useState([])
 
   const [deleteUserOpen, setDeleteUserDialogOpen] = useState(false)
   const [deleteUserUser, setDeleteUser] = useState(null)
@@ -79,61 +77,21 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
   const userInfo = useRouteLoaderData('root')
   const navigate = useNavigate()
 
-  function newUserDialogOpen () {
-    setNewUserDialogOpen(true)
-  }
-
-  function newUserDialogClose () {
-    setNewUserDialogOpen(false)
-    setNewUserNameExists(false)
-    setNewUserName(null)
-  }
-
-  async function newUserAction () {
+  async function openNewUser () {
     setLoading(true)
-    setNewUserDialogOpen(false)
-    const roles = [Roles.VIEWER]
-    newUserRoles.admin && roles.push(Roles.ADMIN)
-    newUserRoles.fixturesSec && roles.push(Roles.FIXTURES_SECRETARY)
-    newUserRoles.resultsEntry && roles.push(Roles.RESULTS_ENTRY)
 
     try {
-      const user = await createUser(newUserName, roles)
-      userLinkDialogOpen(user)
-      setUserLinkTriggerRefresh(true)
+      setApps(await getApps())
+      setLoading(false)
+      setNewUserDialogOpen(true)
     } catch (error) {
       setErrorMessage(error.message)
-    }
-
-    setLoading(false)
-  }
-
-  function newUserDialogNameChange (e) {
-    if (e.target.value.length <= 0 || e.target.value.length > 50) {
-      setNewUserNameBadLength(true)
-      setNewUserNameExists(false)
-      setNewUserNameInvalid(false)
-    } else if (usernames.includes(e.target.value)) {
-      setNewUserNameBadLength(false)
-      setNewUserNameExists(true)
-      setNewUserNameInvalid(false)
-    } else if (!/^((?![":{}?= ])[\x20-\x7F])+$/.test(e.target.value)) {
-      setNewUserNameBadLength(false)
-      setNewUserNameExists(false)
-      setNewUserNameInvalid(true)
-    } else {
-      setNewUserNameBadLength(false)
-      setNewUserNameExists(false)
-      setNewUserNameInvalid(false)
-      setNewUserName(e.target.value)
+      setLoading(false)
     }
   }
 
-  function newUserDialogRolesChange (e) {
-    setNewUserRoles({
-      ...newUserRoles,
-      [e.target.name]: e.target.checked
-    })
+  function closeNewUser () {
+    setNewUserDialogOpen(false)
   }
 
   function editUserDialogOpen (user) {
@@ -181,27 +139,13 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
     }
   }
 
-  function deleteUserDialogOpen (user) {
+  function openDeleteUser (user) {
     setDeleteUser(user)
     setDeleteUserDialogOpen(true)
   }
 
-  function deleteUserDialogClose () {
+  function closeDeleteUser () {
     setDeleteUserDialogOpen(false)
-  }
-
-  async function deleteUserAction () {
-    setLoading(true)
-    setDeleteUserDialogOpen(false)
-
-    try {
-      await deleteUser(deleteUserUser.id)
-      setLoading(false)
-      navigate('.', { replace: true })
-    } catch (error) {
-      setErrorMessage(error.message)
-      setLoading(false)
-    }
   }
 
   async function userLinkCopy () {
@@ -213,7 +157,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
     // setSuccessMessage('Info copied')
   }
 
-  function userLinkDialogOpen (user) {
+  function openUserLink (user) {
     setUserLinkUser(user)
     setUserLinkDialogOpen(true)
   }
@@ -241,7 +185,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
 
     try {
       const user = await resetUser(resetUserUser.id)
-      userLinkDialogOpen(user)
+      openUserLink(user)
       setUserLinkTriggerRefresh(true)
     } catch (error) {
       setErrorMessage(error.message)
@@ -249,57 +193,6 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
 
     setLoading(false)
   }
-
-  const NewUserDialog = (
-    <Dialog open={newUserOpen} onClose={newUserDialogClose} aria-labelledby='add new user'>
-      <DialogTitle id='add-user-dialog-title' className='dialog-top'>New User</DialogTitle>
-      <DialogContent>
-        <br/>
-        <DialogContentText>User</DialogContentText>
-        {
-          newUserNameExists
-          ?
-          <TextField error helperText='user already exists' margin='dense' id='add-competition-name' onChange={newUserDialogNameChange} label='username' type='text' fullWidth/>
-          :
-            newUserNameInvalid
-            ?
-            <TextField error helperText='invalid username' margin='dense' id='add-competition-name' onChange={newUserDialogNameChange} label='username' type='text' fullWidth/>
-            :
-            <TextField autoFocus helperText='&nbsp;' margin='dense' id='add-competition-name' onChange={newUserDialogNameChange} label='username' type='text' fullWidth/>
-        }
-        <DialogContentText>Roles</DialogContentText>
-        <FormGroup>
-          <FormControlLabel control={<Checkbox onChange={newUserDialogRolesChange} name='admin' />} label='Admin' />
-          <FormControlLabel control={<Checkbox onChange={newUserDialogRolesChange} name='fixturesSec' />} label='Fixtures secretary' />
-          <FormControlLabel control={<Checkbox onChange={newUserDialogRolesChange} name='resultsEntry' />} label='Results entry' />
-          <FormControlLabel disabled control={<Checkbox defaultChecked />} label='Viewer' />
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={newUserDialogClose} variant='outlined' color='primary'>Cancel</Button>
-        {
-          newUserNameBadLength || newUserNameExists || newUserNameInvalid
-          ?
-          <Button disabled variant='contained' color='primary'>Create</Button>
-          :
-          <Button onClick={newUserAction} variant='contained' color='primary'>Create</Button>
-        }
-      </DialogActions>
-    </Dialog>
-  )
-
-  const DeleteUserDialog = (
-    <Dialog open={deleteUserOpen} onClose={deleteUserDialogClose} aria-labelledby='delete user'>
-      <DialogTitle id='delete-user-dialog-title' className='dialog-top'>Delete User</DialogTitle>
-      <DialogContent>
-        <DialogContentText>Are you sure you want to delete user "{ deleteUserUser ? deleteUserUser.username : ''}"?</DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={deleteUserDialogClose} variant='outlined' color='primary'>Cancel</Button>
-        <Button onClick={deleteUserAction} variant='contained' color='primary'>Delete</Button>
-      </DialogActions>
-    </Dialog>
-  )
 
   const EditUserDialog = (
     <Dialog open={editUserOpen} onClose={editUserDialogClose} aria-labelledby='delete user'>
@@ -380,7 +273,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
   )
 
   let ui = ( <InsufficientRoles /> )
-  if (Roles.roleCheck(userInfo.roles,[Roles.ADMIN])) {
+  if (Roles.roleCheck(userInfo.roles, [Roles.ADMIN])) {
     ui = (
       <Box padding='5px' sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box padding='10px 10px 5px 10px'>
@@ -403,7 +296,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
           }
         </Box>
         <Box textAlign='right' padding='0px 30px'>
-          <Button aria-label='New user' variant='outlined' startIcon={<PersonAddAltRoundedIcon />} onClick={newUserDialogOpen}>New User</Button>
+          <Button aria-label='New user' variant='outlined' startIcon={<PersonAddAltRoundedIcon />} onClick={openNewUser}>New User</Button>
         </Box>
         <Box padding='10px 30px'>
           <TableContainer component={Paper}>
@@ -423,6 +316,9 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
                     <Typography textAlign='center' variant='button' component='div' className='white'>Roles</Typography>
                   </TableCell>
                   <TableCell align='center'>
+                    <Typography textAlign='center' variant='button' component='div' className='white'>App</Typography>
+                  </TableCell>
+                  <TableCell align='center'>
                     <Typography textAlign='center' variant='button' component='div' className='white'>Actions</Typography>
                   </TableCell>
                 </TableRow>
@@ -440,7 +336,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
                       {
                         user.state === 'pending'
                         ?
-                        <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ marginLeft: '4px', mr: 2 }} onClick={() => { userLinkDialogOpen(user) }} >
+                        <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ marginLeft: '4px', mr: 2 }} onClick={() => { openUserLink(user) }} >
                           <LinkRoundedIcon />
                         </IconButton>
                         :
@@ -448,6 +344,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
                       }
                     </TableCell>
                     <TableCell align='center'>{user.roles.join(', ')}</TableCell>
+                    <TableCell align='center'>{user.app}</TableCell>
                     <TableCell align='right'>
                       {
                         user.username === 'admin'
@@ -467,7 +364,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
                           <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} onClick={() => { editUserDialogOpen(user) }} >
                             <EditRoundedIcon />
                           </IconButton>
-                          <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} onClick={() => { deleteUserDialogOpen(user) }} >
+                          <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} onClick={() => { openDeleteUser(user) }} >
                             <DeleteRoundedIcon />
                           </IconButton>
                         </>
@@ -479,8 +376,8 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
             </Table>
           </TableContainer>
         </Box>
-        { newUserOpen ? NewUserDialog : null }
-        { deleteUserOpen ? DeleteUserDialog : null }
+        { newUserOpen ? <NewUser setLoading={setLoading} apps={apps} usernames={usernames} openUserLink={openUserLink} setUserLinkTriggerRefresh={setUserLinkTriggerRefresh} closeDialog={closeNewUser} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
+        { deleteUserOpen ? <DeleteUser setLoading={setLoading} deleteUserUser={deleteUserUser} closeDialog={closeDeleteUser} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />: null }
         { editUserOpen ? EditUserDialog : null }
         { userLinkOpen ? UserLinkDialog : null }
         { resetUserOpen ? ResetUserDialog : null }

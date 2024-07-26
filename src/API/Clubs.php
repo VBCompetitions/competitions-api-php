@@ -8,7 +8,7 @@ use Throwable;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use VBCompetitions\CompetitionsAPI\{
-    AppConfig,
+    Config,
     ErrorMessage,
     Roles,
     Utils
@@ -18,7 +18,7 @@ use VBCompetitions\Competitions\Club;
 // Errorcodes 007FN
 final class Clubs
 {
-    public static function getClubs(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function getClubs(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the clubs in competition with ID ['.$competition_id.']');
@@ -34,7 +34,7 @@ final class Clubs
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function createClub(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function createClub(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to create a club in competition with ID ['.$competition_id.']');
@@ -46,7 +46,7 @@ final class Clubs
         }
 
         try {
-            $club_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_CLUB_CREATE, '0071');
+            $club_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_CLUB_CREATE, '0071');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -84,7 +84,7 @@ final class Clubs
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function getClub(AppConfig $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
+    public static function getClub(Config $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the club with ID ['.$club_id.'] in competition with ID ['.$competition_id.']');
@@ -106,7 +106,7 @@ final class Clubs
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateClub(AppConfig $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
+    public static function updateClub(Config $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the club with ID ['.$club_id.'] in competition with ID ['.$competition_id.']');
@@ -124,7 +124,7 @@ final class Clubs
         }
 
         try {
-            $club_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_CLUB_UPDATE, '0073');
+            $club_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_CLUB_UPDATE, '0073');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -153,7 +153,7 @@ final class Clubs
         return $res->withStatus(200);
     }
 
-    public static function deleteClub(AppConfig $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
+    public static function deleteClub(Config $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the club with ID ['.$club_id.'] in competition with ID ['.$competition_id.']');

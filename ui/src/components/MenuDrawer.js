@@ -1,4 +1,4 @@
-import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded'
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded'
@@ -35,13 +35,13 @@ export default function MenuDrawer ( { drawerOpen, toggleDrawer }) {
     )
 
     systemSettings = (
-      <Link to='/system' key='admin'>
+      <Link to='/settings' key='admin'>
         <ListItem>
           <ListItemButton>
             <ListItemIcon>
-              <AdminPanelSettingsRoundedIcon />
+              <SettingsRoundedIcon />
             </ListItemIcon>
-            <ListItemText primary={'System'} />
+            <ListItemText primary={'Settings'} />
           </ListItemButton>
         </ListItem>
       </Link>

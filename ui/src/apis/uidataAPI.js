@@ -27,8 +27,8 @@ export async function getUsers () {
   }
 }
 
-export async function createUser (username, roles) {
-  const newUser = { username, roles }
+export async function createUser (username, roles, app) {
+  const newUser = { username, roles, app }
   try {
     const response = await fetch(`${window.VBC_UIDATA_URL}/u`, {
       method: 'POST',
@@ -212,14 +212,63 @@ export async function deleteKey (keyID) {
 
 //#endregion
 
-//#region System /s
+//#region Logs /s
 
 export async function getSystemLogs () {
   try {
     const response = await fetch(`${window.VBC_UIDATA_URL}/s/logs`, { credentials: 'include' })
     await checkResponse(response)
-    const logs = await response.text()
-    return logs
+    return await response.text()
+  } catch (error) {
+    throw error
+  }
+}
+
+//#endregion
+
+//#region Apps /s
+
+export async function getApps () {
+  try {
+    const response = await fetch(`${window.VBC_UIDATA_URL}/s/apps`, { credentials: 'include' })
+    await checkResponse(response)
+    return await response.json()
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function createApp (name, rootPath, roles) {
+  const newApp = { name, rootPath, roles }
+  try {
+    const response = await fetch(`${window.VBC_UIDATA_URL}/s/apps`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(newApp)
+    })
+    await checkResponse(response)
+    return await response.json()
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteApp (appID) {
+  try {
+    let method = 'DELETE'
+    let url = `${window.VBC_UIDATA_URL}/s/apps/${appID}`
+    if (window.VBC_GET_POST_MODE) {
+      method = 'POST'
+      url = `${url}/delete`
+    }
+    const response = await fetch(url, {
+      method,
+      mode: 'cors',
+      credentials: 'include'
+    })
+    await checkResponse(response)
   } catch (error) {
     throw error
   }

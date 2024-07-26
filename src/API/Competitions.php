@@ -8,7 +8,7 @@ use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Throwable;
 use VBCompetitions\Competitions\Competition;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
 use VBCompetitions\CompetitionsAPI\Roles;
 use VBCompetitions\CompetitionsAPI\Utils;
@@ -16,7 +16,7 @@ use VBCompetitions\CompetitionsAPI\Utils;
 // Errorcodes 000FN
 final class Competitions
 {
-    public static function getCompetitions(AppConfig $config, Request $req, Response $res) : Response
+    public static function getCompetitions(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get competitions list');
@@ -53,7 +53,7 @@ final class Competitions
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function createCompetition(AppConfig $config, Request $req, Response $res) : Response
+    public static function createCompetition(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to create competition');
@@ -104,7 +104,7 @@ final class Competitions
         return $res;
     }
 
-    public static function getCompetition(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function getCompetition(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get competition with ID ['.$competition_id.']');
@@ -120,7 +120,7 @@ final class Competitions
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateCompetition(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function updateCompetition(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update competition with ID ['.$competition_id.']');
@@ -173,7 +173,7 @@ final class Competitions
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function deleteCompetition(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function deleteCompetition(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete competition with ID ['.$competition_id.']');

@@ -6,18 +6,18 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use Slim\Routing\RouteCollectorProxy;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\Middleware\AuthBySessionMiddleware;
 
 class UI {
-    private AppConfig $config;
+    private Config $config;
 
     // private App $app;
 
     /**
-     * @param AppConfig $config The configuration container
+     * @param Config $config The configuration container
      */
-    function __construct(AppConfig $config)
+    function __construct(Config $config)
     {
         $this->config = $config;
     }
@@ -60,6 +60,16 @@ class UI {
             ->add($auth_middleware);
 
             $group->get('/account', function (Request $_, Response $res) {
+                return Page::root($this->config, $res);
+            })
+            ->add($auth_middleware);
+
+            $group->get('/settings', function (Request $_, Response $res) {
+                return Page::root($this->config, $res);
+            })
+            ->add($auth_middleware);
+
+            $group->get('/settings/*', function (Request $_, Response $res) {
                 return Page::root($this->config, $res);
             })
             ->add($auth_middleware);
@@ -169,13 +179,43 @@ class UI {
                 return Users::resetUser($this->config, $args['user_id'], $req, $res);
             })->add(new AuthBySessionMiddleware($this->config));
 
-
             /**********************************
               Routes for system admin commands
              **********************************/
             $group->get('/s/logs', function (Request $req, Response $res) {
-                return System::getLogs($this->config, $req, $res);
+                return Settings::getLogs($this->config, $req, $res);
             })->add(new AuthBySessionMiddleware($this->config));
+
+            /************************************************
+              Routes for application definitions and settings
+             ************************************************/
+            $group->get('/s/apps',  function (Request $req, Response $res) {
+                return Settings::getApps($this->config, $req, $res);
+            })->add(new AuthBySessionMiddleware($this->config));
+
+            $group->post('/s/apps',  function (Request $req, Response $res) {
+                return Settings::createApp($this->config, $req, $res);
+            })->add(new AuthBySessionMiddleware($this->config));
+
+            if ($get_post_mode) {
+                $group->post('/s/apps/{app_id}/patch', function (Request $req, Response $res, $args) {
+                    return Settings::updateApp($this->config, $args['app_id'], $req, $res);
+                })->add(new AuthBySessionMiddleware($this->config));
+            } else {
+                $group->patch('/s/apps/{app_id}', function (Request $req, Response $res, $args) {
+                    return Settings::updateApp($this->config, $args['app_id'], $req, $res);
+                })->add(new AuthBySessionMiddleware($this->config));
+            }
+
+            if ($get_post_mode) {
+                $group->post('/s/apps/{app_id}/delete', function (Request $req, Response $res, $args) {
+                    return Settings::deleteApp($this->config, $args['app_id'], $req, $res);
+                })->add(new AuthBySessionMiddleware($this->config));
+            } else {
+                $group->delete('/s/apps/{app_id}', function (Request $req, Response $res, $args) {
+                    return Settings::deleteApp($this->config, $args['app_id'], $req, $res);
+                })->add(new AuthBySessionMiddleware($this->config));
+            }
 
             /*!!!!!!!!!!!!!!!!!!!!!!!!
               !! UNPROTECTED ROUTES !!

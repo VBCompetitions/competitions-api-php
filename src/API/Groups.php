@@ -20,7 +20,7 @@ use VBCompetitions\Competitions\{
     SetConfig
 };
 use VBCompetitions\CompetitionsAPI\{
-    AppConfig,
+    Config,
     ErrorMessage,
     Roles,
     Utils
@@ -29,7 +29,7 @@ use VBCompetitions\CompetitionsAPI\{
 // Errorcodes 002FN
 final class Groups
 {
-    public static function createGroup(AppConfig $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
+    public static function appendGroup(Config $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to append a group to stage with ID ['.$stage_id.'] in competition with ID ['.$competition_id.']');
@@ -47,7 +47,7 @@ final class Groups
         }
 
         try {
-            $group_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_GROUP_APPEND, '0020');
+            $group_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_GROUP_APPEND, '0020');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -99,7 +99,7 @@ final class Groups
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateGroup(AppConfig $config, string $competition_id, string $stage_id, string $group_id, Request $req, Response $res) : Response
+    public static function updateGroup(Config $config, string $competition_id, string $stage_id, string $group_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the group with ID ['.$group_id.'] in stage with ID ['.$stage_id.'] in competition with ID ['.$competition_id.']');
@@ -123,7 +123,7 @@ final class Groups
         }
 
         try {
-            $group_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_GROUP_UPDATE, '0021');
+            $group_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_GROUP_UPDATE, '0021');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -163,7 +163,7 @@ final class Groups
         return $res->withStatus(200);
     }
 
-    public static function deleteGroup(AppConfig $config, string $competition_id, string $stage_id, string $group_id, Request $req, Response $res) : Response
+    public static function deleteGroup(Config $config, string $competition_id, string $stage_id, string $group_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the group with ID ['.$group_id.'] in stage with ID ['.$stage_id.'] in competition with ID ['.$competition_id.']');

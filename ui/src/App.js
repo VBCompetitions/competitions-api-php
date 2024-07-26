@@ -17,7 +17,7 @@ import ErrorPage from './pages/ErrorPage.js'
 import Login from './pages/Login.js'
 import Account, { accountLoader } from './pages/Account.js'
 import Activate, { loadUserActivation } from './pages/Activate.js'
-import System from './pages/System.js'
+import Settings from './pages/Settings.js'
 import Users, { userListLoader } from './pages/Users.js'
 
 export default function App () {
@@ -58,8 +58,18 @@ export default function App () {
           errorElement: <ErrorPage />
         },
         {
-          path: '/system',
-          element: <System setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />,
+          path: '/settings',
+          element: <Settings tabSelected={0} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />,
+          errorElement: <ErrorPage />
+        },
+        {
+          path: '/settings/apps',
+          element: <Settings tabSelected={1} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />,
+          errorElement: <ErrorPage />
+        },
+        {
+          path: '/settings/logs',
+          element: <Settings tabSelected={2} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />,
           errorElement: <ErrorPage />
         },
         {

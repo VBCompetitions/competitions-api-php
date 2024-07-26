@@ -10,7 +10,7 @@ final class Context
     private string $user_id = 'unknown';
     private  string $username = 'unknown';
 
-    public function __construct(AppConfig $config)
+    public function __construct(Config $config)
     {
         $this->logger = new Logger($config, $this);
     }

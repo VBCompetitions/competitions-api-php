@@ -10,7 +10,7 @@ use Throwable;
 use VBCompetitions\Competitions\Player;
 use VBCompetitions\Competitions\PlayerTeam;
 use VBCompetitions\CompetitionsAPI\{
-    AppConfig,
+    Config,
     ErrorMessage,
     Roles,
     Utils
@@ -20,7 +20,7 @@ use VBCompetitions\Competitions\CompetitionTeam;
 // Errorcodes 004FN
 final class Players
 {
-    public static function getPlayers(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function getPlayers(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the players in competition with ID ['.$competition_id.']');
@@ -36,7 +36,7 @@ final class Players
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function createPlayer(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function createPlayer(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to create a player in competition with ID ['.$competition_id.']');
@@ -48,7 +48,7 @@ final class Players
         }
 
         try {
-            $player_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_PLAYER_CREATE, '0041');
+            $player_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_PLAYER_CREATE, '0041');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -105,7 +105,7 @@ final class Players
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function getPlayer(AppConfig $config, string $competition_id, string $player_id, Request $req, Response $res) : Response
+    public static function getPlayer(Config $config, string $competition_id, string $player_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the player with ID ['.$player_id.'] in competition with ID ['.$competition_id.']');
@@ -127,7 +127,7 @@ final class Players
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updatePlayer(AppConfig $config, string $competition_id, string $player_id, Request $req, Response $res) : Response
+    public static function updatePlayer(Config $config, string $competition_id, string $player_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the player with ID ['.$player_id.'] in competition with ID ['.$competition_id.']');
@@ -145,7 +145,7 @@ final class Players
         }
 
         try {
-            $player_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_PLAYER_UPDATE, '0043');
+            $player_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_PLAYER_UPDATE, '0043');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -193,7 +193,7 @@ final class Players
         return $res->withStatus(200);
     }
 
-    public static function deletePlayer(AppConfig $config, string $competition_id, string $player_id, Request $req, Response $res) : Response
+    public static function deletePlayer(Config $config, string $competition_id, string $player_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the player with ID ['.$player_id.'] in competition with ID ['.$competition_id.']');
@@ -226,7 +226,7 @@ final class Players
         return $res->withStatus(200);
     }
 
-    public static function transferPlayer(AppConfig $config, string $competition_id, string $player_id, string $team_id, Request $req, Response $res) : Response
+    public static function transferPlayer(Config $config, string $competition_id, string $player_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to transfer the player with ID ['.$player_id.'] to team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
@@ -244,7 +244,7 @@ final class Players
         }
 
         try {
-            $transfer_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_PLAYER_TRANSFER, '0045');
+            $transfer_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_PLAYER_TRANSFER, '0045');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -278,7 +278,7 @@ final class Players
         return $res->withStatus(200);
     }
 
-    public static function getPlayersForTeam(AppConfig $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
+    public static function getPlayersForTeam(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the players in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');

@@ -7,14 +7,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
 
 class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
 {
-    private AppConfig $config;
+    private Config $config;
 
-    public function __construct(AppConfig $config) {
+    public function __construct(Config $config) {
         $this->config = $config;
     }
 
@@ -131,11 +131,11 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
             }
         }
 
-        // session tokens are in a cookie with the name defined by AppConfig::SESSION_COOKIE
+        // session tokens are in a cookie with the name defined by Config::SESSION_COOKIE
         $cookies = $req->getCookieParams();
-        if (array_key_exists(AppConfig::SESSION_COOKIE, $cookies)) {
+        if (array_key_exists(Config::SESSION_COOKIE, $cookies)) {
             session_save_path($this->config->getSessionDir());
-            session_name(AppConfig::SESSION_COOKIE);
+            session_name(Config::SESSION_COOKIE);
             session_start();
             if (!isset($_SESSION['valid']) || $_SESSION['valid'] != true) {
                 session_unset();

@@ -13,7 +13,7 @@ use VBCompetitions\Competitions\{
     Stage
 };
 use VBCompetitions\CompetitionsAPI\{
-    AppConfig,
+    Config,
     ErrorMessage,
     Roles,
     Utils
@@ -22,7 +22,7 @@ use VBCompetitions\CompetitionsAPI\{
 // Errorcodes 005FN
 final class Stages
 {
-    public static function appendStage(AppConfig $config, string $competition_id, Request $req, Response $res) : Response
+    public static function appendStage(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to append a stage to competition with ID ['.$competition_id.']');
@@ -34,7 +34,7 @@ final class Stages
         }
 
         try {
-            $stage_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_STAGE_APPEND, '0050');
+            $stage_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_STAGE_APPEND, '0050');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -70,7 +70,7 @@ final class Stages
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateStage(AppConfig $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
+    public static function updateStage(Config $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the stage with ID ['.$stage_id.'] in competition with ID ['.$competition_id.']');
@@ -88,7 +88,7 @@ final class Stages
         }
 
         try {
-            $stage_data = Utils::getAndValidateData($config, $req, $context, AppConfig::VALIDATE_STAGE_UPDATE, '0051');
+            $stage_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_STAGE_UPDATE, '0051');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -119,7 +119,7 @@ final class Stages
         return $res->withStatus(200);
     }
 
-    public static function deleteStage(AppConfig $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
+    public static function deleteStage(Config $config, string $competition_id, string $stage_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the stage with ID ['.$stage_id.'] in competition with ID ['.$competition_id.']');

@@ -13,9 +13,9 @@ import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import Typography from '@mui/material/Typography'
 
 import CompetitionAPI from '../apis/competitionAPI'
-import CompetitionCard from '../components/CompetitionCard.js'
-import Roles from '../components/Roles.js'
-import NewCompetitionDialog from '../dialogs/competitions/NewCompetitionDialog.js'
+import CompetitionCard from '../components/CompetitionCard'
+import Roles from '../components/Roles'
+import NewCompetition from '../dialogs/competitions/NewCompetition'
 
 export async function competitionListLoader() {
   const competitionAPI = new CompetitionAPI()
@@ -113,7 +113,7 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
       {
         newCompetitionOpen
         ?
-        <NewCompetitionDialog closeDialog={closeNewCompetition} loadCompetition={loadCompetition} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+        <NewCompetition closeDialog={closeNewCompetition} loadCompetition={loadCompetition} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
         :
         null
       }

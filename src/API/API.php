@@ -14,17 +14,17 @@ use VBCompetitions\CompetitionsAPI\API\Stages;
 use VBCompetitions\CompetitionsAPI\API\Teams;
 
 use Slim\Routing\RouteCollectorProxy;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 
 final class API
 {
-    private AppConfig $config;
+    private Config $config;
 
     /**
-     * @param AppConfig $config The configuration container
+     * @param Config $config The configuration container
      */
 
-    function __construct(AppConfig $config)
+    function __construct(Config $config)
     {
         $this->config = $config;
     }
@@ -254,7 +254,7 @@ final class API
              * GROUPS
              ********************/
             $group->post('/c/{competition_id}/s/{stage_id}/g', function (Request $req, Response $res, $args) {
-                return Groups::createGroup($this->config, $args['competition_id'], $args['stage_id'], $req, $res);
+                return Groups::appendGroup($this->config, $args['competition_id'], $args['stage_id'], $req, $res);
             });
 
             if ($get_post_mode) {

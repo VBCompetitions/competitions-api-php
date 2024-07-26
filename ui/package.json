@@ -1,6 +1,6 @@
 {
   "name": "ui",
-  "version": "0.1.0",
+  "version": "0.11.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -22,12 +22,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rm -rf ../src/UI/app/static/* && cp -rPp build/* ../src/UI/app/.",
+    "build": "npm run build:schema && react-scripts build && rm -rf ../src/UI/app/static/* && cp -rPp build/* ../src/UI/app/.",
+    "build:schema": "node ./scripts/buildSchema.mjs",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "homepage": "/competitions-api-php/example/vbc/ui",
-  "devhomepage": ".",
+  "homepage": ".",
   "eslintConfig": {
     "extends": [
       "react-app",

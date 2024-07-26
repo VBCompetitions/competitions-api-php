@@ -45,25 +45,24 @@ while (!$password_ok) {
 
 echo PHP_EOL.'Creating directories...'.PHP_EOL;
 
-mkdir($data_dir);
-mkdir($data_dir.DIRECTORY_SEPARATOR.'competitions');
-mkdir($data_dir.DIRECTORY_SEPARATOR.'sessions');
-mkdir($data_dir.DIRECTORY_SEPARATOR.'users');
-mkdir($data_dir.DIRECTORY_SEPARATOR.'competitions');
+# TODO - "make parent dir if doesn't exist" check
+
+$directories = [
+  'competitions',
+  'logs',
+  'sessions',
+  'settings',
+  'users',
+];
+
+foreach ($directories as $directory) {
+  mkdir($data_dir.DIRECTORY_SEPARATOR.$directory);
+  $h = fopen($data_dir.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'.htaccess', 'w');
+  fwrite($h, 'Require all denied');
+  fclose($h);
+}
 
 $h = fopen($data_dir.DIRECTORY_SEPARATOR.'.htaccess', 'w');
-fwrite($h, 'Require all denied');
-fclose($h);
-
-$h = fopen($data_dir.DIRECTORY_SEPARATOR.'competitions'.DIRECTORY_SEPARATOR.'.htaccess', 'w');
-fwrite($h, 'Require all denied');
-fclose($h);
-
-$h = fopen($data_dir.DIRECTORY_SEPARATOR.'sessions'.DIRECTORY_SEPARATOR.'.htaccess', 'w');
-fwrite($h, 'Require all denied');
-fclose($h);
-
-$h = fopen($data_dir.DIRECTORY_SEPARATOR.'users'.DIRECTORY_SEPARATOR.'.htaccess', 'w');
 fwrite($h, 'Require all denied');
 fclose($h);
 

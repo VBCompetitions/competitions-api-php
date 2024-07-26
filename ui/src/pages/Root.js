@@ -35,7 +35,8 @@ export default function Root ({ username, setUsername }) {
   const navigation = useNavigation()
   const location = useLocation()
 
-  if (!userInfo.loggedIn && location.pathname !== '/login') {
+  if (!userInfo.loggedIn &&
+    (location.pathname !== '/login' && !/\/account\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/.test(location.pathname))) {
     navigate('/login', { replace: true })
   }
 

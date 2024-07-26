@@ -7,13 +7,13 @@ use Ramsey\Uuid\Uuid;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use stdClass;
-use VBCompetitions\CompetitionsAPI\AppConfig;
+use VBCompetitions\CompetitionsAPI\Config;
 use VBCompetitions\CompetitionsAPI\ErrorMessage;
 
 // Errorcodes 012FN
 final class Keys
 {
-    public static function getKeys(AppConfig $config, Request $req, Response $res) : Response
+    public static function getKeys(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
@@ -40,7 +40,7 @@ final class Keys
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    public static function createKey(AppConfig $config, Request $req, Response $res) : Response
+    public static function createKey(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
@@ -94,7 +94,7 @@ final class Keys
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
-    public static function updateKey(AppConfig $config, string $key_id, Request $req, Response $res) : Response
+    public static function updateKey(Config $config, string $key_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';
@@ -137,7 +137,7 @@ final class Keys
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
-    public static function deleteKey(AppConfig $config, string $key_id, Request $req, Response $res) : Response
+    public static function deleteKey(Config $config, string $key_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $keys_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'apikeys.json';

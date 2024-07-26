@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/monkeysppp/VBCompetitions-API/1.0.0/groupCreate",
+  "$id": "https://github.com/monkeysppp/VBCompetitions-API/1.0.0/groupAppend",
   "description": "A single competition group",
   "type": "object",
   "additionalProperties": false,

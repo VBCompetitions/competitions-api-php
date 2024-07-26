@@ -23,8 +23,8 @@ import Typography from '@mui/material/Typography'
 import { Link, useRouteLoaderData } from 'react-router-dom'
 
 import { CompetitionAPI } from '../apis/competitionAPI'
-import EditCompetitionDialog from '../dialogs/competitions/EditCompetitionDialog'
-import DeleteCompetitionDialog from '../dialogs/competitions/DeleteCompetitionDialog'
+import EditCompetition from '../dialogs/competitions/EditCompetition'
+import DeleteCompetition from '../dialogs/competitions/DeleteCompetition'
 import Roles from './Roles'
 
 export default function CompetitionCard ({ competition, setSuccessMessage, setErrorMessage, triggerRefresh }) {
@@ -119,14 +119,14 @@ export default function CompetitionCard ({ competition, setSuccessMessage, setEr
       {
         deleteCompetitionOpen
         ?
-        <DeleteCompetitionDialog competition={competition} closeDialog={closeDeleteCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+        <DeleteCompetition competition={competition} closeDialog={closeDeleteCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
         :
         null
       }
       {
         editCompetitionOpen
         ?
-        <EditCompetitionDialog competition={competition} closeDialog={closeEditCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+        <EditCompetition competition={competition} closeDialog={closeEditCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
         :
         null
       }
