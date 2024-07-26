@@ -71,6 +71,7 @@ final class Settings
         $apps_file = realpath($config->getSettingsDir().DIRECTORY_SEPARATOR.'apps.json');
         if ($apps_file === false) {
             $context->getLogger()->info('No Apps defined yet, so creating the apps file');
+            $apps_file = $config->getSettingsDir().DIRECTORY_SEPARATOR.'apps.json';
         } else {
             $apps_json = file_get_contents($apps_file);
             if ($apps_json === false) {
