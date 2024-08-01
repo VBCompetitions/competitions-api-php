@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Link, redirect, useLoaderData, useNavigate, useParams, useRouteLoaderData } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
 import ArticleRoundedIcon from '@mui/icons-material/ArticleRounded'
 import Box from '@mui/material/Box'
@@ -38,6 +38,8 @@ export default function Settings ({ tabSelected, setSuccessMessage, setErrorMess
       case 2:
         navigate('/settings/logs', { replace: true })
         break
+      default:
+        navigate('/settings', { replace: true })
     }
   }
 

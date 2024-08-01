@@ -45,8 +45,8 @@ export async function createUser (username, roles, app) {
   }
 }
 
-export async function updateUser (userID, state, roles) {
-  const userUpdate = { state, roles }
+export async function updateUser (userID, state, roles, app) {
+  const userUpdate = { state, roles, app }
   try {
     let method = 'PATCH'
     let url = `${window.VBC_UIDATA_URL}/u/${userID}`

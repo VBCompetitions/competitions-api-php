@@ -9,10 +9,9 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 
-import { States, createUser, deleteUser, getUsers, resetUser, updateUser } from '../../apis/uidataAPI'
-import Roles, { InsufficientRoles } from '../../components/Roles'
+import { deleteUser } from '../../apis/uidataAPI'
 
-export default function DeleteUser ({ setLoading, deleteUserUser, closeDialog, setSuccessMessage, setErrorMessage }) {
+export default function DeleteUser ({ setLoading, user, closeDialog, setSuccessMessage, setErrorMessage }) {
   const navigate = useNavigate()
 
   async function deleteUserAction () {
@@ -20,7 +19,7 @@ export default function DeleteUser ({ setLoading, deleteUserUser, closeDialog, s
     closeDialog()
 
     try {
-      await deleteUser(deleteUserUser.id)
+      await deleteUser(user.id)
       setLoading(false)
       navigate('.', { replace: true })
     } catch (error) {
@@ -33,7 +32,7 @@ export default function DeleteUser ({ setLoading, deleteUserUser, closeDialog, s
     <Dialog open={true} onClose={closeDialog} aria-labelledby='delete user'>
       <DialogTitle id='delete-user-dialog-title' className='dialog-top'>Delete User</DialogTitle>
       <DialogContent>
-        <DialogContentText>Are you sure you want to delete user "{ deleteUserUser ? deleteUserUser.username : ''}"?</DialogContentText>
+        <DialogContentText>Are you sure you want to delete user "{ user ? user.username : ''}"?</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDialog} variant='outlined' color='primary'>Cancel</Button>

@@ -152,6 +152,13 @@ final class Users
             }
         }
 
+        // For VBC, make sure Roles::VIEWER is included
+        if (array_key_exists('app', $body_params) && $body_params['app'] !== 'VBC') {
+            if (!in_array(Roles::VIEWER, $roles)) {
+                array_push($roles, Roles::VIEWER);
+            }
+        }
+
         $users_file = $config->getUsersDir().DIRECTORY_SEPARATOR.'users.json';
         $h = fopen($users_file, 'r');
         $json = fread($h, filesize($users_file));
@@ -230,28 +237,78 @@ final class Users
 
         $body_params = (array)$req->getParsedBody();
 
+        // Default the valid roles to the VBC roles
+        $available_roles = Roles::_ALL;
+
+        // Check if the user is associated with an App
+        if (array_key_exists('app', $body_params) && $body_params['app'] !== 'VBC') {
+            $app_name = $body_params['app'];
+            $apps = [];
+            $apps_file = realpath($config->getSettingsDir().DIRECTORY_SEPARATOR.'apps.json');
+            if ($apps_file === false) {
+                $context->getLogger()->info('Request to get the list of Apps but none have been defined and there are no apps defined');
+                return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Request to get the list of Apps but none have been defined and there are no apps defined', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01024');
+            }
+
+            $apps_json = file_get_contents($apps_file);
+            if ($apps_json === false) {
+                $context->getLogger()->error('Failed to get the list of apps.  A config file exists, but it failed to load');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01025');
+            }
+
+            $apps_data = json_decode($apps_json);
+            if (!is_array($apps_data)) {
+                $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01026');
+            }
+
+            try {
+                foreach ($apps_data as $app_data) {
+                    array_push($apps, new App($app_data));
+                }
+            } catch (Throwable $err) {
+                $context->getLogger()->error('Failed to parse the apps configuration: '.$err->getMessage());
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01027');
+            }
+
+            // get app roles
+            $app_found = false;
+            foreach ($apps as $app) {
+                if ($app->getName() === $app_name) {
+                    $app_found = true;
+                    $available_roles = $app->getRoles();
+                }
+            }
+            if (!$app_found) {
+                $context->getLogger()->error('Failed to find the specified App with ID "'.$app_name.'"');
+                return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Failed to find the specified App', ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, '01028');
+            }
+        }
+
         // Check requested roles are valid
         foreach($body_params['roles'] as $requested_roles) {
-            if (!in_array($requested_roles, Roles::_ALL)) {
-                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Role does not exist', ErrorMessage::BAD_REQUEST_CODE, '01024');
+            if (!in_array($requested_roles, $available_roles)) {
+                return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Role does not exist', ErrorMessage::BAD_REQUEST_CODE, '01029');
             }
         }
 
         // Check requested state is valid
         if (!in_array($body_params['state'], States::_LIST_ALL)) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'State does not exist', ErrorMessage::BAD_REQUEST_CODE, '01025');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'State does not exist', ErrorMessage::BAD_REQUEST_CODE, '01070');
         }
 
-        // List the requested roles
         $roles = [];
-        foreach(Roles::_ALL as $available_role) {
+        foreach($available_roles as $available_role) {
             if (in_array($available_role, $body_params['roles'])) {
                 array_push($roles, $available_role);
             }
         }
-        // Make sure Roles::VIEWER is included
-        if (!in_array(Roles::VIEWER, $roles)) {
-            array_push($roles, Roles::VIEWER);
+
+        // For VBC, make sure Roles::VIEWER is included
+        if (!array_key_exists('app', $body_params) || $body_params['app'] === 'VBC') {
+            if (!in_array(Roles::VIEWER, $roles)) {
+                array_push($roles, Roles::VIEWER);
+            }
         }
 
         // A pending user cannot change state from a user update request

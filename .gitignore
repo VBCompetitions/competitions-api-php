@@ -15,3 +15,4 @@
 !/example/data/settings/.htaccess
 /example/data/competitions/*
 !/example/data/competitions/api-test-competition.json
+/ui/src/apis/competitionSchema.js

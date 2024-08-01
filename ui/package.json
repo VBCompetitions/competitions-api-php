@@ -27,7 +27,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "homepage": ".",
+  "homepage": "/competitions-api-php/example/vbc/ui",
+  "devhomepage": ".",
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -3,7 +3,6 @@ import { Link, redirect, useLoaderData, useNavigate, useRouteLoaderData } from '
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import Dialog from '@mui/material/Dialog'
@@ -13,8 +12,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormGroup from '@mui/material/FormGroup'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
 import IconButton from '@mui/material/IconButton'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -22,7 +19,7 @@ import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import LockResetRoundedIcon from '@mui/icons-material/LockResetRounded'
 import Paper from '@mui/material/Paper'
 import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded'
-import Switch from '@mui/material/Switch'
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import TextField from '@mui/material/TextField'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -32,11 +29,11 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 
-import { States, createUser, deleteUser, getApps, getUsers, resetUser, updateUser } from '../apis/uidataAPI'
+import { getApps, getUsers, resetUser } from '../apis/uidataAPI'
 import Roles, { InsufficientRoles } from '../components/Roles'
 import NewUser from '../dialogs/users/NewUser'
 import DeleteUser from '../dialogs/users/DeleteUser'
-
+import EditUser from '../dialogs/users/EditUser'
 export async function userListLoader() {
   try {
     const userList = await getUsers()
@@ -63,8 +60,6 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
 
   const [editUserOpen, setEditUserDialogOpen] = useState(false)
   const [editUserUser, setEditUser] = useState(null)
-  const [editUserState, setEditUserState] = useState('active')
-  const [editUserRoles, setEditUserRoles] = React.useState({ admin: false, fixturesSec: false, resultsEntry: false })
 
   const [userLinkOpen, setUserLinkDialogOpen] = useState(false)
   const [userLinkTriggerRefresh, setUserLinkTriggerRefresh] = useState(false)
@@ -94,49 +89,22 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
     setNewUserDialogOpen(false)
   }
 
-  function editUserDialogOpen (user) {
-    setEditUser(user)
-    setEditUserDialogOpen(true)
-    setEditUserState(user.state)
-    setEditUserRoles({ admin: user.roles.includes('ADMIN'), fixturesSec: user.roles.includes('FIXTURES_SECRETARY'), resultsEntry: user.roles.includes('RESULTS_ENTRY') })
-  }
-
-  function editUserDialogClose () {
-    setEditUserDialogOpen(false)
-  }
-
-  function toggleEditUserState () {
-    if (editUserState === States.ACTIVE) {
-      setEditUserState(States.SUSPENDED)
-    } else if (editUserState === States.SUSPENDED) {
-      setEditUserState(States.ACTIVE)
-    }
-  }
-
-  function editUserDialogRolesChange (e) {
-    setEditUserRoles({
-      ...editUserRoles,
-      [e.target.name]: e.target.checked
-    })
-  }
-
-  async function editUserAction () {
+  async function openEditUser (user) {
     setLoading(true)
-    setEditUserDialogOpen(false)
-
-    const roles = [Roles.VIEWER]
-    editUserRoles.admin && roles.push(Roles.ADMIN)
-    editUserRoles.fixturesSec && roles.push(Roles.FIXTURES_SECRETARY)
-    editUserRoles.resultsEntry && roles.push(Roles.RESULTS_ENTRY)
 
     try {
-      await updateUser(editUserUser.id, editUserState, roles)
+      setApps(await getApps())
       setLoading(false)
-      navigate('.', { replace: true })
+      setEditUser(user)
+      setEditUserDialogOpen(true)
     } catch (error) {
       setErrorMessage(error.message)
       setLoading(false)
     }
+  }
+
+  function closeEditUser () {
+    setEditUserDialogOpen(false)
   }
 
   function openDeleteUser (user) {
@@ -193,35 +161,6 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
 
     setLoading(false)
   }
-
-  const EditUserDialog = (
-    <Dialog open={editUserOpen} onClose={editUserDialogClose} aria-labelledby='delete user'>
-      <DialogTitle id='add-user-dialog-title' className='dialog-top'>Edit User</DialogTitle>
-      <DialogContent>
-        <br/>
-        <DialogContentText>Username</DialogContentText>
-        <Box sx={{padding: '10px 0px'}}>
-          <TextField id='edit-username' disabled={true} name='edit-username' sx={{ width: '35ch' }} value={editUserUser ? editUserUser.username : ''} variant='outlined' />
-        </Box>
-        <DialogContentText>State</DialogContentText>
-        <Box sx={{padding: '10px 0px'}}>
-          <Switch onClick={toggleEditUserState} disabled={editUserState === 'pending'} defaultChecked={editUserState === 'active'} ></Switch>
-          <Typography variant='body2' component='span' className={editUserState === 'active' ? 'green' : editUserState === 'suspended' ? 'orange' : 'blue' }>{editUserState}</Typography>
-        </Box>
-        <DialogContentText>Roles</DialogContentText>
-        <FormGroup>
-          <FormControlLabel control={<Checkbox onChange={editUserDialogRolesChange} defaultChecked={editUserRoles.admin} name='admin' />} label='Admin' />
-          <FormControlLabel control={<Checkbox onChange={editUserDialogRolesChange} defaultChecked={editUserRoles.fixturesSec} name='fixturesSec' />} label='Fixtures secretary' />
-          <FormControlLabel control={<Checkbox onChange={editUserDialogRolesChange} defaultChecked={editUserRoles.resultsEntry} name='resultsEntry' />} label='Results entry' />
-          <FormControlLabel disabled control={<Checkbox defaultChecked />} label='Viewer' />
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={editUserDialogClose} variant='outlined' color='primary'>Cancel</Button>
-        <Button onClick={editUserAction} variant='contained' color='primary'>Update</Button>
-      </DialogActions>
-    </Dialog>
-  )
 
   const UserLinkDialog = (<Dialog open={userLinkOpen} onClose={userLinkDialogClose} aria-labelledby='user link'>
     <DialogTitle id='user-link-dialog-title' className='dialog-top'>User Activation Link</DialogTitle>
@@ -284,6 +223,9 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
               </IconButton>
             </Link>
             <Typography sx={{ flexGrow: '1', marginBottom: '3px' }} variant='h5' textAlign='left' gutterBottom>Users</Typography>
+            <IconButton size="small" aria-label="refresh list" onClick={() => { navigate('.', { replace: true }) }} color="inherit">
+              <RefreshRoundedIcon color='action' />
+            </IconButton>
           </Box>
         </Box>
         <Box padding='10px' paddingBottom={'20px'}>
@@ -361,7 +303,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
                               <LockResetRoundedIcon />
                             </IconButton>
                           }
-                          <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} onClick={() => { editUserDialogOpen(user) }} >
+                          <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} onClick={() => { openEditUser(user) }} >
                             <EditRoundedIcon />
                           </IconButton>
                           <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 2 }} onClick={() => { openDeleteUser(user) }} >
@@ -377,8 +319,8 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
           </TableContainer>
         </Box>
         { newUserOpen ? <NewUser setLoading={setLoading} apps={apps} usernames={usernames} openUserLink={openUserLink} setUserLinkTriggerRefresh={setUserLinkTriggerRefresh} closeDialog={closeNewUser} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
-        { deleteUserOpen ? <DeleteUser setLoading={setLoading} deleteUserUser={deleteUserUser} closeDialog={closeDeleteUser} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />: null }
-        { editUserOpen ? EditUserDialog : null }
+        { deleteUserOpen ? <DeleteUser setLoading={setLoading} user={deleteUserUser} closeDialog={closeDeleteUser} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />: null }
+        { editUserOpen ? <EditUser setLoading={setLoading} user={editUserUser} apps={apps} closeDialog={closeEditUser} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
         { userLinkOpen ? UserLinkDialog : null }
         { resetUserOpen ? ResetUserDialog : null }
       </Box>
