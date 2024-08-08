@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
-import MenuDrawer from '../components/MenuDrawer'
+import MenuDrawer from './components/MenuDrawer'
 import { getAccount } from '../apis/uidataAPI'
 
 export async function loggedIn () {
