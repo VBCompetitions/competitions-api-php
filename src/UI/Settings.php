@@ -110,6 +110,7 @@ final class Settings
         fwrite($h, json_encode($apps, JSON_PRETTY_PRINT));
         fclose($h);
 
+        $context->getLogger()->info('App created with name "'.$new_app->name.'" and ID "'.$app->id.'"');
         $res->getBody()->write(json_encode($new_app));
         return $res->withHeader('Content-Type', 'application/json');
     }
@@ -164,7 +165,75 @@ final class Settings
 
     public static function updateApp(Config $config, string $app_id, Request $req, Response $res) : Response
     {
-        return $res->withStatus(200);
+        $context = $req->getAttribute('context');
+        $roles = $req->getAttribute('roles');
+        $context->getLogger()->info('Request to update the App with ID '.$app_id);
+
+        if ($roles === null) {
+            $context->getLogger()->error('Failed to get roles from the request');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::app()::update())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01330');
+        }
+
+        $body_params = (array)$req->getParsedBody();
+        $name = $body_params['name'];
+        $root_path = $body_params['rootPath'];
+        $roles = $body_params['roles'];
+
+        // check app name is valid must contain only ASCII printable characters excluding " : { } ? =
+        if (!preg_match('/^((?![":{}?= ])[\x20-\x7F])+$/', $name)) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid name: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01331');
+        }
+
+        // check root path is valid, must have a leading '/'
+        if (strlen($root_path) < 1 || !str_starts_with($root_path, '/')) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01332');
+        }
+
+        $apps = [];
+        $apps_file = realpath($config->getSettingsDir().DIRECTORY_SEPARATOR.'apps.json');
+        if ($apps_file === false) {
+            $context->getLogger()->info('No Apps defined, so we can\'t update anything');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such app', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01333');
+        } else {
+            $apps_json = file_get_contents($apps_file);
+            if ($apps_json === false) {
+                $context->getLogger()->error('Failed to get the list of apps.  A config file exists, but it failed to load');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01334');
+            }
+
+            $apps = json_decode($apps_json);
+            if (!is_array($apps)) {
+                $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01335');
+            }
+        }
+
+        $found_app = null;
+        foreach ($apps as $app) {
+            if ($app->id === $app_id) {
+                $found_app = $app;
+                $app->name = $name;
+                $app->rootPath = $root_path;
+                $app->roles = $roles;
+                break;
+            }
+        }
+
+        if (is_null($found_app)) {
+            $context->getLogger()->error('Failed to find the app with ID '.$app_id);
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such app', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01336');
+        }
+
+        $h = fopen($apps_file, 'w');
+        fwrite($h, json_encode($apps, JSON_PRETTY_PRINT));
+        fclose($h);
+
+        $res->getBody()->write(json_encode($found_app));
+        return $res->withHeader('Content-Type', 'application/json');
     }
 
     public static function deleteApp(Config $config, string $app_id, Request $req, Response $res) : Response
@@ -199,6 +268,9 @@ final class Settings
             $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
             return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01342');
         }
+
+        // TODO - check if there are any users associated with the App
+        // and block if there are
 
         $apps_data = array_values(array_filter($apps_data, fn($el): bool => $el->id !== $app_id));
 
