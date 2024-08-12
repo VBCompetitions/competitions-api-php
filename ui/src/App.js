@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import Box from '@mui/material/Box'
-import NotificationSnackbar from './components/NotificationSnackbar.js'
+import NotificationSnackbar from './pages/components/NotificationSnackbar.js'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import '@fontsource/roboto/300.css'
@@ -11,14 +11,14 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
 import Root, { loggedIn } from './pages/Root.js'
-import CompetitionList, { competitionListLoader } from './pages/CompetitionList.js'
-import CompetitionViewer, { competitionLoader } from './pages/CompetitionViewer.js'
+import CompetitionList, { competitionListLoader } from './pages/competitions/CompetitionList.js'
+import CompetitionViewer, { competitionLoader } from './pages/competitions/CompetitionViewer.js'
 import ErrorPage from './pages/ErrorPage.js'
-import Login from './pages/Login.js'
-import Account, { accountLoader } from './pages/Account.js'
-import Activate, { loadUserActivation } from './pages/Activate.js'
-import Settings from './pages/Settings.js'
-import Users, { userListLoader } from './pages/Users.js'
+import Login from './pages/account/Login.js'
+import Account, { accountLoader } from './pages/account/Account.js'
+import Activate, { loadUserActivation } from './pages/account/Activate.js'
+import Settings from './pages/settings/Settings.js'
+import Users, { userListLoader } from './pages/users/Users.js'
 
 export default function App () {
   const [successMessage, setSuccessMessage] = useState(null)

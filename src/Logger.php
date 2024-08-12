@@ -16,7 +16,7 @@ final class Logger
 
     // TODO add a log level - this would be a "system" setting
 
-    public function __construct(Config $config, Context $context)
+    public function __construct(BaseConfig $config, Context $context)
     {
         $this->log_file = $config->getLogDir().DIRECTORY_SEPARATOR.'logs.jsonl';
         $this->context = $context;
@@ -25,11 +25,13 @@ final class Logger
 
     private function log(string $level, string $msg) : void
     {
+        // TODO Rotate log if needed
         $h = fopen($this->log_file, 'a');
         // We create an object to take advantage of json_encode encoding/escaping any strings
         $log_line = new stdClass();
         $log_line->timestamp = (new DateTime())->format('c');
         $log_line->level = $level;
+        $log_line->app = $this->context->getAppName();
         $log_line->context_id = $this->context_id;
         $log_line->user_id = $this->context->getUserID();
         $log_line->username = $this->context->getUsername();

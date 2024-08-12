@@ -45,8 +45,8 @@ export async function createUser (username, roles, app) {
   }
 }
 
-export async function updateUser (userID, state, roles) {
-  const userUpdate = { state, roles }
+export async function updateUser (userID, state, roles, app) {
+  const userUpdate = { state, roles, app }
   try {
     let method = 'PATCH'
     let url = `${window.VBC_UIDATA_URL}/u/${userID}`
@@ -247,6 +247,29 @@ export async function createApp (name, rootPath, roles) {
       credentials: 'include',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newApp)
+    })
+    await checkResponse(response)
+    return await response.json()
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateApp (appID, name, rootPath, roles) {
+  const updatedApp = { name, rootPath, roles }
+  try {
+    let method = 'PATCH'
+    let url = `${window.VBC_UIDATA_URL}/s/apps/${appID}`
+    if (window.VBC_GET_POST_MODE) {
+      method = 'POST'
+      url = `${url}/patch`
+    }
+    const response = await fetch(url, {
+      method,
+      mode: 'cors',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(updatedApp)
     })
     await checkResponse(response)
     return await response.json()

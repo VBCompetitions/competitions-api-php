@@ -10,7 +10,9 @@ final class Context
     private string $user_id = 'unknown';
     private  string $username = 'unknown';
 
-    public function __construct(Config $config)
+    private string $app_name = 'VBC';
+
+    public function __construct(BaseConfig $config)
     {
         $this->logger = new Logger($config, $this);
     }
@@ -38,5 +40,15 @@ final class Context
     public function getUsername() : string
     {
         return $this->username;
+    }
+
+    public function setAppName(string $app_name)
+    {
+        $this->app_name = $app_name;
+    }
+
+    public function getAppName() : string
+    {
+        return $this->app_name;
     }
 }

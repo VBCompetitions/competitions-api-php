@@ -20,6 +20,7 @@ if (!$app->initialiseSession()) {
 
 $username = $app->getUsername();
 $roles = $app->getUserRoles();
+$app->getLogger()->info('User "'.$username.'" loaded their profile');
 ?>
 
 <html>

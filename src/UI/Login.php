@@ -116,8 +116,6 @@ final class Login
                 if ($app->getName() === $users_data->users->$user_id->app) {
                     $app_found = true;
                     $return_to = $app->getRootPath();
-                    $_SESSION['app'] = true;
-                    $_SESSION['app_name'] = $app->getName();
                     break;
                 }
             }
