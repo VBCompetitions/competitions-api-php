@@ -21,7 +21,7 @@ import Typography from '@mui/material/Typography'
 import { States, updateUser } from '../../../apis/uidataAPI'
 import Roles from '../../components/Roles'
 
-export default function EditUser ({ setLoading, user, apps, closeDialog, setSuccessMessage, setErrorMessage }) {
+export default function EditUser ({ user, apps, closeDialog, setLoading, setSuccessMessage, setErrorMessage }) {
   const navigate = useNavigate()
 
   const [userState, setUserState] = useState(user.state === 'active' ? States.ACTIVE : States.SUSPENDED)
@@ -53,6 +53,7 @@ export default function EditUser ({ setLoading, user, apps, closeDialog, setSucc
     try {
       await updateUser(user.id, userState, newUserRoles, app)
       setLoading(false)
+      setSuccessMessage('User updated')
       navigate('.', { replace: true })
     } catch (error) {
       setErrorMessage(error.message)

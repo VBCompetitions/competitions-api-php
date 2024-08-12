@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, redirect, useLoaderData, useNavigate, useNavigation } from 'react-router-dom'
+import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router-dom'
 
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -8,11 +8,6 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import Divider from '@mui/material/Divider'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -20,7 +15,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Grid from '@mui/material/Unstable_Grid2'
 import IconButton from '@mui/material/IconButton'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
 import ClubCard from './clubs/ClubCard.js'
@@ -31,6 +25,8 @@ import GroupBreak from './groups/GroupBreak.js'
 import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 
 import CompetitionAPI from '../../apis/competitionAPI.js'
+import EditCompetition from './dialogs/EditCompetition'
+import Roles from '../components/Roles'
 
 export async function competitionLoader (url) {
   const competitionAPI = new CompetitionAPI()
@@ -46,26 +42,18 @@ export async function competitionLoader (url) {
   }
 }
 
-export default function CompetitionViewer ({ selectCompetition, setSuccessMessage, setErrorMessage }) {
+export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage }) {
   const { competitionID, competition } = useLoaderData()
+  const simpleCompetition = {
+    id: competitionID,
+    name: competition.getName()
+  }
   const navigate = useNavigate()
   const navigation = useNavigation()
 
-  // const [competition, setCompetitionData] = useState(null)
-  // const [loading, setLoading] = useState(true)
-  // const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
   const [editCompetitionOpen, setEditCompetitionOpen] = useState(false)
-  // const [newCompetitionName, setNewCompetitionName] = useState(null)
-
-  // const competitionID = useLoaderData()
-
-  // useEffect(() => {
-  //   refreshCompetitionData()
-  // }, [])
-
-  function returnToList () {
-    // selectCompetition()
-  }
+  const userInfo = useRouteLoaderData('root')
 
   async function refreshCompetitionData() {
   //   setLoading(true)
@@ -86,51 +74,19 @@ export default function CompetitionViewer ({ selectCompetition, setSuccessMessag
     // setLoading(true)
   }
 
-  const editCompetitionDialogOpen = () => {
+  const openEditCompetition = () => {
     setEditCompetitionOpen(true)
   }
 
-  const editCompetitionDialogClose = () => {
+  const closeEditCompetition = () => {
     setEditCompetitionOpen(false)
-  }
-
-  const editCompetitionDialogUpdate = async () => {
-    // setLoading(true)
-    // editCompetitionDialogClose()
-    // const updatedCompetition = {
-    //   name: newCompetitionName,
-    // //   teams: [],
-    // //   stages: []
-    // }
-    // try {
-    //   let response = await fetch(`http://localhost/competitions-api-php/example/api/v1/c/${competitionID}`, {
-    //     method: 'PUT',
-    //     mode: "cors",
-    //     headers: { 'content-type': 'application/json' },
-    //     body: JSON.stringify(updatedCompetition)
-    //   })
-    //   console.log(await response.json())
-    // } catch (error) {
-    //   // setError(error)
-    //   // setLoading(false)
-    //   console.log(error.body)
-    // }
-    // await refreshCompetitionData()
-    // setLoading(false)
-  }
-
-  const editCompetitionDialogNameChange = e => {
-    // setNewCompetitionName(e.target.value)
   }
 
   function addTeamDialogOpen () {}
 
   function addClubDialogOpen () {}
 
-  console.log(navigation)
-
   if (navigation.state === 'loading') {
-    console.log(navigation)
     return <Box padding="5px">
       <Box padding="10px 10px 5px 10px">
         <Box sx={{ display: 'flex' }}>
@@ -157,21 +113,27 @@ export default function CompetitionViewer ({ selectCompetition, setSuccessMessag
       <Box padding="10px 10px 5px 10px">
         <Box sx={{ display: 'flex' }}>
           <Link to={`/c`}>
-            <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }} onClick={returnToList} color="inherit">
+            <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }} color="inherit">
               <ArrowBackRoundedIcon color='action' />
             </IconButton>
           </Link>
           <Typography sx={{ flexGrow: '1', marginBottom: '3px' }} variant="h5" textAlign="left" gutterBottom>{competition.getName()}</Typography>
-          <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }} onClick={editCompetitionDialogOpen} color="inherit">
-            <EditRoundedIcon color='action' />
-          </IconButton>
+          {
+            Roles.roleCheck(userInfo.roles, Roles.Competition.update)
+            ?
+            <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }} onClick={openEditCompetition} color="inherit">
+              <EditRoundedIcon color='action' />
+            </IconButton>
+            :
+            null
+          }
           <IconButton size="small" aria-label="refresh list" onClick={() => { navigate('.', { replace: true }) }} color="inherit">
             <RefreshRoundedIcon color='action' />
           </IconButton>
         </Box>
       </Box>
       <Box padding="10px">
-        {navigation.location ? <LinearProgress /> : <Divider sx={{ borderBottomWidth: 4, borderColor: '#1976d2' }} />}
+        { navigation.location || loading ? <LinearProgress /> : <Divider sx={{ borderBottomWidth: 4, borderColor: '#1976d2' }} /> }
       </Box>
       <Box padding="10px">
         <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
@@ -181,7 +143,7 @@ export default function CompetitionViewer ({ selectCompetition, setSuccessMessag
               {competition.getClubs().sort((a, b) => {
                 return a.getName().localeCompare(b.getName())
               }).map(item => (
-                <ClubCard key={item.id} selectAction={selectCompetition} competition={competition} club={item} triggerLoading={triggerLoading} triggerRefresh={refreshCompetitionData} />
+                <ClubCard key={item.id} selectAction={() => { /* TODO */ }} competition={competition} club={item} triggerLoading={triggerLoading} triggerRefresh={refreshCompetitionData} />
               ))}
               <Box padding="8px" sx={{ width: 150, height: 120 }}>
                 <Button aria-label="Club Team" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addClubDialogOpen} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Club</Button>
@@ -198,7 +160,7 @@ export default function CompetitionViewer ({ selectCompetition, setSuccessMessag
               {competition.getTeams().sort((a, b) => {
                 return a.getName().localeCompare(b.getName())
               }).map(item => (
-                <TeamCard key={item.id} selectAction={selectCompetition} competition={competition} setErrorMessage={setErrorMessage} team={item} triggerLoading={triggerLoading} triggerRefresh={refreshCompetitionData} />
+                <TeamCard key={item.id} selectAction={() => { /* TODO */ }} competition={competition} setErrorMessage={setErrorMessage} team={item} triggerLoading={triggerLoading} triggerRefresh={refreshCompetitionData} />
               ))}
               <Box padding="8px" sx={{ width: 150, height: 120 }}>
                 <Button aria-label="Add Team" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addTeamDialogOpen} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Team</Button>
@@ -261,17 +223,7 @@ export default function CompetitionViewer ({ selectCompetition, setSuccessMessag
           ))
         }
       </Box>
-      <Dialog open={editCompetitionOpen} onClose={editCompetitionDialogClose} aria-labelledby="edit competition">
-        <DialogTitle id="edit-competition-dialog-title">Edit Competition</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Edit the name for the competition</DialogContentText>
-          <TextField autoFocus margin="dense" id="add-competition-name" onChange={editCompetitionDialogNameChange} label="Competition name" type="text" fullWidth defaultValue={competition.getName()} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={editCompetitionDialogClose} variant="outlined" color="primary">Cancel</Button>
-          <Button onClick={editCompetitionDialogUpdate} variant="contained" color="primary">Update</Button>
-        </DialogActions>
-      </Dialog>
+      { editCompetitionOpen ? <EditCompetition competition={simpleCompetition} closeDialog={closeEditCompetition} setUpdating={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Box>
   )
 }

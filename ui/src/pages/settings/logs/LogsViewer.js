@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography'
 import { getSystemLogs } from '../../../apis/uidataAPI'
 
 export default function LogsViewer ({ setLoading, setSuccessMessage, setErrorMessage }) {
+  // TODO - pagination (with all the usual problems of the data changing under you while you're showing page 2)
   const [logLines, setLogLines] = useState([])
 
   useEffect(() => {
@@ -51,6 +52,9 @@ export default function LogsViewer ({ setLoading, setSuccessMessage, setErrorMes
                 <Typography textAlign='center' variant='button' component='div' className='white'>User</Typography>
               </TableCell>
               <TableCell align='center'>
+                <Typography textAlign='center' variant='button' component='div' className='white'>App</Typography>
+              </TableCell>
+              <TableCell align='center'>
                 <Typography textAlign='center' variant='button' component='div' className='white'>Context</Typography>
               </TableCell>
             </TableRow>
@@ -67,6 +71,7 @@ export default function LogsViewer ({ setLoading, setSuccessMessage, setErrorMes
                     <TableCell align='center'>{logLineParsed.level}</TableCell>
                     <TableCell align='left'>{logLineParsed.message}</TableCell>
                     <TableCell align='center'>{`${logLineParsed.username} (${logLineParsed.user_id})`}</TableCell>
+                    <TableCell align='center'>{logLineParsed.app ? logLineParsed.app : 'VBC'}</TableCell>
                     <TableCell align='center'>{logLineParsed.context_id}</TableCell>
                   </TableRow>
                 )

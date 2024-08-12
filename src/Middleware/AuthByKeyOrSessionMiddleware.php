@@ -102,6 +102,11 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
                 $key_entry = $keys_data->keys->$key_id;
                 $key_entry->lastUsed = (new DateTime())->format('c');
                 $user_id = $key_entry->user;
+                if (property_exists($users_data->users, 'app')) {
+                    $context->setAppName($users_data->users->app);
+                } else {
+                    $context->setAppName('VBC');
+                }
                 $context->setUserID($user_id);
                 $context->setUserName($users_data->users->$user_id->username);
 
@@ -148,7 +153,8 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
                 return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Authentication Error', ErrorMessage::INTERNAL_ERROR_CODE, null);
             }
 
-            if (!property_exists($users_data->users, $_SESSION['user_id'])) {
+            // Check if user exists and is active
+            if (!property_exists($users_data->users, $_SESSION['user_id']) || $users_data->users->{$_SESSION['user_id']}->state !== 'active') {
                 // The user has been deleted!
                 session_unset();
                 session_destroy();
@@ -156,6 +162,11 @@ class AuthByKeyOrSessionMiddleware implements MiddlewareInterface
                 return ErrorMessage::respondWithError($context, ErrorMessage::UNAUTHORIZED_HTTP, 'Authentication Error', ErrorMessage::UNAUTHORIZED_CODE, null);
             }
 
+            if (property_exists($users_data->users, 'app')) {
+                $context->setAppName($users_data->users->app);
+            } else {
+                $context->setAppName('VBC');
+            }
             $context->setUserID($_SESSION['user_id']);
             $context->setUserName($_SESSION['username']);
             $req = $req->withAttribute('roles', $users_data->users->{$_SESSION['user_id']}->roles);

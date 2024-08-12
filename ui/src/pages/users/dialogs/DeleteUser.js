@@ -10,7 +10,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 
 import { deleteUser } from '../../../apis/uidataAPI'
 
-export default function DeleteUser ({ setLoading, user, closeDialog, setSuccessMessage, setErrorMessage }) {
+export default function DeleteUser ({ user, closeDialog, setLoading, setSuccessMessage, setErrorMessage }) {
   const navigate = useNavigate()
 
   async function deleteUserAction () {

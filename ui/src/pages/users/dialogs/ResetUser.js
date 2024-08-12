@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography'
 
 import { resetUser } from '../../../apis/uidataAPI'
 
-export default function ResetUser ({ setLoading, user, closeDialog, openUserLink, setUserLinkTriggerRefresh, setSuccessMessage, setErrorMessage }) {
+export default function ResetUser ({ user, closeDialog, openUserLink, setUserLinkTriggerRefresh, setLoading, setSuccessMessage, setErrorMessage }) {
   async function resetUserAction () {
     setLoading(true)
     closeDialog()

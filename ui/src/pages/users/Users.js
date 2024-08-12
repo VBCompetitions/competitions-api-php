@@ -208,7 +208,7 @@ export default function Users ({ setSuccessMessage, setErrorMessage }) {
                       }
                     </TableCell>
                     <TableCell align='center'>{user.roles.join(', ')}</TableCell>
-                    <TableCell align='center'>{user.app}</TableCell>
+                    <TableCell align='center'>{user.app ? user.app : 'VBC'}</TableCell>
                     <TableCell align='right'>
                       {
                         user.username === 'admin'

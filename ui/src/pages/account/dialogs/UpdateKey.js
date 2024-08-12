@@ -39,15 +39,15 @@ export default function UpdateKey ({ updateKeyID, currentUpdateKeyDescription, c
 
   return (
     <Dialog open={true} onClose={closeDialog} aria-labelledby="update new api key">
-    <DialogTitle id="update-key-dialog-title">Update API Key</DialogTitle>
-    <DialogContent>
-      <DialogContentText>Enter a new description for the API Key</DialogContentText>
-      <TextField autoFocus defaultValue={currentUpdateKeyDescription} fullWidth error={updateKeyDescriptionInvalid} helperText={updateKeyDescriptionInvalid ? 'invalid description' : ' ' } margin="dense" id="update-key-description" onChange={updateKeyDescriptionChange} label="API Key description" type="text" />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={closeDialog} variant="outlined" color="primary">Cancel</Button>
-      <Button onClick={updateKeyAction} disabled={updateKeyDescriptionInvalid || updateKeyDescription.length <= 0} variant="contained" color="primary">Update</Button>
-    </DialogActions>
-  </Dialog>
+      <DialogTitle id="update-key-dialog-title">Update API Key</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Enter a new description for the API Key</DialogContentText>
+        <TextField autoFocus defaultValue={currentUpdateKeyDescription} fullWidth error={updateKeyDescriptionInvalid} helperText={updateKeyDescriptionInvalid ? 'invalid description' : ' ' } margin="dense" id="update-key-description" onChange={updateKeyDescriptionChange} label="API Key description" type="text" />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeDialog} variant="outlined" color="primary">Cancel</Button>
+        <Button onClick={updateKeyAction} disabled={updateKeyDescriptionInvalid || updateKeyDescription.length <= 0} variant="contained" color="primary">Update</Button>
+      </DialogActions>
+    </Dialog>
   )
 }

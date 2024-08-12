@@ -6,13 +6,17 @@ final class App
 {
     private AppConfig $config;
 
-    private string $username;
-    private string $user_id;
+    private Context $context;
+
+    private Logger $logger;
+
     private array $roles;
 
     function __construct(array $config)
     {
         $this->config = new AppConfig($config);
+        $this->context = new Context($this->config);
+        $this->logger = new Logger($this->config, $this->context);
     }
 
     public function initialiseSession() : bool
@@ -47,8 +51,19 @@ final class App
             return false;
         }
 
-        $this->user_id = $_SESSION['user_id'];
-        $this->username = $_SESSION['username'];
+        if ($users_data->users->{$_SESSION['user_id']}->state !== 'active') {
+            // user is suspended
+            return false;
+        }
+
+        if (property_exists($users_data->users->{$_SESSION['user_id']}, 'app')) {
+            $this->context->setAppName($users_data->users->{$_SESSION['user_id']}->app);
+        } else {
+            $this->context->setAppName('VBC');
+        }
+
+        $this->context->setUserID($_SESSION['user_id']);
+        $this->context->setUserName($_SESSION['username']);
         $this->roles = $users_data->users->{$_SESSION['user_id']}->roles;
 
         return true;
@@ -74,16 +89,21 @@ final class App
 
     public function getUserID() : string
     {
-        return $this->user_id;
+        return $this->context->getUserID();
     }
 
     public function getUsername() : string
     {
-        return $this->username;
+        return $this->context->getUsername();
     }
 
     public function getUserRoles() : array
     {
         return $this->roles;
+    }
+
+    public function getLogger() : Logger
+    {
+        return $this->logger;
     }
 }

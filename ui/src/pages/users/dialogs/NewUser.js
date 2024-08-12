@@ -17,7 +17,7 @@ import Select from '@mui/material/Select';
 import { createUser } from '../../../apis/uidataAPI'
 import Roles from '../../components/Roles'
 
-export default function NewUser ({ setLoading, apps, closeDialog, usernames, openUserLink, setUserLinkTriggerRefresh, setSuccessMessage, setErrorMessage }) {
+export default function NewUser ({ apps, closeDialog, usernames, openUserLink, setUserLinkTriggerRefresh, setLoading, setSuccessMessage, setErrorMessage }) {
   const [usernameBadLength, setUsernameBadLength] = useState(true)
   const [usernameExists, setUsernameExists] = useState(false)
   const [usernameInvalid, setUsernameInvalid] = useState(false)

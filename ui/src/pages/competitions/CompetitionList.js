@@ -36,6 +36,7 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
   const navigate = useNavigate()
   const navigation = useNavigation()
 
+  const [loading, setLoading] = useState(false)
   const [newCompetitionOpen, setNewCompetitionOpen] = useState(false)
 
   function openNewCompetition () {
@@ -44,10 +45,6 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
 
   function closeNewCompetition () {
     setNewCompetitionOpen(false)
-  }
-
-  function refreshList () {
-    navigate('.', { replace: true })
   }
 
   function loadCompetition (competitionID) {
@@ -92,8 +89,14 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
           </IconButton>
         </Box>
       </Box>
-      <Box padding="10px">
-        <Divider sx={{ borderBottomWidth: 4, borderColor: '#1976d2' }} />
+      <Box padding='10px' paddingBottom={'20px'}>
+        {
+          loading
+          ?
+          <LinearProgress />
+          :
+          <Divider sx={{ borderBottomWidth: 4, borderColor: '#1976d2' }} />
+        }
       </Box>
       {newCompetitionButton}
       <Box padding="10px">
@@ -106,17 +109,11 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
             }
             return a.name.localeCompare(b.name)
           }).map(item => (
-            <CompetitionCard key={item.id} competition={item} triggerRefresh={refreshList} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
+            <CompetitionCard key={item.id} competition={item} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           ))}
         </Grid>
       </Box>
-      {
-        newCompetitionOpen
-        ?
-        <NewCompetition closeDialog={closeNewCompetition} loadCompetition={loadCompetition} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
-        :
-        null
-      }
+      { newCompetitionOpen ? <NewCompetition closeDialog={closeNewCompetition} loadCompetition={loadCompetition} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Box>
   )
 }

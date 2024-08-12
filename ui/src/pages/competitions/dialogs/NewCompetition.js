@@ -53,7 +53,7 @@ function NewCompetition ({ closeDialog, loadCompetition, setSuccessMessage, setE
         <TextField autoFocus margin="dense" id="add-competition-name" onChange={newCompetitionDialogNameChange} label="Competition name" type="text" fullWidth/>
         <br/><br/>
         <DialogContentText>Enter any notes on the competition</DialogContentText>
-        <TextField autoFocus margin="dense" id="add-competition-notes" onChange={newCompetitionDialogNotesChange} label="Notes" type="text" fullWidth/>
+        <TextField margin="dense" id="add-competition-notes" onChange={newCompetitionDialogNotesChange} label="Notes" type="text" fullWidth/>
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDialog} variant="outlined" color="primary">Cancel</Button>

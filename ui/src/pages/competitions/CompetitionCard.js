@@ -1,37 +1,28 @@
 import React, { useState } from 'react'
 
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import Grid from '@mui/material/Unstable_Grid2'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link, useRouteLoaderData } from 'react-router-dom'
 
-import { CompetitionAPI } from '../../apis/competitionAPI'
 import EditCompetition from './dialogs/EditCompetition'
 import DeleteCompetition from './dialogs/DeleteCompetition'
 import Roles from '../components/Roles'
 
-export default function CompetitionCard ({ competition, setSuccessMessage, setErrorMessage, triggerRefresh }) {
+export default function CompetitionCard ({ competition, setLoading, setSuccessMessage, setErrorMessage }) {
   const [menuWindow, setMenuWindow] = useState(null)
   const [deleteCompetitionOpen, setDeleteCompetitionOpen] = useState(false)
   const [editCompetitionOpen, setEditCompetitionOpen] = useState(false)
-  const [newCompetitionName, setNewCompetitionName] = useState(competition.name)
   const [updating, setUpdating] = useState(null)
   const userInfo = useRouteLoaderData('root')
 
@@ -75,7 +66,7 @@ export default function CompetitionCard ({ competition, setSuccessMessage, setEr
   if (competitionMenuActions.length > 0) {
     competitionActions = (
       <CardActions>
-        {updating ? <Box sx={{ display: 'flex' }}><CircularProgress size="20px" /></Box> : null }
+        { updating ? <Box sx={{ display: 'flex' }}><CircularProgress size="20px" /></Box> : null }
         <Box sx={{ width: "100%", textAlign: "right" }}>
           <IconButton size="small" aria-label="competition menu" aria-controls="menu-competition-card"
             aria-haspopup="true" onClick={openMenu} color="inherit">
@@ -116,20 +107,8 @@ export default function CompetitionCard ({ competition, setSuccessMessage, setEr
           {competitionActions}
         </Card>
       </Box>
-      {
-        deleteCompetitionOpen
-        ?
-        <DeleteCompetition competition={competition} closeDialog={closeDeleteCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
-        :
-        null
-      }
-      {
-        editCompetitionOpen
-        ?
-        <EditCompetition competition={competition} closeDialog={closeEditCompetition} triggerRefresh={triggerRefresh} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
-        :
-        null
-      }
+      { deleteCompetitionOpen ? <DeleteCompetition competition={competition} closeDialog={closeDeleteCompetition} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
+      { editCompetitionOpen ? <EditCompetition competition={competition} closeDialog={closeEditCompetition} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Grid>
   )
 }

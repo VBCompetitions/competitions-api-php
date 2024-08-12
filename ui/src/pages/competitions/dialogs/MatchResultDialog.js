@@ -178,7 +178,7 @@ function MatchResultDialog ({ competition, competitionID, match, homeTeam, awayT
       </Box>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', width: '50%', borderStyle: 'solid', borderWidth: '0px 1px 0px 0px', borderColor: '#d7d7d7', padding: '0px 5px' }}>
-          <TextField sx={{ width: '200px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-home-team" defaultValue={mvpList[0]} onChange={e => { handleMVPChange(e, false, true) }} type="text"/>
+          <TextField sx={{ width: '200px', minWidth: '100px' }} margin="dense" size="small" id="mvp-home-team" defaultValue={mvpList[0]} onChange={e => { handleMVPChange(e, false, true) }} type="text"/>
         </Box>
         <Box sx={{ display: 'flex', width: '50%', padding: '0px 5px' }}>
           <TextField sx={{ width: '200px', minWidth: '100px' }} margin="dense" size="small" id="mvp-away-team" defaultValue={mvpList[1]} onChange={e => { handleMVPChange(e, false, false)} } type="text"/>
@@ -189,7 +189,7 @@ function MatchResultDialog ({ competition, competitionID, match, homeTeam, awayT
       </Box>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', padding: '5px' }}>
-          <TextField sx={{ width: '400px', minWidth: '100px' }} autoFocus margin="dense" size="small" id="mvp-match" defaultValue={mvpList[2]} onChange={e => { handleMVPChange(e, true, false) }} type="text"/>
+          <TextField sx={{ width: '400px', minWidth: '100px' }} margin="dense" size="small" id="mvp-match" defaultValue={mvpList[2]} onChange={e => { handleMVPChange(e, true, false) }} type="text"/>
         </Box>
       </Box>
     </Box>

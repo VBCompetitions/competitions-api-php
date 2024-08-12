@@ -2,11 +2,10 @@
 
 namespace VBCompetitions\CompetitionsAPI;
 
-use Exception;
 use Opis\JsonSchema\ValidationResult;
 use Opis\JsonSchema\Validator;
 
-final class Config
+final class Config extends BaseConfig
 {
     public const SESSION_COOKIE = 'VBCSESSION';
 
@@ -24,24 +23,14 @@ final class Config
     public const VALIDATE_GROUP_APPEND = 'groupAppend';
     public const VALIDATE_GROUP_UPDATE = 'groupUpdate';
 
-    private string $base_path;
-    private string $data_dir;
     private bool $get_post_mode;
 
     private Validator $validator;
 
     public function __construct(array $config)
     {
-        if (!key_exists('url_base_path', $config)) {
-            throw new Exception('url_base_path is not set');
-        }
+        parent::__construct($config);
 
-        if (!key_exists('vbc_dir', $config)) {
-            throw new Exception('vbc_dir is not set');
-        }
-
-        $this->base_path = $config['url_base_path'];
-        $this->data_dir = $config['vbc_dir'];
         $this->get_post_mode = $config['get_post_mode'];
 
         $this->validator = new Validator();
@@ -51,36 +40,6 @@ final class Config
     public function getGetPostMode() : bool
     {
         return $this->get_post_mode;
-    }
-
-    public function getBasePath() : string
-    {
-        return $this->base_path;
-    }
-
-    public function getCompetitionsDir() : string
-    {
-        return realpath($this->data_dir.DIRECTORY_SEPARATOR.'competitions');
-    }
-
-    public function getUsersDir() : string
-    {
-        return realpath($this->data_dir.DIRECTORY_SEPARATOR.'users');
-    }
-
-    public function getSessionDir() : string
-    {
-        return realpath($this->data_dir.DIRECTORY_SEPARATOR.'sessions');
-    }
-
-    public function getLogDir() : string
-    {
-        return realpath($this->data_dir.DIRECTORY_SEPARATOR.'logs');
-    }
-
-    public function getSettingsDir() : string
-    {
-        return realpath($this->data_dir.DIRECTORY_SEPARATOR.'settings');
     }
 
     public function validateData(string $schema_id, object $data) : ValidationResult

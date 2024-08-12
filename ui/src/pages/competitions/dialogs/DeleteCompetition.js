@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -9,17 +10,21 @@ import DialogContentText from '@mui/material/DialogContentText'
 
 import CompetitionAPI from '../../../apis/competitionAPI'
 
-function DeleteCompetition ({ competition, closeDialog, triggerRefresh, setSuccessMessage, setErrorMessage }) {
+function DeleteCompetition ({ competition, closeDialog, setLoading, setSuccessMessage, setErrorMessage }) {
+  const navigate = useNavigate()
 
   async function deleteCompetitionAction () {
+    setLoading(true)
+    closeDialog()
     const competitionAPI = new CompetitionAPI()
     try {
-      closeDialog()
       await competitionAPI.deleteCompetition(competition.id)
+      setLoading(false)
       setSuccessMessage('Competition deleted')
-      triggerRefresh()
+      navigate('.', { replace: true })
     } catch (error) {
       setErrorMessage(error.message)
+      setLoading(false)
     }
   }
 

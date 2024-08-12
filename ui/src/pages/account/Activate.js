@@ -36,7 +36,6 @@ export default function Activate () {
 
   function passwordChange (e) {
     setPasswordToShort(e.target.value.length < 10)
-    // TODO - max length for password
     setPasswordInvalid(!/^[a-zA-Z0-9!'#£$%&'()*+.,/:;<=>?@[^_`{|}~\-\\\]]{8,50}$/.test(e.target.value))
   }
 

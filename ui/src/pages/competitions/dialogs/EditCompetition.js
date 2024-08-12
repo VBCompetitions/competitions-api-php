@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -10,11 +11,14 @@ import DialogContentText from '@mui/material/DialogContentText'
 
 import CompetitionAPI from '../../../apis/competitionAPI'
 
-function EditCompetition ({ competition, closeDialog, triggerRefresh, setSuccessMessage, setErrorMessage }) {
+function EditCompetition ({ competition, closeDialog, setUpdating, setSuccessMessage, setErrorMessage }) {
+  const navigate = useNavigate()
 
   const [competitionName, setCompetitionName] = useState(null)
 
   async function editCompetitionAction () {
+    setUpdating(true)
+    closeDialog()
     const updatedCompetition = {
       name: competitionName,
       teams: [],
@@ -23,12 +27,12 @@ function EditCompetition ({ competition, closeDialog, triggerRefresh, setSuccess
     const competitionAPI = new CompetitionAPI()
     try {
       await competitionAPI.updateCompetition(competition.id, updatedCompetition)
-      closeDialog()
+      setUpdating(false)
       setSuccessMessage('Competition updated')
-      triggerRefresh()
+      navigate('.', { replace: true })
     } catch (error) {
-      closeDialog()
       setErrorMessage(error.message)
+      setUpdating(false)
     }
   }
 
