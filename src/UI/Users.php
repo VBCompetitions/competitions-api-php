@@ -153,7 +153,7 @@ final class Users
         }
 
         // For VBC, make sure Roles::VIEWER is included
-        if (array_key_exists('app', $body_params) && $body_params['app'] !== 'VBC') {
+        if (!array_key_exists('app', $body_params) || $body_params['app'] === 'VBC') {
             if (!in_array(Roles::VIEWER, $roles)) {
                 array_push($roles, Roles::VIEWER);
             }
