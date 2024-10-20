@@ -117,6 +117,7 @@ function MatchResultDialog ({ competition, competitionID, match, homeTeam, awayT
     }
 
     delete matchData.id
+    delete matchData.court
     delete matchData.date
     delete matchData.friendly
     delete matchData.manager
