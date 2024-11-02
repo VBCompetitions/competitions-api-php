@@ -16,7 +16,7 @@ use VBCompetitions\CompetitionsAPI\UI\App;
 // Errorcodes 013FN
 final class Settings
 {
-    public static function getLogs(Config $config, Request $req, Response $res) : Response
+    public static function getLogsList(Config $config, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
         $roles = $req->getAttribute('roles');
@@ -28,8 +28,41 @@ final class Settings
             return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01300');
         }
 
+        // $context->getLogger()->info('List of system logs requested');
+
+        $log_files = scandir($config->getLogDir());
+        $log_files = array_filter($log_files, fn ($filename): bool => preg_match('/logs-\d\d\d\d-\d\d-\d\d.jsonl/', $filename) === 1);
+        $log_files = array_map(fn ($filename): string => substr($filename, 5, 10), $log_files);
+        rsort($log_files);
+
+        $res->getBody()->write(json_encode($log_files));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    public static function getLogs(Config $config, string $log_date, Request $req, Response $res) : Response
+    {
+        $context = $req->getAttribute('context');
+        $roles = $req->getAttribute('roles');
+        if ($roles === null) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00000');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::log()::get())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01310');
+        }
+
+        if (strlen($log_date) != 10 || !preg_match('/^\d\d\d\d-\d\d-\d\d$/', $log_date)) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP , 'Invalid date format', ErrorMessage::BAD_REQUEST_CODE, '01311');
+        }
+
         // $context->getLogger()->info('System logs requested');
-        $log_file = $config->getLogDir().DIRECTORY_SEPARATOR.'logs.jsonl';
+
+        $log_file = $config->getLogDir().DIRECTORY_SEPARATOR.'logs-'.$log_date.'.jsonl';
+
+        if ($log_file === false) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Log file note found', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01312');
+        }
+
         $h = fopen($log_file, 'r');
         $log_text = fread($h, filesize($log_file));
         fclose($h);
@@ -49,7 +82,7 @@ final class Settings
         }
 
         if (!Roles::roleCheck($roles, Roles::app()::create())) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01310');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01320');
         }
 
         $body_params = (array)$req->getParsedBody();
@@ -59,12 +92,12 @@ final class Settings
 
         // check app name is valid must contain only ASCII printable characters excluding " : { } ? =
         if (!preg_match('/^((?![":{}?= ])[\x20-\x7F])+$/', $name)) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid name: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01311');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid name: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01321');
         }
 
         // check root path is valid, must have a leading '/'
         if (strlen($root_path) < 1 || !str_starts_with($root_path, '/')) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01312');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01322');
         }
 
         $apps = [];
@@ -76,13 +109,13 @@ final class Settings
             $apps_json = file_get_contents($apps_file);
             if ($apps_json === false) {
                 $context->getLogger()->error('Failed to get the list of apps.  A config file exists, but it failed to load');
-                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01313');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01323');
             }
 
             $apps = json_decode($apps_json);
             if (!is_array($apps)) {
                 $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
-                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01314');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01324');
             }
         }
 
@@ -95,7 +128,7 @@ final class Settings
         }
         if ($name_exists) {
             $context->getLogger()->error('App with name "'.$name.'" already exists');
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_EXISTS_HTTP, 'App with name "'.$name.'" already exists', ErrorMessage::RESOURCE_EXISTS_CODE, '01314');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_EXISTS_HTTP, 'App with name "'.$name.'" already exists', ErrorMessage::RESOURCE_EXISTS_CODE, '01325');
         }
 
         $new_app = new stdClass();
@@ -127,7 +160,7 @@ final class Settings
         }
 
         if (!Roles::roleCheck($roles, Roles::app()::get())) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01320');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01330');
         }
 
         $apps = [];
@@ -141,13 +174,13 @@ final class Settings
         $apps_json = file_get_contents($apps_file);
         if ($apps_json === false) {
             $context->getLogger()->error('Failed to get the list of apps.  A config file exists, but it failed to load');
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01321');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01331');
         }
 
         $apps_data = json_decode($apps_json);
         if (!is_array($apps_data)) {
             $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01322');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01332');
         }
 
         try {
@@ -156,7 +189,7 @@ final class Settings
             }
         } catch (Throwable $err) {
             $context->getLogger()->error('Failed to parse the apps configuration: '.$err->getMessage());
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01323');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01333');
         }
 
         $res->getBody()->write(json_encode($apps));
@@ -175,7 +208,7 @@ final class Settings
         }
 
         if (!Roles::roleCheck($roles, Roles::app()::update())) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01330');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01340');
         }
 
         $body_params = (array)$req->getParsedBody();
@@ -185,30 +218,30 @@ final class Settings
 
         // check app name is valid must contain only ASCII printable characters excluding " : { } ? =
         if (!preg_match('/^((?![":{}?= ])[\x20-\x7F])+$/', $name)) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid name: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01331');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid name: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01341');
         }
 
         // check root path is valid, must have a leading '/'
         if (strlen($root_path) < 1 || !str_starts_with($root_path, '/')) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01332');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, 'Invalid username: must contain only ASCII printable characters excluding " : { } ? =', ErrorMessage::BAD_REQUEST_CODE, '01342');
         }
 
         $apps = [];
         $apps_file = realpath($config->getSettingsDir().DIRECTORY_SEPARATOR.'apps.json');
         if ($apps_file === false) {
             $context->getLogger()->info('No Apps defined, so we can\'t update anything');
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such app', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01333');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such app', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01343');
         } else {
             $apps_json = file_get_contents($apps_file);
             if ($apps_json === false) {
                 $context->getLogger()->error('Failed to get the list of apps.  A config file exists, but it failed to load');
-                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01334');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01344');
             }
 
             $apps = json_decode($apps_json);
             if (!is_array($apps)) {
                 $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
-                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01335');
+                return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01345');
             }
         }
 
@@ -225,7 +258,7 @@ final class Settings
 
         if (is_null($found_app)) {
             $context->getLogger()->error('Failed to find the app with ID '.$app_id);
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such app', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01336');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'No such app', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '01346');
         }
 
         $h = fopen($apps_file, 'w');
@@ -248,7 +281,7 @@ final class Settings
         }
 
         if (!Roles::roleCheck($roles, Roles::app()::delete())) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01340');
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '01350');
         }
 
         $apps_file = realpath($config->getSettingsDir().DIRECTORY_SEPARATOR.'apps.json');
@@ -260,19 +293,19 @@ final class Settings
         $apps_json = file_get_contents($apps_file);
         if ($apps_json === false) {
             $context->getLogger()->error('Failed to get the list of apps.  A config file exists, but it failed to load');
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01341');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01351');
         }
 
         $apps_data = json_decode($apps_json);
         if (!is_array($apps_data)) {
             $context->getLogger()->error('Failed to get the list of apps.  The file loaded but doesn\'t contain a JSON array');
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01342');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '01352');
         }
 
         // TODO - check if there are any users associated with the App
         // and block if there are
 
-        $apps_data = array_values(array_filter($apps_data, fn($el): bool => $el->id !== $app_id));
+        $apps_data = array_values(array_filter($apps_data, fn ($el): bool => $el->id !== $app_id));
 
         $h = fopen($apps_file, 'w');
         fwrite($h, json_encode($apps_data, JSON_PRETTY_PRINT));

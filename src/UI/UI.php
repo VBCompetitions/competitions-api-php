@@ -183,7 +183,12 @@ class UI {
               Routes for system admin commands
              **********************************/
             $group->get('/s/logs', function (Request $req, Response $res) {
-                return Settings::getLogs($this->config, $req, $res);
+                return Settings::getLogsList($this->config, $req, $res);
+            })->add(new AuthBySessionMiddleware($this->config));
+
+
+            $group->get('/s/logs/{log_date}', function (Request $req, Response $res, $args) {
+                return Settings::getLogs($this->config, $args['log_date'], $req, $res);
             })->add(new AuthBySessionMiddleware($this->config));
 
             /************************************************

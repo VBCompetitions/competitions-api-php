@@ -85,6 +85,10 @@
   height: 100%;
 }
 
+td.log-table {
+  padding: 5px;
+}
+
 /* general */
 div.data-box {
   border: var(--color-blue) solid 1px;
