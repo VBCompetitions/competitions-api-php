@@ -126,7 +126,6 @@ export default function LogsViewer ({ setLoading, setSuccessMessage, setErrorMes
                 let logLineParsed
                 try {
                   logLineParsed = JSON.parse(logLine)
-                  console.log(logLineParsed)
                   return (
                     <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       <TableCell align='center' className='log-table'>{logLineParsed.datetime.split('T').join(' ')}</TableCell>
