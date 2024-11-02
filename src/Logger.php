@@ -2,56 +2,63 @@
 
 namespace VBCompetitions\CompetitionsAPI;
 
-use stdClass;
-use DateTime;
+use Monolog\Formatter\JsonFormatter;
 use Ramsey\Uuid\Uuid;
+
+use Monolog\Level;
+use Monolog\Handler\RotatingFileHandler;
 
 final class Logger
 {
-    private string $log_file;
+    private \Monolog\Logger $logger;
 
     private Context $context;
 
     private string $context_id;
 
-    // TODO add a log level - this would be a "system" setting
-
     public function __construct(BaseConfig $config, Context $context)
     {
-        $this->log_file = $config->getLogDir().DIRECTORY_SEPARATOR.'logs.jsonl';
+        $max_files = 60;
+        $log_level = Level::Info;
+        $this->logger = new \Monolog\Logger('logger');
+        $this->logger->pushHandler((new RotatingFileHandler(
+            $config->getLogDir().DIRECTORY_SEPARATOR.'logs.jsonl',
+            $max_files,
+            $log_level
+        ))->setFilenameFormat(
+            'logs-{date}',
+            RotatingFileHandler::FILE_PER_DAY
+        )->setFormatter(new JsonFormatter()));
         $this->context = $context;
-        $this->context_id = Uuid::uuid4()->toString();
+        $this->context_id = substr(Uuid::uuid4()->toString(), 0, 8);
     }
 
-    private function log(string $level, string $msg) : void
+    private function getContext(?string $resource) : array
     {
-        // TODO Rotate log if needed
-        $h = fopen($this->log_file, 'a');
-        // We create an object to take advantage of json_encode encoding/escaping any strings
-        $log_line = new stdClass();
-        $log_line->timestamp = (new DateTime())->format('c');
-        $log_line->level = $level;
-        $log_line->app = $this->context->getAppName();
-        $log_line->context_id = $this->context_id;
-        $log_line->user_id = $this->context->getUserID();
-        $log_line->username = $this->context->getUsername();
-        $log_line->message = $msg;
-        fwrite($h, json_encode($log_line).PHP_EOL);
-        fclose($h);
+        $context = [
+            'app' => $this->context->getAppName(),
+            'id' => $this->context_id,
+            'user_id' => $this->context->getUserID(),
+            'username' => $this->context->getUsername()
+        ];
+        if (!is_null($resource)) {
+            $context['resource'] = $resource;
+        }
+        return $context;
     }
 
-    public function error(string $msg) : void
+    public function error(string $msg, string $resource = null) : void
     {
-        $this->log('ERROR', $msg);
+        $this->logger->error($msg, $this->getContext($resource));
     }
 
-    public function info(string $msg) : void
+    public function info(string $msg, string $resource = null) : void
     {
-        $this->log('INFO', $msg);
+        $this->logger->info($msg, $this->getContext($resource));
     }
 
-    public function debug(string $msg) : void
+    public function debug(string $msg, string $resource = null) : void
     {
-        $this->log('DEBUG', $msg);
+        $this->logger->debug($msg, $this->getContext($resource));
     }
 }

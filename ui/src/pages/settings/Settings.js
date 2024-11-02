@@ -81,11 +81,13 @@ export default function Settings ({ tabSelected, setSuccessMessage, setErrorMess
         }
         </Box>
         <Box padding="10px">
-          <Tabs value={tabID} onChange={changeTab} aria-label="settings tabs">
-            <Tab icon={<SettingsRoundedIcon />} iconPosition="start" label="Config" id='simple-tab-config' aria-controls='simple-tabpanel-0' />
-            <Tab icon={<AppsRoundedIcon />} iconPosition="start" label="Apps" id='simple-tab-apps' aria-controls='simple-tabpanel-1' />
-            <Tab icon={<ArticleRoundedIcon />} iconPosition="start" label="Logs" id='simple-tab-logs' aria-controls='simple-tabpanel-2' />
-          </Tabs>
+          <Box sx={{ borderBottom: 1, borderColor: '#93b6d9' }}>
+            <Tabs value={tabID} onChange={changeTab} aria-label="settings tabs">
+              <Tab icon={<SettingsRoundedIcon />} iconPosition="start" label="Config" id='simple-tab-config' aria-controls='simple-tabpanel-0' />
+              <Tab icon={<AppsRoundedIcon />} iconPosition="start" label="Apps" id='simple-tab-apps' aria-controls='simple-tabpanel-1' />
+              <Tab icon={<ArticleRoundedIcon />} iconPosition="start" label="Logs" id='simple-tab-logs' aria-controls='simple-tabpanel-2' />
+            </Tabs>
+          </Box>
         </Box>
         {panel}
       </Box>

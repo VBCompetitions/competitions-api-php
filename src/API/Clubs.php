@@ -21,7 +21,7 @@ final class Clubs
     public static function getClubs(Config $config, string $competition_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
-        $context->getLogger()->info('Request to get the clubs in competition with ID ['.$competition_id.']');
+        $context->getLogger()->debug('Request to get the clubs in competition with ID ['.$competition_id.']');
 
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::club()::get(), $competition_id, '0070');
@@ -29,7 +29,7 @@ final class Clubs
             return $err->respond($context);
         }
 
-        $context->getLogger()->info('Clubs in competition with ID ['.$competition_id.'] returned');
+        $context->getLogger()->debug('Clubs in competition with ID ['.$competition_id.'] returned');
         $res->getBody()->write(json_encode($competition->getClubs()));
         return $res->withHeader('Content-Type', 'application/json');
     }
@@ -72,7 +72,7 @@ final class Clubs
         try {
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $err) {
-            $context->getLogger()->info('Failed to save the competition: '.$err->getMessage());
+            $context->getLogger()->error('Failed to save the competition: '.$err->getMessage());
             return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00711');
         }
 
@@ -87,7 +87,7 @@ final class Clubs
     public static function getClub(Config $config, string $competition_id, string $club_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
-        $context->getLogger()->info('Request to get the club with ID ['.$club_id.'] in competition with ID ['.$competition_id.']');
+        $context->getLogger()->debug('Request to get the club with ID ['.$club_id.'] in competition with ID ['.$competition_id.']');
 
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::club()::get(), $competition_id, '0072');
@@ -101,7 +101,7 @@ final class Clubs
             return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Failed to find the club', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00720');
         }
 
-        $context->getLogger()->info('Club with ID ['.$club_id.'] and name ['.$club->getName().'] in competition with ID ['.$competition_id.'] returned');
+        $context->getLogger()->debug('Club with ID ['.$club_id.'] and name ['.$club->getName().'] in competition with ID ['.$competition_id.'] returned');
         $res->getBody()->write(json_encode($club));
         return $res->withHeader('Content-Type', 'application/json');
     }

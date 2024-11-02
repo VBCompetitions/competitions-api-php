@@ -214,11 +214,21 @@ export async function deleteKey (keyID) {
 
 //#region Logs /s
 
-export async function getSystemLogs () {
+export async function getSystemLogs (date) {
+  try {
+    const response = await fetch(`${window.VBC_UIDATA_URL}/s/logs/${date}`, { credentials: 'include' })
+    await checkResponse(response)
+    return await response.text()
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getSystemLogsList () {
   try {
     const response = await fetch(`${window.VBC_UIDATA_URL}/s/logs`, { credentials: 'include' })
     await checkResponse(response)
-    return await response.text()
+    return await response.json()
   } catch (error) {
     throw error
   }
