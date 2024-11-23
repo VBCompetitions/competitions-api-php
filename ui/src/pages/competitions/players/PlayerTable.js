@@ -16,14 +16,16 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
+import { useRouteLoaderData } from 'react-router-dom'
 
 import DeletePlayer from './dialogs/DeletePlayer'
 import UpdatePlayer from './dialogs/UpdatePlayer'
 import NewPlayer from './dialogs/NewPlayer'
+import Roles from '../../components/Roles'
 
 function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorMessage }) {
   const [loadingNewPlayer, setLoadingNewPlayer] = useState(false)
-  const [loadingUpdatePlayer, setLoadingUpdatePlayer] = useState(null)
+  const [updating, setUpdating] = useState(null)
 
   const [newPlayerOpen, setNewPlayerOpen] = useState(false)
 
@@ -32,6 +34,8 @@ function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorM
 
   const [updatePlayerOpen, setUpdatePlayerDialogOpen] = useState(false)
   const [updatePlayerPlayer, setUpdatePlayer] = useState(null)
+
+  const userInfo = useRouteLoaderData('root')
 
   function openNewPlayer () {
     setNewPlayerOpen(true)
@@ -63,11 +67,15 @@ function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorM
     <Box>
       <Box textAlign='right' padding='0px 30px'>
         {
-          loadingNewPlayer
+          Roles.roleCheck(userInfo.roles, Roles.Player.create)
           ?
-          <Button aria-label='New user' variant='outlined' startIcon={<CircularProgress size="20px" />} onClick={openNewPlayer}>Add player</Button>
+            loadingNewPlayer
+            ?
+            <Button aria-label='New user' variant='outlined' startIcon={<CircularProgress size="20px" />} onClick={openNewPlayer}>Add player</Button>
+            :
+            <Button aria-label='New user' variant='outlined' startIcon={<PersonAddAltRoundedIcon />} onClick={openNewPlayer}>Add player</Button>
           :
-          <Button aria-label='New user' variant='outlined' startIcon={<PersonAddAltRoundedIcon />} onClick={openNewPlayer}>Add player</Button>
+          null
         }
       </Box>
       <Box padding='10px 30px'>
@@ -104,17 +112,17 @@ function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorM
                   <TableCell sx={{ padding: '5px' }} align='right'>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
                       {
-                        loadingUpdatePlayer && (player.getID() === deletePlayerPlayer?.getID() || player.getID() === updatePlayerPlayer?.getID())
+                        updating && (player.getID() === deletePlayerPlayer?.getID() || player.getID() === updatePlayerPlayer?.getID())
                         ?
                         <CircularProgress size="24px" />
                         :
                         <Icon size="20px" />
                       }
                       <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ ml: 2, mr: 1 }} onClick={() => { openUpdatePlayer(player) }} >
-                        <EditRoundedIcon />
+                        <EditRoundedIcon color='action' />
                       </IconButton>
                       <IconButton size='small' edge='start' color='inherit' aria-label='menu' sx={{ mr: 1 }} onClick={() => { openDeletePlayer(player) }} >
-                        <DeleteRoundedIcon />
+                        <DeleteRoundedIcon color='action' />
                       </IconButton>
                     </Box>
                   </TableCell>
@@ -125,8 +133,8 @@ function PlayerTable ({ competition, competitionID, setSuccessMessage, setErrorM
         </TableContainer>
       </Box>
       { newPlayerOpen ? <NewPlayer competitionID={competitionID} setLoading={setLoadingNewPlayer} closeDialog={closeNewPlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
-      { deletePlayerOpen ? <DeletePlayer competitionID={competitionID} player={deletePlayerPlayer} setLoading={setLoadingUpdatePlayer} closeDialog={closeDeletePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
-      { updatePlayerOpen ? <UpdatePlayer setLoading={setLoadingUpdatePlayer} closeDialog={closeUpdatePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
+      { deletePlayerOpen ? <DeletePlayer competitionID={competitionID} player={deletePlayerPlayer} setLoading={setUpdating} closeDialog={closeDeletePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
+      { updatePlayerOpen ? <UpdatePlayer competitionID={competitionID} player={updatePlayerPlayer} setUpdating={setUpdating} closeDialog={closeUpdatePlayer} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Box>
   )
 }
