@@ -19,13 +19,13 @@ import Typography from '@mui/material/Typography'
 
 import ClubCard from './clubs/ClubCard.js'
 import PlayerTable from './players/PlayerTable.js'
-import TeamCard from './teams/TeamCard.js'
+import TeamList from './teams/TeamList.js'
 import GroupMatchSimple from './groups/GroupMatchSimple.js'
 import GroupBreak from './groups/GroupBreak.js'
 import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 
 import CompetitionAPI from '../../apis/competitionAPI.js'
-import EditCompetition from './dialogs/EditCompetition'
+import UpdateCompetition from './dialogs/UpdateCompetition.js'
 import Roles from '../components/Roles'
 
 export async function competitionLoader (url) {
@@ -81,8 +81,6 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
   const closeEditCompetition = () => {
     setEditCompetitionOpen(false)
   }
-
-  function addTeamDialogOpen () {}
 
   function addClubDialogOpen () {}
 
@@ -156,16 +154,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
         <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Teams</Typography></AccordionSummary>
           <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
-            <Grid container spacing={2}>
-              {competition.getTeams().sort((a, b) => {
-                return a.getName().localeCompare(b.getName())
-              }).map(item => (
-                <TeamCard key={item.id} selectAction={() => { /* TODO */ }} competition={competition} setErrorMessage={setErrorMessage} team={item} triggerLoading={triggerLoading} triggerRefresh={refreshCompetitionData} />
-              ))}
-              <Box padding="8px" sx={{ width: 150, height: 120 }}>
-                <Button aria-label="Add Team" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addTeamDialogOpen} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Team</Button>
-              </Box>
-            </Grid>
+            <TeamList competition={competition} competitionID={competitionID} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           </AccordionDetails>
         </Accordion>
       </Box>
@@ -223,7 +212,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
           ))
         }
       </Box>
-      { editCompetitionOpen ? <EditCompetition competition={simpleCompetition} closeDialog={closeEditCompetition} setUpdating={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
+      { editCompetitionOpen ? <UpdateCompetition competition={simpleCompetition} closeDialog={closeEditCompetition} setUpdating={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Box>
   )
 }
