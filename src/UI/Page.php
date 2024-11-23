@@ -15,7 +15,7 @@ final class Page
         $body = '<!DOCTYPE html><html><head><title>VBCompetitions API</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script defer="defer" src="'.$config->getBasePath().'/ui/api-url.js"></script>
-        <script defer="defer" src="'.$config->getBasePath().'/ui/static/js/main.fa4421c9.js"></script>
+        <script defer="defer" src="'.$config->getBasePath().'/ui/static/js/main.b67f1078.js"></script>
         <link href="'.$config->getBasePath().'/ui/static/css/main.34e8076a.css" rel="stylesheet">
         </head><body><div id="root"></div></body></html>';
         $res->getBody()->write($body);

@@ -116,8 +116,93 @@ export default class CompetitionAPI {
 
   // #endregion
 
+  // #region Team /c/{c}/t
+  async createTeam(competitionID, team) {
+    if (!validateTeamCreate(team)) {
+      let errors = ''
+      validateTeamCreate.errors.forEach(e => {
+        errors += `[${e.schemaPath}] [${e.instancePath}] ${e.message}\n`
+      })
+      throw new Error(`Team create data failed schema validation:\n${errors}`)
+    }
+
+    try {
+      let method = 'POST'
+      let url = `${window.VBC_API_URL}/c/${competitionID}/t`
+      const response = await fetch(url, {
+        method,
+        mode: "cors",
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(team)
+      })
+      await this.#checkResponse(response)
+      const newTeam = await response.json()
+      return newTeam
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async updateTeam(competitionID, teamID, teamUpdate) {
+    if (!validateTeamUpdate(teamUpdate)) {
+      let errors = ''
+      validateTeamUpdate.errors.forEach(e => {
+        errors += `[${e.schemaPath}] [${e.instancePath}] ${e.message}\n`
+      })
+      throw new Error(`Team update data failed schema validation:\n${errors}`)
+    }
+
+    try {
+      let method = 'PUT'
+      let url = `${window.VBC_API_URL}/c/${competitionID}/t/${teamID}`
+      if (window.VBC_GET_POST_MODE) {
+        method = 'POST'
+        url = `${url}/put`
+      }
+      const response = await fetch(url, {
+        method,
+        mode: "cors",
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(teamUpdate)
+      })
+      await this.#checkResponse(response)
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async deleteTeam(competitionID, teamID) {
+    try {
+      let method = 'DELETE'
+      let url = `${window.VBC_API_URL}/c/${competitionID}/t/${teamID}`
+      if (window.VBC_GET_POST_MODE) {
+        method = 'POST'
+        url = `${url}/delete`
+      }
+      const response = await fetch(url, {
+        method,
+        mode: "cors",
+        credentials: 'include'
+      })
+      await this.#checkResponse(response)
+    } catch (error) {
+      throw error
+    }
+  }
+  // #endregion
+
   // #region Player /c/{c}/p
   async createPlayer(competitionID, player) {
+    if (!validatePlayerCreate(player)) {
+      let errors = ''
+      validatePlayerCreate.errors.forEach(e => {
+        errors += `[${e.schemaPath}] [${e.instancePath}] ${e.message}\n`
+      })
+      throw new Error(`Player create data failed schema validation:\n${errors}`)
+    }
+
     try {
       let method = 'POST'
       let url = `${window.VBC_API_URL}/c/${competitionID}/p`
@@ -137,6 +222,14 @@ export default class CompetitionAPI {
   }
 
   async updatePlayer(competitionID, playerID, playerUpdate) {
+    if (!validatePlayerUpdate(playerUpdate)) {
+      let errors = ''
+      validatePlayerUpdate.errors.forEach(e => {
+        errors += `[${e.schemaPath}] [${e.instancePath}] ${e.message}\n`
+      })
+      throw new Error(`Player update data failed schema validation:\n${errors}`)
+    }
+
     try {
       let method = 'PUT'
       let url = `${window.VBC_API_URL}/c/${competitionID}/p/${playerID}`

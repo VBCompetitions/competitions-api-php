@@ -1,87 +1,90 @@
-import React /*, { useState }*/ from 'react'
+import React, { useState } from 'react'
 
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-// import CircularProgress from '@mui/material/CircularProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 import Grid from '@mui/material/Unstable_Grid2'
-// import IconButton from '@mui/material/IconButton'
-// import Menu from '@mui/material/Menu'
-// import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-// import MenuItem from '@mui/material/MenuItem'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
+import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { useRouteLoaderData } from 'react-router-dom'
 
-// import { deleteCompetition, updateCompetition } from './apis/competitionAPI.js'
+import DeleteTeam from './dialogs/DeleteTeam'
+import UpdateTeam from './dialogs/UpdateTeam'
+import Roles from '../../components/Roles'
 
-export default function TeamCard ({ competition, team, selectAction, setErrorMessage, triggerLoading, triggerRefresh }) {
-  // const [menuWindow, setMenuWindow] = useState(null)
-  // const [deleteCompetitionOpen, setDeleteCompetitionOpen] = useState(false)
-  // const [editCompetitionOpen, setEditCompetitionOpen] = useState(false)
-  // const [newCompetitionName, setNewCompetitionName] = useState(competition.name)
-  // const [updating, setUpdating] = useState(null)
+export default function TeamCard ({ competitionID, team, setLoading, setSuccessMessage, setErrorMessage }) {
+  const [menuWindow, setMenuWindow] = useState(null)
+  const [deleteTeamOpen, setDeleteTeamOpen] = useState(false)
+  const [updateTeamOpen, setUpdateTeamOpen] = useState(false)
+  const [updating, setUpdating] = useState(null)
+  const userInfo = useRouteLoaderData('root')
 
-  // const openMenu = (event) => {
-  //   setMenuWindow(event.currentTarget)
-  // }
+  const openMenu = (event) => {
+    setMenuWindow(event.currentTarget)
+  }
 
-  // const closeMenu = () => {
-  //   setMenuWindow(null)
-  // }
+  const closeMenu = () => {
+    setMenuWindow(null)
+  }
 
-  // const deleteCompetitionDialogDelete = async () => {
-  //   triggerLoading()
-  //   setUpdating(true)
-  //   deleteCompetitionDialogClose()
-  //   try {
-  //     deleteCompetition(competition)
-  //   } catch (error) {
-  //     setErrorMessage(error.message)
-  //   }
-  //   triggerRefresh()
-  // }
+  const openDeleteTeam = () => {
+    setDeleteTeamOpen(true)
+    closeMenu()
+  }
 
-  // const deleteCompetitionDialogOpen = () => {
-  //   setDeleteCompetitionOpen(true)
-  //   closeMenu()
-  // }
+  const closeDeleteTeam = () => {
+    setDeleteTeamOpen(false)
+  }
 
-  // const deleteCompetitionDialogClose = () => {
-  //   setDeleteCompetitionOpen(false)
-  // }
+  const openEditTeam = () => {
+    setUpdateTeamOpen(true)
+    closeMenu()
+  }
 
-  // const editCompetitionDialogOpen = () => {
-  //   setEditCompetitionOpen(true)
-  //   closeMenu()
-  // }
+  const closeUpdateTeam = () => {
+    setUpdateTeamOpen(false)
+  }
 
-  // const editCompetitionDialogClose = () => {
-  //   setEditCompetitionOpen(false)
-  // }
+  const teamMenuActions = []
 
-  // const editCompetitionDialogUpdate = async () => {
-  //   triggerLoading()
-  //   setUpdating(true)
-  //   editCompetitionDialogClose()
-  //   const updatedCompetition = {
-  //     name: newCompetitionName,
-  //   //   teams: [],
-  //   //   stages: []
-  //   }
-  //   try {
-  //     updateCompetition(competition.id, updatedCompetition)
-  //   } catch (error) {
-  //     setErrorMessage(error.message)
-  //   }
-  //   await triggerRefresh()
-  //   setUpdating(false)
-  // }
+  if (Roles.roleCheck(userInfo.roles, Roles.Team.update)) {
+    teamMenuActions.push(<MenuItem onClick={openEditTeam}>Edit</MenuItem>)
+  }
 
-  // const editCompetitionDialogNameChange = e => {
-  //   setNewCompetitionName(e.target.value)
-  // }
+  if (Roles.roleCheck(userInfo.roles, Roles.Team.delete)) {
+    teamMenuActions.push(<MenuItem onClick={openDeleteTeam}>Delete</MenuItem>)
+  }
+
+  let teamActions = ( <CardActions></CardActions> )
+  if (teamMenuActions.length > 0) {
+    teamActions = (
+      <CardActions>
+        {
+          updating ? <Box sx={{ display: 'flex' }}><CircularProgress size="20px" /></Box> : null
+        }
+        <Box sx={{ width: "100%", textAlign: "right" }}>
+          <IconButton size="small" aria-label="team menu" aria-controls="menu-team-card"
+            aria-haspopup="true" onClick={openMenu} color="inherit">
+            <MenuRoundedIcon color='action' />
+          </IconButton>
+          <Menu id="menu-team-card" anchorEl={menuWindow} anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
+            keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }}
+            open={Boolean(menuWindow)} onClose={closeMenu}>
+            {
+              teamMenuActions.map(menuItem => menuItem)
+            }
+          </Menu>
+        </Box>
+      </CardActions>
+    )
+  }
 
   return (
     <Grid>
@@ -100,23 +103,11 @@ export default function TeamCard ({ competition, team, selectAction, setErrorMes
               }
             </CardContent>
           </CardActionArea>
-          <CardActions>
-          </CardActions>
+          {teamActions}
         </Card>
       </Box>
+      { deleteTeamOpen ? <DeleteTeam competitionID={competitionID} team={team} closeDialog={closeDeleteTeam} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
+      { updateTeamOpen ? <UpdateTeam competitionID={competitionID} team={team} closeDialog={closeUpdateTeam} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Grid>
   )
 }
-            // {updating ? <Box sx={{ display: 'flex' }}><CircularProgress size="20px" /></Box> : null }
-            // <Box sx={{ width: "100%", textAlign: "right" }}>
-            //   <IconButton size="small" aria-label="competition menu" aria-controls="menu-competition-card"
-            //     aria-haspopup="true" onClick={openMenu} color="inherit">
-            //     <MenuRoundedIcon color='action' />
-            //   </IconButton>
-            // </Box>
-              // <Menu id="menu-competition-card" anchorEl={menuWindow} anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
-              //   keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }}
-              //   open={Boolean(menuWindow)} onClose={closeMenu}>
-              //   <MenuItem onClick={editCompetitionDialogOpen}>Edit</MenuItem>
-              //   <MenuItem onClick={deleteCompetitionDialogOpen}>Delete</MenuItem>
-              // </Menu>
