@@ -36,6 +36,20 @@ export default class Roles {
     results: [Roles.ADMIN, Roles.FIXTURES_SECRETARY, Roles.RESULTS_ENTRY]
   }
 
+  static Player = {
+    create: [Roles.ADMIN, Roles.FIXTURES_SECRETARY],
+    delete: [Roles.ADMIN, Roles.FIXTURES_SECRETARY],
+    get: Roles._ANY,
+    update: [Roles.ADMIN, Roles.FIXTURES_SECRETARY]
+  }
+
+  static Team = {
+    create: [Roles.ADMIN, Roles.FIXTURES_SECRETARY],
+    delete: [Roles.ADMIN, Roles.FIXTURES_SECRETARY],
+    get: Roles._ANY,
+    update: [Roles.ADMIN, Roles.FIXTURES_SECRETARY]
+  }
+
   static User = {
     create: [Roles.ADMIN],
     get: [Roles.ADMIN],
