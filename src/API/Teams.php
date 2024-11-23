@@ -23,6 +23,15 @@ final class Teams
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the teams in competition with ID ['.$competition_id.']');
 
+        $roles = $req->getAttribute('roles');
+        if ($roles === null) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00600');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::team()::get())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00601');
+        }
+
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::get(), $competition_id, '0060');
         } catch (ErrorMessage $err) {
@@ -38,6 +47,15 @@ final class Teams
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to create a team in competition with ID ['.$competition_id.']');
+
+        $roles = $req->getAttribute('roles');
+        if ($roles === null) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00610');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::team()::create())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00611');
+        }
 
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::create(), $competition_id, '0061');
@@ -69,14 +87,14 @@ final class Teams
             }
             $competition->addTeam($team);
         } catch (Throwable $err) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, $err->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00610');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, $err->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00614');
         }
 
         try {
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $err) {
             $context->getLogger()->info('Failed to save the competition: '.$err->getMessage());
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00611');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00615');
         }
 
         $context->getLogger()->info('Team with name ['.$team_data->name.'] and ID ['.$team_id.'] created');
@@ -91,6 +109,15 @@ final class Teams
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to get the team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
+
+        $roles = $req->getAttribute('roles');
+        if ($roles === null) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00620');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::team()::get())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00621');
+        }
 
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::get(), $competition_id, '0062');
@@ -113,6 +140,15 @@ final class Teams
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to update the team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
+        $roles = $req->getAttribute('roles');
+        if ($roles === null) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00630');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::team()::update())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00631');
+        }
+
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::update(), $competition_id, '0063');
         } catch (ErrorMessage $err) {
@@ -122,7 +158,7 @@ final class Teams
         try {
             $team = $competition->getTeam($team_id);
         } catch (Throwable $err) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Failed to find the team', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00630');
+            return ErrorMessage::respondWithError($context, ErrorMessage::RESOURCE_DOES_NOT_EXIST_HTTP, 'Failed to find the team', ErrorMessage::RESOURCE_DOES_NOT_EXIST_CODE, '00632');
         }
 
         try {
@@ -144,14 +180,14 @@ final class Teams
                 $team->setNotes($team_data->notes);
             }
         } catch (Throwable $err) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, $err->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00631');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, $err->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00633');
         }
 
         try {
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $err) {
             $context->getLogger()->info('Failed to save the competition: '.$err->getMessage());
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00632');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00634');
         }
 
         $context->getLogger()->info('Updated team with ID ['.$team_id.'] and name ['.$team->getName().'] in competition with ID ['.$competition_id.']');
@@ -162,6 +198,15 @@ final class Teams
     {
         $context = $req->getAttribute('context');
         $context->getLogger()->info('Request to delete the team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
+
+        $roles = $req->getAttribute('roles');
+        if ($roles === null) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Internal Server Error', ErrorMessage::INTERNAL_ERROR_CODE, '00640');
+        }
+
+        if (!Roles::roleCheck($roles, Roles::team()::delete())) {
+            return ErrorMessage::respondWithError($context, ErrorMessage::FORBIDDEN_HTTP, 'Insufficient roles', ErrorMessage::FORBIDDEN_CODE, '00641');
+        }
 
         try {
             $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::delete(), $competition_id, '0064');
@@ -177,14 +222,14 @@ final class Teams
         try {
             $competition->deleteTeam($team_id);
         } catch (Throwable $err) {
-            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, $err->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00640');
+            return ErrorMessage::respondWithError($context, ErrorMessage::BAD_REQUEST_HTTP, $err->getMessage(), ErrorMessage::BAD_REQUEST_CODE, '00642');
         }
 
         try {
             $competition->saveToFile($config->getCompetitionsDir(), $competition_id.'.json');
         } catch (Throwable $err) {
             $context->getLogger()->info('Failed to save the competition: '.$err->getMessage());
-            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00641');
+            return ErrorMessage::respondWithError($context, ErrorMessage::INTERNAL_ERROR_HTTP, 'Failed to save the competition', ErrorMessage::INTERNAL_ERROR_CODE, '00643');
         }
 
         $context->getLogger()->info('Deleted team with ID ['.$team_id.'] from competition with ID ['.$competition_id.']');
