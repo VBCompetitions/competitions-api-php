@@ -11,7 +11,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 
 import CompetitionAPI from '../../../apis/competitionAPI'
 
-function EditCompetition ({ competition, closeDialog, setUpdating, setSuccessMessage, setErrorMessage }) {
+function UpdateCompetition ({ competition, closeDialog, setUpdating, setSuccessMessage, setErrorMessage }) {
   const navigate = useNavigate()
 
   const [competitionName, setCompetitionName] = useState(null)
@@ -55,4 +55,4 @@ function EditCompetition ({ competition, closeDialog, setUpdating, setSuccessMes
   )
 }
 
-export default EditCompetition
+export default UpdateCompetition

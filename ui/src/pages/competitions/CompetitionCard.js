@@ -15,14 +15,14 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Link, useRouteLoaderData } from 'react-router-dom'
 
-import EditCompetition from './dialogs/EditCompetition'
+import UpdateCompetition from './dialogs/UpdateCompetition'
 import DeleteCompetition from './dialogs/DeleteCompetition'
 import Roles from '../components/Roles'
 
 export default function CompetitionCard ({ competition, setLoading, setSuccessMessage, setErrorMessage }) {
   const [menuWindow, setMenuWindow] = useState(null)
   const [deleteCompetitionOpen, setDeleteCompetitionOpen] = useState(false)
-  const [editCompetitionOpen, setEditCompetitionOpen] = useState(false)
+  const [updateCompetitionOpen, setUpdateCompetitionOpen] = useState(false)
   const [updating, setUpdating] = useState(null)
   const userInfo = useRouteLoaderData('root')
 
@@ -44,12 +44,12 @@ export default function CompetitionCard ({ competition, setLoading, setSuccessMe
   }
 
   const openEditCompetition = () => {
-    setEditCompetitionOpen(true)
+    setUpdateCompetitionOpen(true)
     closeMenu()
   }
 
   const closeEditCompetition = () => {
-    setEditCompetitionOpen(false)
+    setUpdateCompetitionOpen(false)
   }
 
   const competitionMenuActions = []
@@ -108,7 +108,7 @@ export default function CompetitionCard ({ competition, setLoading, setSuccessMe
         </Card>
       </Box>
       { deleteCompetitionOpen ? <DeleteCompetition competition={competition} closeDialog={closeDeleteCompetition} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
-      { editCompetitionOpen ? <EditCompetition competition={competition} closeDialog={closeEditCompetition} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
+      { updateCompetitionOpen ? <UpdateCompetition competition={competition} closeDialog={closeEditCompetition} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Grid>
   )
 }
