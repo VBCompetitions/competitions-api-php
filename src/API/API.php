@@ -5,7 +5,10 @@ namespace VBCompetitions\CompetitionsAPI\API;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
+
+use VBCompetitions\CompetitionsAPI\API\ClubContacts;
 use VBCompetitions\CompetitionsAPI\API\Competitions;
+use VBCompetitions\CompetitionsAPI\API\CompetitionContacts;
 use VBCompetitions\CompetitionsAPI\API\TeamContacts;
 use VBCompetitions\CompetitionsAPI\API\Groups;
 use VBCompetitions\CompetitionsAPI\API\Matches;
