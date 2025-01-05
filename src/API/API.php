@@ -5,8 +5,11 @@ namespace VBCompetitions\CompetitionsAPI\API;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
+
+use VBCompetitions\CompetitionsAPI\API\ClubContacts;
 use VBCompetitions\CompetitionsAPI\API\Competitions;
-use VBCompetitions\CompetitionsAPI\API\Contacts;
+use VBCompetitions\CompetitionsAPI\API\CompetitionContacts;
+use VBCompetitions\CompetitionsAPI\API\TeamContacts;
 use VBCompetitions\CompetitionsAPI\API\Groups;
 use VBCompetitions\CompetitionsAPI\API\Matches;
 use VBCompetitions\CompetitionsAPI\API\Players;
@@ -70,6 +73,41 @@ final class API
             }
 
             /*********************
+             * COMPETITION CONTACTS
+             ********************/
+            $group->get('/c/{competition_id}/ct', function (Request $req, Response $res, $args) {
+                return CompetitionContacts::getContacts($this->config, $args['competition_id'], $req, $res);
+            });
+
+            $group->post('/c/{competition_id}/ct', function (Request $req, Response $res, $args) {
+                return CompetitionContacts::createContact($this->config, $args['competition_id'], $req, $res);
+            });
+
+            $group->get('/c/{competition_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                return CompetitionContacts::getContact($this->config, $args['competition_id'], $args['contact_id'], $req, $res);
+            });
+
+            if ($get_post_mode) {
+                $group->post('/c/{competition_id}/ct/{contact_id}/put', function (Request $req, Response $res, $args) {
+                    return CompetitionContacts::updateContact($this->config, $args['competition_id'], $args['contact_id'], $req, $res);
+                });
+            } else {
+                $group->put('/c/{competition_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                    return CompetitionContacts::updateContact($this->config, $args['competition_id'], $args['contact_id'], $req, $res);
+                });
+            }
+
+            if ($get_post_mode) {
+                $group->post('/c/{competition_id}/ct/{contact_id}/delete', function (Request $req, Response $res, $args) {
+                    return CompetitionContacts::deleteContact($this->config, $args['competition_id'], $args['contact_id'], $req, $res);
+                });
+            } else {
+                $group->delete('/c/{competition_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                    return CompetitionContacts::deleteContact($this->config, $args['competition_id'], $args['contact_id'], $req, $res);
+                });
+            }
+
+            /*********************
              * CLUBS
              ********************/
             $group->get('/c/{competition_id}/c', function (Request $req, Response $res, $args) {
@@ -101,6 +139,41 @@ final class API
             } else {
                 $group->delete('/c/{competition_id}/c/{club_id}', function (Request $req, Response $res, $args) {
                     return Clubs::deleteClub($this->config, $args['competition_id'], $args['club_id'], $req, $res);
+                });
+            }
+
+            /*********************
+             * CLUB CONTACTS
+             ********************/
+            $group->get('/c/{competition_id}/c/{club_id}/ct', function (Request $req, Response $res, $args) {
+                return ClubContacts::getContacts($this->config, $args['competition_id'], $args['club_id'], $req, $res);
+            });
+
+            $group->post('/c/{competition_id}/c/{club_id}/ct', function (Request $req, Response $res, $args) {
+                return ClubContacts::createContact($this->config, $args['competition_id'], $args['club_id'], $req, $res);
+            });
+
+            $group->get('/c/{competition_id}/c/{club_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                return ClubContacts::getContact($this->config, $args['competition_id'], $args['club_id'], $args['contact_id'], $req, $res);
+            });
+
+            if ($get_post_mode) {
+                $group->post('/c/{competition_id}/c/{club_id}/ct/{contact_id}/put', function (Request $req, Response $res, $args) {
+                    return ClubContacts::updateContact($this->config, $args['competition_id'], $args['club_id'], $args['contact_id'], $req, $res);
+                });
+            } else {
+                $group->put('/c/{competition_id}/c/{club_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                    return ClubContacts::updateContact($this->config, $args['competition_id'], $args['club_id'], $args['contact_id'], $req, $res);
+                });
+            }
+
+            if ($get_post_mode) {
+                $group->post('/c/{competition_id}/c/{club_id}/ct/{contact_id}/delete', function (Request $req, Response $res, $args) {
+                    return ClubContacts::deleteContact($this->config, $args['competition_id'], $args['club_id'], $args['contact_id'], $req, $res);
+                });
+            } else {
+                $group->delete('/c/{competition_id}/c/{club_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                    return ClubContacts::deleteContact($this->config, $args['competition_id'], $args['club_id'], $args['contact_id'], $req, $res);
                 });
             }
 
@@ -140,37 +213,37 @@ final class API
             }
 
             /*********************
-             * CONTACTS
+             * TEAM CONTACTS
              ********************/
-            $group->get('/c/{competition_id}/t/{team_id}/c', function (Request $req, Response $res, $args) {
-                return Contacts::getContacts($this->config, $args['competition_id'], $args['team_id'], $req, $res);
+            $group->get('/c/{competition_id}/t/{team_id}/ct', function (Request $req, Response $res, $args) {
+                return TeamContacts::getContacts($this->config, $args['competition_id'], $args['team_id'], $req, $res);
             });
 
-            $group->post('/c/{competition_id}/t/{team_id}/c', function (Request $req, Response $res, $args) {
-                return Contacts::createContact($this->config, $args['competition_id'], $args['team_id'], $req, $res);
+            $group->post('/c/{competition_id}/t/{team_id}/ct', function (Request $req, Response $res, $args) {
+                return TeamContacts::createContact($this->config, $args['competition_id'], $args['team_id'], $req, $res);
             });
 
-            $group->get('/c/{competition_id}/t/{team_id}/c/{contact_id}', function (Request $req, Response $res, $args) {
-                return Contacts::getContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
+            $group->get('/c/{competition_id}/t/{team_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                return TeamContacts::getContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
             });
 
             if ($get_post_mode) {
-                $group->post('/c/{competition_id}/t/{team_id}/c/{contact_id}/put', function (Request $req, Response $res, $args) {
-                    return Contacts::updateContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
+                $group->post('/c/{competition_id}/t/{team_id}/ct/{contact_id}/put', function (Request $req, Response $res, $args) {
+                    return TeamContacts::updateContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
                 });
             } else {
-                $group->put('/c/{competition_id}/t/{team_id}/c/{contact_id}', function (Request $req, Response $res, $args) {
-                    return Contacts::updateContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
+                $group->put('/c/{competition_id}/t/{team_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                    return TeamContacts::updateContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
                 });
             }
 
             if ($get_post_mode) {
-                $group->post('/c/{competition_id}/t/{team_id}/c/{contact_id}/delete', function (Request $req, Response $res, $args) {
-                    return Contacts::deleteContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
+                $group->post('/c/{competition_id}/t/{team_id}/ct/{contact_id}/delete', function (Request $req, Response $res, $args) {
+                    return TeamContacts::deleteContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
                 });
             } else {
-                $group->delete('/c/{competition_id}/t/{team_id}/c/{contact_id}', function (Request $req, Response $res, $args) {
-                    return Contacts::deleteContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
+                $group->delete('/c/{competition_id}/t/{team_id}/ct/{contact_id}', function (Request $req, Response $res, $args) {
+                    return TeamContacts::deleteContact($this->config, $args['competition_id'], $args['team_id'], $args['contact_id'], $req, $res);
                 });
             }
 

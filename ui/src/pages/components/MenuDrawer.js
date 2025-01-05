@@ -9,7 +9,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import SportsVolleyballRoundedIcon from '@mui/icons-material/SportsVolleyballRounded'
-import { Link, useRouteLoaderData } from 'react-router-dom'
+import { Link, useRouteLoaderData } from 'react-router'
 
 import Roles from './Roles'
 

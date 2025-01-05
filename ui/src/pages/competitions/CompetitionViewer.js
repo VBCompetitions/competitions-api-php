@@ -1,21 +1,25 @@
 import React, { useState } from 'react'
-import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router-dom'
+import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router'
 
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import EditRoundedIcon from '@mui/icons-material/EditRounded'
-import LinearProgress from '@mui/material/LinearProgress'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import Grid from '@mui/material/Unstable_Grid2'
-import IconButton from '@mui/material/IconButton'
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
-import Typography from '@mui/material/Typography'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Divider,
+  LinearProgress,
+  Grid2,
+  IconButton,
+  Typography
+} from '@mui/material'
+import {
+  ArrowBackRounded,
+  AddRounded,
+  EditRounded,
+  ExpandMore,
+  RefreshRounded
+} from '@mui/icons-material'
 
 import ClubCard from './clubs/ClubCard.js'
 import PlayerTable from './players/PlayerTable.js'
@@ -90,7 +94,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
         <Box sx={{ display: 'flex' }}>
           <Link to={`/`}>
             <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }}  color="inherit">
-              <ArrowBackRoundedIcon color='action' />
+              <ArrowBackRounded color='action' />
             </IconButton>
           </Link>
           <Typography sx={{ flexGrow: '1', marginBottom: '3px' }} variant="h5" textAlign="left" gutterBottom>
@@ -112,7 +116,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
         <Box sx={{ display: 'flex' }}>
           <Link to={`/c`}>
             <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }} color="inherit">
-              <ArrowBackRoundedIcon color='action' />
+              <ArrowBackRounded color='action' />
             </IconButton>
           </Link>
           <Typography sx={{ flexGrow: '1', marginBottom: '3px' }} variant="h5" textAlign="left" gutterBottom>{competition.getName()}</Typography>
@@ -120,13 +124,13 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
             Roles.roleCheck(userInfo.roles, Roles.Competition.update)
             ?
             <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }} onClick={openEditCompetition} color="inherit">
-              <EditRoundedIcon color='action' />
+              <EditRounded color='action' />
             </IconButton>
             :
             null
           }
           <IconButton size="small" aria-label="refresh list" onClick={() => { navigate('.', { replace: true }) }} color="inherit">
-            <RefreshRoundedIcon color='action' />
+            <RefreshRounded color='action' />
           </IconButton>
         </Box>
       </Box>
@@ -135,24 +139,24 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
       </Box>
       <Box padding="10px">
         <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Clubs</Typography></AccordionSummary>
+          <AccordionSummary expandIcon={<ExpandMore sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Clubs</Typography></AccordionSummary>
           <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
-            <Grid container spacing={2}>
+            <Grid2 container spacing={2}>
               {competition.getClubs().sort((a, b) => {
                 return a.getName().localeCompare(b.getName())
               }).map(item => (
                 <ClubCard key={item.id} selectAction={() => { /* TODO */ }} competition={competition} club={item} triggerLoading={triggerLoading} triggerRefresh={refreshCompetitionData} />
               ))}
               <Box padding="8px" sx={{ width: 150, height: 120 }}>
-                <Button aria-label="Club Team" variant="outlined" startIcon={<AddRoundedIcon />} onClick={addClubDialogOpen} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Club</Button>
+                <Button aria-label="Club Team" variant="outlined" startIcon={<AddRounded />} onClick={addClubDialogOpen} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Club</Button>
               </Box>
-            </Grid>
+            </Grid2>
           </AccordionDetails>
         </Accordion>
       </Box>
       <Box padding="10px">
         <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Teams</Typography></AccordionSummary>
+          <AccordionSummary expandIcon={<ExpandMore sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Teams</Typography></AccordionSummary>
           <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
             <TeamList competition={competition} competitionID={competitionID} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           </AccordionDetails>
@@ -160,7 +164,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
       </Box>
       <Box padding="10px">
         <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Players</Typography></AccordionSummary>
+          <AccordionSummary expandIcon={<ExpandMore sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">Players</Typography></AccordionSummary>
           <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
             <PlayerTable competition={competition} competitionID={competitionID} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           </AccordionDetails>
@@ -171,7 +175,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
         {
           competition.getStages().map(stage => (
             <Accordion defaultExpanded={true} sx={{ backgroundColor: '#1976d2', color: 'white' }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">{stage.getName()}</Typography></AccordionSummary>
+              <AccordionSummary expandIcon={<ExpandMore sx={{ color: 'white' }} />} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">{stage.getName()}</Typography></AccordionSummary>
               <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
                 {
                   Array.isArray(stage.getDescription())
@@ -184,7 +188,7 @@ export default function CompetitionViewer ({ setSuccessMessage, setErrorMessage 
                 {
                   stage.getGroups().map(group => (
                     <Accordion sx={{ backgroundColor: '#1976d2', color: 'white' }}>
-                      <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }}/>} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">{group.getName()}</Typography></AccordionSummary>
+                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: 'white' }}/>} aria-controls="panel1-content" id="panel1-header"><Typography variant="h6" textAlign="left">{group.getName()}</Typography></AccordionSummary>
                       <AccordionDetails sx={{ backgroundColor: '#eaf5ff' }}>
                       {
                         Array.isArray(group.getDescription())

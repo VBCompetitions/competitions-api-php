@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import './App.css'
 import Box from '@mui/material/Box'
 import NotificationSnackbar from './pages/components/NotificationSnackbar.js'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'

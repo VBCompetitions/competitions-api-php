@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData } from 'react-router'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

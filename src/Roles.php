@@ -27,7 +27,53 @@ final class CompetitionRoles
     }
 }
 
+final class CompetitionContactRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function get() : array
+    {
+        return Roles::_ALL;
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
 final class ClubRoles
+{
+    public static function create() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function delete() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+
+    public static function get() : array
+    {
+        return Roles::_ALL;
+    }
+
+    public static function update() : array
+    {
+        return [Roles::ADMIN, Roles::FIXTURES_SECRETARY];
+    }
+}
+
+final class ClubContactRoles
 {
     public static function create() : array
     {
@@ -73,7 +119,7 @@ final class TeamRoles
     }
 }
 
-final class ContactRoles
+final class TeamContactRoles
 {
     public static function create() : array
     {
@@ -280,9 +326,19 @@ final class Roles
         return new CompetitionRoles();
     }
 
+    public static function competitionContact() : CompetitionContactRoles
+    {
+        return new CompetitionContactRoles();
+    }
+
     public static function club() : ClubRoles
     {
         return new ClubRoles();
+    }
+
+    public static function clubContact() : ClubContactRoles
+    {
+        return new ClubContactRoles();
     }
 
     public static function team() : TeamRoles
@@ -290,10 +346,11 @@ final class Roles
         return new TeamRoles();
     }
 
-    public static function contact() : ContactRoles
+    public static function teamContact() : TeamContactRoles
     {
-        return new ContactRoles();
+        return new TeamContactRoles();
     }
+
     public static function player() : PlayerRoles
     {
         return new PlayerRoles();

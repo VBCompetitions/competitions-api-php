@@ -22,8 +22,12 @@ tags:
     externalDocs:
       description: Find out more
       url: https://github.com/VBCompetitions
+  - name: competition contacts
+    description: Everything about a contact in a competition
   - name: clubs
     description: Everything about a club in a competition
+  - name: club contacts
+    description: Everything about a contact in a club
   - name: teams
     description: Everything about a team in a competition
   - name: team contacts
@@ -52,14 +56,14 @@ paths:
             items:
               type: string
           explode: false
-          description: The metadata key-values that must be in the comeptition for it to be included. Each entry should be of the form "key=value" with the "=" URI encoded as "%3d".  For example to include competitions with "key1=value1" and "key2=value2", the query parameters should include "withmeta=key1%3dvalue1,key2%3dvalue2"
+          description: The metadata key-values that must be in the competition for it to be included. Each entry should be of the form "key=value" with the "=" URI encoded as "%3d".  For example to include competitions with "key1=value1" and "key2=value2", the query parameters should include "withmeta=key1%3dvalue1,key2%3dvalue2"
         - in: query
           name: notmeta
           schema:
             type: array
             items:
               type: string
-          description: The metadata key-values that must not be in the comeptition for it to be included.  This may be because the key is no there, or the value is different. Each entry should be of the form "key=value" with the "=" URI encoded as "%3d".  For example to exclude competitions with "key1=value1" and "key2=value2", the query parameters should include "withmeta=key1%3dvalue1&withmeta=key2%3dvalue2"
+          description: The metadata key-values that must not be in the competition for it to be included.  This may be because the key is no there, or the value is different. Each entry should be of the form "key=value" with the "=" URI encoded as "%3d".  For example to exclude competitions with "key1=value1" and "key2=value2", the query parameters should include "withmeta=key1%3dvalue1&withmeta=key2%3dvalue2"
       responses:
         '200':
           description: success
@@ -209,6 +213,210 @@ paths:
         - name: competitionID
           in: path
           description: ID of the Competition to add
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /c/{competitionID}/ct:
+    get:
+      tags:
+        - competition contacts
+      summary: List contacts
+      description: Get a list of all contacts in a competition
+      operationId: getCompetitionContacts
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition the Contact is in
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Competition/properties/contacts'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - competition contacts
+      summary: Add a contact
+      description: Add a new contact to the competition
+      operationId: addCompetitionContact
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition to add the Contact to
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The Contact definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompetitionContactDetails'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewResourceDetails'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: conflicting contact ID
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /c/{competitionID}/ct/{contactID}:
+    get:
+      tags:
+        - competition contacts
+      summary: Get a Contact
+      description: Get the contact with the specified ID
+      operationId: getCompetitionContactByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition the Contact is in
+          required: true
+          schema:
+            type: string
+        - name: contactID
+          in: path
+          description: ID of the Contact to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Competition/properties/contacts/items'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or contact ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - competition contacts
+      summary: Update a Contact
+      description: Update a Contact's basic details
+      operationId: updateCompetitionContactByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition containing the Contact
+          required: true
+          schema:
+            type: string
+        - name: contactID
+          in: path
+          description: ID of the Contact to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The Contact details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompetitionContactDetails'
+      responses:
+        '200':
+          description: success
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or contact ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - competition contacts
+      summary: Delete the Contact
+      description: Delete the Contact with the specified ID
+      operationId: deleteCompetitionContactByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition containing the Contact
+          required: true
+          schema:
+            type: string
+        - name: contactID
+          in: path
+          description: ID of the Contact to delete
           required: true
           schema:
             type: string
@@ -431,6 +639,240 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /c/{competitionID}/c/{clubID}/ct:
+    get:
+      tags:
+        - club contacts
+      summary: List contacts
+      description: Get a list of all contacts in a club
+      operationId: getClubContacts
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition the Contacts is in
+          required: true
+          schema:
+            type: string
+        - name: clubID
+          in: path
+          description: ID of the Club the Contacts are in
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Competition/properties/clubs/items/properties/contacts'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition or club ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - club contacts
+      summary: Add a contact
+      description: Add a new contact to the club
+      operationId: addClubContact
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition to add the Contact to
+          required: true
+          schema:
+            type: string
+        - name: clubID
+          in: path
+          description: ID of the Club to add the Contact to
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The Contact definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClubContactDetails'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewResourceDetails'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: conflicting contact ID
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /c/{competitionID}/c/{clubID}/ct/{contactID}:
+    get:
+      tags:
+        - club contacts
+      summary: Get a Contact
+      description: Get the contact with the specified ID
+      operationId: getClubContactByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition the Contact is in
+          required: true
+          schema:
+            type: string
+        - name: clubID
+          in: path
+          description: ID of the Club the Contact is in
+          required: true
+          schema:
+            type: string
+        - name: contactID
+          in: path
+          description: ID of the Contact to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Competition/properties/clubs/items/properties/contacts/items'
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition, club or contact ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - club contacts
+      summary: Update a Contact
+      description: Update a Contact's basic details
+      operationId: updateClubContactByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition containing the Club
+          required: true
+          schema:
+            type: string
+        - name: clubID
+          in: path
+          description: ID of the Club containing the Contact
+          required: true
+          schema:
+            type: string
+        - name: contactID
+          in: path
+          description: ID of the Contact to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The Contact details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClubContactDetails'
+      responses:
+        '200':
+          description: success
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: no such competition, club or contact ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - club contacts
+      summary: Delete the Contact
+      description: Delete the Contact with the specified ID
+      operationId: deleteClubContactByID
+      parameters:
+        - name: competitionID
+          in: path
+          description: ID of the Competition containing the Club
+          required: true
+          schema:
+            type: string
+        - name: clubID
+          in: path
+          description: ID of the Club containing the Contact
+          required: true
+          schema:
+            type: string
+        - name: contactID
+          in: path
+          description: ID of the Contact to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /c/{competitionID}/t:
     get:
       tags:
@@ -635,13 +1077,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /c/{competitionID}/t/{teamID}/c:
+  /c/{competitionID}/t/{teamID}/ct:
     get:
       tags:
         - team contacts
       summary: List contacts
       description: Get a list of all contacts in a team
-      operationId: getContacts
+      operationId: getTeamContacts
       parameters:
         - name: competitionID
           in: path
@@ -685,7 +1127,7 @@ paths:
         - team contacts
       summary: Add a contact
       description: Add a new contact to the team
-      operationId: addContact
+      operationId: addTeamContact
       parameters:
         - name: competitionID
           in: path
@@ -704,7 +1146,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateContactDetails'
+              $ref: '#/components/schemas/CreateTeamContactDetails'
       responses:
         '200':
           description: success
@@ -719,20 +1161,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: conflicting team ID
+          description: conflicting contact ID
         '500':
           description: server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /c/{competitionID}/t/{teamID}/c/{contactID}:
+  /c/{competitionID}/t/{teamID}/ct/{contactID}:
     get:
       tags:
         - team contacts
       summary: Get a Contact
       description: Get the contact with the specified ID
-      operationId: getContactByID
+      operationId: getTeamContactByID
       parameters:
         - name: competitionID
           in: path
@@ -782,7 +1224,7 @@ paths:
         - team contacts
       summary: Update a Contact
       description: Update a Contact's basic details
-      operationId: updateContactByID
+      operationId: updateTeamContactByID
       parameters:
         - name: competitionID
           in: path
@@ -807,7 +1249,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContactDetails'
+              $ref: '#/components/schemas/UpdateTeamContactDetails'
       responses:
         '200':
           description: success
@@ -834,7 +1276,7 @@ paths:
         - team contacts
       summary: Delete the Contact
       description: Delete the Contact with the specified ID
-      operationId: deleteContactByID
+      operationId: deleteTeamContactByID
       parameters:
         - name: competitionID
           in: path
@@ -1643,6 +2085,8 @@ components:
           $ref: '#/components/schemas/Competition/properties/metadata'
         name:
           $ref: '#/components/schemas/Competition/properties/name'
+        contacts:
+          $ref: '#/components/schemas/Competition/properties/contacts'
         notes:
           $ref: '#/components/schemas/Competition/properties/notes'
         clubs:
@@ -1697,6 +2141,77 @@ components:
           type: string
           minLength: 1
           maxLength: 10000
+        contacts:
+          description: A list of contact details for the competition
+          type: array
+          items:
+            description: A single contact for the competition
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                description: "A unique ID for this contact, e.g. 'Contact1'.  This must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? ="
+                type: string
+                minLength: 1
+                maxLength: 100
+                pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+              name:
+                description: The name of this contact
+                type: string
+                minLength: 1
+                maxLength: 1000
+              notes:
+                description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+                type: string
+                minLength: 1
+              roles:
+                description: The roles of this contact within the competition
+                type: array
+                minItems: 1
+                uniqueItems: true
+                items:
+                  description: A role of this contact
+                  type: string
+                  default: secretary
+                  enum:
+                    - director
+                    - fixtures
+                    - logistics
+                    - communications
+                    - officials
+                    - results
+                    - marketing
+                    - safety
+                    - volunteer
+                    - welfare
+                    - hospitality
+                    - ceremonies
+                    - secretary
+                    - treasurer
+                    - medic
+              emails:
+                description: The email addresses for this contact
+                type: array
+                minItems: 1
+                uniqueItems: true
+                items:
+                  description: An email address for this contact
+                  type: string
+                  format: email
+                  minLength: 3
+              phones:
+                description: The telephone numbers for this contact
+                type: array
+                minItems: 1
+                uniqueItems: true
+                items:
+                  description: A telephone number for this contact
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+            required:
+              - id
+              - roles
         notes:
           description: Free form string to add notes about the competition.  This can be
             used for arbitrary content that various implementations can use
@@ -1721,6 +2236,72 @@ components:
                 type: string
                 minLength: 1
                 maxLength: 1000
+              contacts:
+                description: A list of contact details for the club
+                type: array
+                items:
+                  description: A single contact for the club
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      description: "A unique ID for this contact, e.g. 'CL1Contact1'.  This must be unique within the club.  It must contain only ASCII printable characters excluding \" : { } ? ="
+                      type: string
+                      minLength: 1
+                      maxLength: 100
+                      pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+                    name:
+                      description: The name of this contact
+                      type: string
+                      minLength: 1
+                      maxLength: 1000
+                    notes:
+                      description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+                      type: string
+                      minLength: 1
+                    roles:
+                      description: The roles of this contact within the club
+                      type: array
+                      minItems: 1
+                      uniqueItems: true
+                      items:
+                        description: A role of this contact
+                        type: string
+                        default: secretary
+                        enum:
+                          - chair
+                          - vice
+                          - treasurer
+                          - secretary
+                          - welfare
+                          - communications
+                          - marketing
+                          - volunteer
+                          - logistics
+                          - coaching
+                    emails:
+                      description: The email addresses for this contact
+                      type: array
+                      minItems: 1
+                      uniqueItems: true
+                      items:
+                        description: An email address for this contact
+                        type: string
+                        format: email
+                        minLength: 3
+                    phones:
+                      description: The telephone numbers for this contact
+                      type: array
+                      minItems: 1
+                      uniqueItems: true
+                      items:
+                        description: A telephone number for this contact
+                        type: string
+                        minLength: 1
+                        maxLength: 50
+                  required:
+                    - id
+                    - roles
               notes:
                 description: Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use
                 type: string
@@ -1766,6 +2347,10 @@ components:
                       type: string
                       minLength: 1
                       maxLength: 1000
+                    notes:
+                      description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+                      type: string
+                      minLength: 1
                     roles:
                       description: The roles of this contact within the team
                       type: array
@@ -2542,7 +3127,7 @@ components:
             description: A unique identifier for the competition
             type: string
           name:
-            description: The name of the competition, taken from the Comeptition data
+            description: The name of the competition, taken from the competition data
             type: string
           complete:
             description: Whether the competition is compelte (all matches have been played)
@@ -2608,6 +3193,125 @@ components:
             required:
               - key
               - value
+    CreateCompetitionContactDetails:
+      description: The details of the new contact
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: "A unique ID for this contact, e.g. 'Contact1'.  This must be unique within the competition.  It must contain only ASCII printable characters excluding \" : { } ? ="
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        notes:
+          description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+        roles:
+          description: The roles of this contact within the competition
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A role of this contact
+            type: string
+            enum:
+              - director
+              - fixtures
+              - logistics
+              - communications
+              - officials
+              - results
+              - marketing
+              - safety
+              - volunteer
+              - welfare
+              - hospitality
+              - ceremonies
+              - secretary
+              - treasurer
+              - medic
+        emails:
+          description: The email addresses for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: An email address for this contact
+            type: string
+            format: email
+            minLength: 3
+        phones:
+          description: The telephone numbers for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A telephone number for this contact
+            type: string
+            minLength: 1
+            maxLength: 50
+      required:
+        - roles
+    UpdateCompetitionContactDetails:
+      description: Details on a contact
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        notes:
+          description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+        roles:
+          description: The roles of this contact within the club
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A role of this contact
+            type: string
+            enum:
+              - chair
+              - vice
+              - treasurer
+              - secretary
+              - welfare
+              - communications
+              - marketing
+              - volunteer
+              - logistics
+              - coaching
+        emails:
+          description: The email addresses for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: An email address for this contact
+            type: string
+            format: email
+            minLength: 3
+        phones:
+          description: The telephone numbers for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A telephone number for this contact
+            type: string
+            minLength: 1
+            maxLength: 50
     CreateClubDetails:
       description: The details of the new club
       type: object
@@ -2644,6 +3348,120 @@ components:
           description: Free form string to add notes about a club.  This can be used for arbitrary content that various implementations can use
           type: string
           minLength: 1
+    CreateClubContactDetails:
+      description: The details of the new contact
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: "A unique ID for this contact, e.g. 'CL1Contact1'.  This must be unique within the club.  It must contain only ASCII printable characters excluding \" : { } ? ="
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: "^((?![\":{}?=])[\\x20-\\x7F])+$"
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        notes:
+          description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+        roles:
+          description: The roles of this contact within the club
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A role of this contact
+            type: string
+            enum:
+              - chair
+              - vice
+              - treasurer
+              - secretary
+              - welfare
+              - communications
+              - marketing
+              - volunteer
+              - logistics
+              - coaching
+        emails:
+          description: The email addresses for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: An email address for this contact
+            type: string
+            format: email
+            minLength: 3
+        phones:
+          description: The telephone numbers for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A telephone number for this contact
+            type: string
+            minLength: 1
+            maxLength: 50
+      required:
+        - roles
+    UpdateClubContactDetails:
+      description: Details on a contact
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name of this contact
+          type: string
+          minLength: 1
+          maxLength: 1000
+        notes:
+          description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
+        roles:
+          description: The roles of this contact within the club
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A role of this contact
+            type: string
+            enum:
+              - chair
+              - vice
+              - treasurer
+              - secretary
+              - welfare
+              - communications
+              - marketing
+              - volunteer
+              - logistics
+              - coaching
+        emails:
+          description: The email addresses for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: An email address for this contact
+            type: string
+            format: email
+            minLength: 3
+        phones:
+          description: The telephone numbers for this contact
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            description: A telephone number for this contact
+            type: string
+            minLength: 1
+            maxLength: 50
     CreateTeamDetails:
       description: The details of the new team
       additionalProperties: false
@@ -2690,7 +3508,7 @@ components:
             for arbitrary content that various implementations can use
           type: string
           minLength: 1
-    CreateContactDetails:
+    CreateTeamContactDetails:
       description: The details of the new contact
       type: object
       additionalProperties: false
@@ -2706,6 +3524,10 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
+        notes:
+          description: Free form string to add notes about a contact.  This can be used for arbitrary content that various implementations can use
+          type: string
+          minLength: 1
         roles:
           description: The roles of this contact within the team
           type: array
@@ -2714,7 +3536,6 @@ components:
           items:
             description: A role of this contact
             type: string
-            default: secretary
             enum:
               - secretary
               - treasurer
@@ -2745,7 +3566,7 @@ components:
             maxLength: 50
       required:
         - roles
-    UpdateContactDetails:
+    UpdateTeamContactDetails:
       description: Details on a contact
       type: object
       additionalProperties: false
@@ -2763,7 +3584,6 @@ components:
           items:
             description: A role of this contact
             type: string
-            default: secretary
             enum:
               - secretary
               - treasurer

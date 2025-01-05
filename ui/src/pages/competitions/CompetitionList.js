@@ -1,16 +1,21 @@
 import React, { useState } from 'react'
-import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router-dom'
+import { Link, redirect, useLoaderData, useNavigate, useNavigation, useRouteLoaderData } from 'react-router'
 
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/Unstable_Grid2'
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
-import IconButton from '@mui/material/IconButton'
-import LinearProgress from '@mui/material/LinearProgress'
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
-import Typography from '@mui/material/Typography'
+
+import {
+  Box,
+  Button,
+  Divider,
+  Grid2,
+  IconButton,
+  LinearProgress,
+  Typography
+} from '@mui/material'
+import {
+  AddRounded,
+  HomeRounded,
+  RefreshRounded
+} from '@mui/icons-material'
 
 import CompetitionAPI from '../../apis/competitionAPI'
 import CompetitionCard from './CompetitionCard'
@@ -70,7 +75,7 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
   if (Roles.roleCheck(userInfo.roles, Roles.Competition.create)) {
     newCompetitionButton = (
       <Box textAlign="left" paddingLeft="10px">
-        <Button aria-label="New competition" variant="outlined" startIcon={<AddRoundedIcon />} onClick={openNewCompetition}>New Competition</Button>
+        <Button aria-label="New competition" variant="outlined" startIcon={<AddRounded />} onClick={openNewCompetition}>New Competition</Button>
       </Box>
     )
   }
@@ -80,12 +85,12 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
         <Box sx={{ display: 'flex' }}>
           <Link to={`/`}>
             <IconButton size="small" aria-label="refresh list" sx={{ marginRight: '10px' }}  color="inherit">
-              <HomeRoundedIcon color='action' />
+              <HomeRounded color='action' />
             </IconButton>
           </Link>
           <Typography sx={{ flexGrow: '1', marginBottom: '3px' }} variant="h5" textAlign="left" gutterBottom>Competitions</Typography>
           <IconButton size="small" aria-label="refresh list" onClick={() => { navigate('.', { replace: true }) }} color="inherit">
-            <RefreshRoundedIcon color='action' />
+            <RefreshRounded color='action' />
           </IconButton>
         </Box>
       </Box>
@@ -100,7 +105,7 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
       </Box>
       {newCompetitionButton}
       <Box padding="10px">
-        <Grid container spacing={2}>
+        <Grid2 container spacing={2}>
           {competitionList.sort((a, b) => {
             if (a.complete && !b.complete) {
               return 1
@@ -111,7 +116,7 @@ export default function CompetitionList ({ setSuccessMessage, setErrorMessage })
           }).map(item => (
             <CompetitionCard key={item.id} competition={item} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           ))}
-        </Grid>
+        </Grid2>
       </Box>
       { newCompetitionOpen ? <NewCompetition closeDialog={closeNewCompetition} loadCompetition={loadCompetition} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
     </Box>

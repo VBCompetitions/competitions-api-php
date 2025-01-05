@@ -6,14 +6,13 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Unstable_Grid2'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { Link, useRouteLoaderData } from 'react-router-dom'
+import { Link, useRouteLoaderData } from 'react-router'
 
 import UpdateCompetition from './dialogs/UpdateCompetition'
 import DeleteCompetition from './dialogs/DeleteCompetition'
@@ -85,7 +84,7 @@ export default function CompetitionCard ({ competition, setLoading, setSuccessMe
   }
 
   return (
-    <Grid>
+    <>
       <Box sx={{ minWidth: 200 }}>
         <Card variant="outlined" sx={{ width: 250, height: 250 }}>
           <CardActionArea>
@@ -109,6 +108,6 @@ export default function CompetitionCard ({ competition, setLoading, setSuccessMe
       </Box>
       { deleteCompetitionOpen ? <DeleteCompetition competition={competition} closeDialog={closeDeleteCompetition} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
       { updateCompetitionOpen ? <UpdateCompetition competition={competition} closeDialog={closeEditCompetition} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
-    </Grid>
+    </>
   )
 }
