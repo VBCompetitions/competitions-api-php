@@ -16,7 +16,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { useRouteLoaderData } from 'react-router-dom'
+import { useRouteLoaderData } from 'react-router'
 
 import DeletePlayer from './dialogs/DeletePlayer'
 import UpdatePlayer from './dialogs/UpdatePlayer'

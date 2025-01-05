@@ -133,7 +133,7 @@ final class Players
         $context->getLogger()->info('Request to update the player with ID ['.$player_id.'] in competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Utils::loadCompetition($config, $req, $context, Roles::contact()::update(), $competition_id, '0043');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::player()::update(), $competition_id, '0043');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }

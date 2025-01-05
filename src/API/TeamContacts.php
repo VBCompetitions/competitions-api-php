@@ -8,18 +8,20 @@ use Ramsey\Uuid\Uuid;
 use Throwable;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
-use VBCompetitions\Competitions\ContactRole;
 use VBCompetitions\CompetitionsAPI\{
     Config,
     ErrorMessage,
     Roles,
     Utils
 };
-use VBCompetitions\Competitions\CompetitionTeam;
-use VBCompetitions\Competitions\Contact;
+use VBCompetitions\Competitions\{
+    CompetitionTeam,
+    TeamContact,
+    TeamContactRole
+};
 
 // Errorcodes 001FN
-final class Contacts
+final class TeamContacts
 {
     public static function getContacts(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
@@ -27,7 +29,7 @@ final class Contacts
         $context->getLogger()->info('Request to get the contacts in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Utils::loadCompetition($config, $req, $context, Roles::contact()::get(), $competition_id, '0010');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::teamContact()::get(), $competition_id, '0010');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -45,10 +47,10 @@ final class Contacts
     public static function createContact(Config $config, string $competition_id, string $team_id, Request $req, Response $res) : Response
     {
         $context = $req->getAttribute('context');
-        $context->getLogger()->info('Request to create a contact in competition with ID ['.$competition_id.']');
+        $context->getLogger()->info('Request to create a contact in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Utils::loadCompetition($config, $req, $context, Roles::contact()::create(), $competition_id, '0011');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::teamContact()::create(), $competition_id, '0011');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -59,7 +61,7 @@ final class Contacts
         }
 
         try {
-            $contact_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_CONTACT_CREATE, '0011');
+            $contact_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_TEAM_CONTACT_CREATE, '0011');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -76,19 +78,22 @@ final class Contacts
             $roles = [];
             foreach ($contact_data->roles as $role) {
                 array_push($roles, match ($role) {
-                    'secretary' => ContactRole::SECRETARY,
-                    'treasurer' => ContactRole::TREASURER,
-                    'manager' => ContactRole::MANAGER,
-                    'captain' => ContactRole::CAPTAIN,
-                    'coach' => ContactRole::COACH,
-                    'assistantCoach' => ContactRole::ASSISTANT_COACH,
-                    'medic' => ContactRole::MEDIC,
+                    'secretary' => TeamContactRole::SECRETARY,
+                    'treasurer' => TeamContactRole::TREASURER,
+                    'manager' => TeamContactRole::MANAGER,
+                    'captain' => TeamContactRole::CAPTAIN,
+                    'coach' => TeamContactRole::COACH,
+                    'assistantCoach' => TeamContactRole::ASSISTANT_COACH,
+                    'medic' => TeamContactRole::MEDIC,
                     default => throw new Exception('Invalid role: '.$role)
                 });
             }
-            $contact = new Contact($team, $contact_id, $roles);
+            $contact = new TeamContact($team, $contact_id, $roles);
             if (property_exists($contact_data, 'name')) {
                 $contact->setName($contact_data->name);
+            }
+            if (property_exists($contact_data, 'notes')) {
+                $contact->setNotes($contact_data->notes);
             }
             if (property_exists($contact_data, 'emails')) {
                 foreach ($contact_data->emails as $email) {
@@ -126,7 +131,7 @@ final class Contacts
         $context->getLogger()->info('Request to get the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Utils::loadCompetition($config, $req, $context, Roles::team()::get(), $competition_id, '0012');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::teamContact()::get(), $competition_id, '0012');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -153,7 +158,7 @@ final class Contacts
         $context->getLogger()->info('Request to update the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Utils::loadCompetition($config, $req, $context, Roles::contact()::update(), $competition_id, '0013');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::teamContact()::update(), $competition_id, '0013');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -170,7 +175,7 @@ final class Contacts
         }
 
         try {
-            $contact_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_CONTACT_UPDATE, '0013');
+            $contact_data = Utils::getAndValidateData($config, $req, $context, Config::VALIDATE_TEAM_CONTACT_UPDATE, '0013');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }
@@ -179,19 +184,22 @@ final class Contacts
             if (property_exists($contact_data, 'name')) {
                 $old_name = $contact->getName();
                 $contact->setName($contact_data->name);
-                $context->getLogger()->info('Updating name of contact with ID ['.$team_id.'] from ['.$old_name.'] to ['.$contact_data->name.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
+                $context->getLogger()->info('Updating name of contact with ID ['.$contact_id.'] from ['.$old_name.'] to ['.$contact_data->name.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
+            }
+            if (property_exists($contact_data, 'notes')) {
+                $contact->setNotes($contact_data->notes);
             }
             if (property_exists($contact_data, 'roles')) {
                 $roles = [];
                 foreach ($contact_data->roles as $role) {
                     array_push($roles, match ($role) {
-                        'secretary' => ContactRole::SECRETARY,
-                        'treasurer' => ContactRole::TREASURER,
-                        'manager' => ContactRole::MANAGER,
-                        'captain' => ContactRole::CAPTAIN,
-                        'coach' => ContactRole::COACH,
-                        'assistantCoach' => ContactRole::ASSISTANT_COACH,
-                        'medic' => ContactRole::MEDIC,
+                        'secretary' => TeamContactRole::SECRETARY,
+                        'treasurer' => TeamContactRole::TREASURER,
+                        'manager' => TeamContactRole::MANAGER,
+                        'captain' => TeamContactRole::CAPTAIN,
+                        'coach' => TeamContactRole::COACH,
+                        'assistantCoach' => TeamContactRole::ASSISTANT_COACH,
+                        'medic' => TeamContactRole::MEDIC,
                         default => throw new Exception('Invalid role: '.$role)
                     });
                 }
@@ -224,7 +232,7 @@ final class Contacts
         $context->getLogger()->info('Request to delete the contact with ID ['.$contact_id.'] in team with ID ['.$team_id.'] in competition with ID ['.$competition_id.']');
 
         try {
-            $competition = Utils::loadCompetition($config, $req, $context, Roles::contact()::delete(), $competition_id, '0014');
+            $competition = Utils::loadCompetition($config, $req, $context, Roles::teamContact()::delete(), $competition_id, '0014');
         } catch (ErrorMessage $err) {
             return $err->respond($context);
         }

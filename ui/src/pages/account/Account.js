@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, redirect, useLoaderData, useRouteLoaderData } from 'react-router-dom'
+import { Link, redirect, useLoaderData, useRouteLoaderData } from 'react-router'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

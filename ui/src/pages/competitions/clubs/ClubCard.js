@@ -1,18 +1,21 @@
 import React, { useState } from 'react'
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardActions from '@mui/material/CardActions'
-import CardContent from '@mui/material/CardContent'
-import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Unstable_Grid2'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-import MenuItem from '@mui/material/MenuItem'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CircularProgress,
+  Grid2,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography
+} from '@mui/material'
+
+import { MenuRounded } from '@mui/icons-material'
 
 function TeamCard ({ competition, club, selectAction, triggerLoading, triggerRefresh }) {
   const [menuWindow, setMenuWindow] = useState(null)
@@ -94,7 +97,7 @@ function TeamCard ({ competition, club, selectAction, triggerLoading, triggerRef
   }
 
   return (
-    <Grid>
+    <Grid2>
       <Box sx={{ minWidth: 150 }}>
         <Card variant="outlined" sx={{ width: 150, height: 120 }}>
           <CardActionArea onClick={() => {selectAction(competition.id)}}>
@@ -115,7 +118,7 @@ function TeamCard ({ competition, club, selectAction, triggerLoading, triggerRef
             <Box sx={{ width: "100%", textAlign: "right" }}>
               <IconButton size="small" aria-label="competition menu" aria-controls="menu-competition-card"
                 aria-haspopup="true" onClick={openMenu} color="inherit">
-                <MenuRoundedIcon color='action' />
+                <MenuRounded color='action' />
               </IconButton>
               <Menu id="menu-competition-card" anchorEl={menuWindow} anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
                 keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }}
@@ -127,7 +130,7 @@ function TeamCard ({ competition, club, selectAction, triggerLoading, triggerRef
           </CardActions>
         </Card>
       </Box>
-    </Grid>
+    </Grid2>
   )
 }
 

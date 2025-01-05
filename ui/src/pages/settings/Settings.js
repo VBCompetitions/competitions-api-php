@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { Link, useNavigate, useRouteLoaderData } from 'react-router'
 
 import ArticleRoundedIcon from '@mui/icons-material/ArticleRounded'
 import Box from '@mui/material/Box'

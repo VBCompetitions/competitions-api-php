@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Unstable_Grid2'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid2
+} from '@mui/material'
+import { AddRounded } from '@mui/icons-material'
 import TeamCard from './TeamCard.js'
-import { useRouteLoaderData } from 'react-router-dom'
+import { useRouteLoaderData } from 'react-router'
 
 import NewTeam from './dialogs/NewTeam'
 import Roles from '../../components/Roles'
@@ -30,7 +32,7 @@ export default function TeamList ({ competition, competitionID, setLoading, setS
 
   return (
     <Box>
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {
           Roles.roleCheck(userInfo.roles, Roles.Team.create)
           ?
@@ -41,7 +43,7 @@ export default function TeamList ({ competition, competitionID, setLoading, setS
             </Box>
             :
             <Box padding="8px" sx={{ width: 150, height: 120 }}>
-              <Button aria-label="Add Team" variant="outlined" startIcon={<AddRoundedIcon />} onClick={openNewTeam} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Team</Button>
+              <Button aria-label="Add Team" variant="outlined" startIcon={<AddRounded />} onClick={openNewTeam} sx={{ backgroundColor: 'white', width: 150, height: 120 }}>Add Team</Button>
             </Box>
           :
           null
@@ -53,7 +55,7 @@ export default function TeamList ({ competition, competitionID, setLoading, setS
             <TeamCard key={item.id} competitionID={competitionID} team={item} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
           ))
         }
-      </Grid>
+      </Grid2>
       { newTeamOpen ? <NewTeam competitionID={competitionID} setLoading={setLoadingNewTeam} closeDialog={closeNewTeam} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
     </Box>
   )

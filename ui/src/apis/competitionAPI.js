@@ -2,10 +2,13 @@
 // import addFormats from 'ajv-formats'
 
 import { Competition } from '@vbcompetitions/competitions'
-import { validateClubCreate,
+import {
+  validateClubCreate,
   validateClubUpdate,
-  validateContactCreate,
-  validateContactUpdate,
+  validateClubContactCreate,
+  validateClubContactUpdate,
+  validateCompetitionContactCreate,
+  validateCompetitionContactUpdate,
   validateGroupAppend,
   validateGroupUpdate,
   validateMatchResultUpdate,
@@ -15,6 +18,8 @@ import { validateClubCreate,
   validatePlayerUpdate,
   validateStageAppend,
   validateStageUpdate,
+  validateTeamContactCreate,
+  validateTeamContactUpdate,
   validateTeamCreate,
   validateTeamUpdate
 } from './competitionSchema'

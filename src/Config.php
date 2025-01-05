@@ -11,10 +11,14 @@ final class Config extends BaseConfig
 
     public const VALIDATE_CLUB_CREATE = 'clubCreate';
     public const VALIDATE_CLUB_UPDATE = 'clubUpdate';
+    public const VALIDATE_CLUB_CONTACT_CREATE = 'clubContactCreate';
+    public const VALIDATE_CLUB_CONTACT_UPDATE = 'clubContactUpdate';
+    public const VALIDATE_COMPETITION_CONTACT_CREATE = 'competitionContactCreate';
+    public const VALIDATE_COMPETITION_CONTACT_UPDATE = 'competitionContactUpdate';
     public const VALIDATE_TEAM_CREATE = 'teamCreate';
     public const VALIDATE_TEAM_UPDATE = 'teamUpdate';
-    public const VALIDATE_CONTACT_CREATE = 'contactCreate';
-    public const VALIDATE_CONTACT_UPDATE = 'contactUpdate';
+    public const VALIDATE_TEAM_CONTACT_CREATE = 'teamContactCreate';
+    public const VALIDATE_TEAM_CONTACT_UPDATE = 'teamContactUpdate';
     public const VALIDATE_PLAYER_CREATE = 'playerCreate';
     public const VALIDATE_PLAYER_UPDATE = 'playerUpdate';
     public const VALIDATE_PLAYER_TRANSFER = 'playerTransfer';

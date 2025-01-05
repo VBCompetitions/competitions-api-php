@@ -9,7 +9,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import ScoreboardRoundedIcon from '@mui/icons-material/ScoreboardRounded';
 import Typography from '@mui/material/Typography'
-import { useRouteLoaderData } from 'react-router-dom'
+import { useRouteLoaderData } from 'react-router'
 
 // import { GroupMatch as CGroupMatch } from '@vbcompetitions/competitions'
 import TeamAndScoreBox from './TeamAndScoreBox.js'

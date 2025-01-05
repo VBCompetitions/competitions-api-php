@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
+import { useRouteLoaderData } from 'react-router'
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardActions from '@mui/material/CardActions'
-import CardContent from '@mui/material/CardContent'
-import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Unstable_Grid2'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-import MenuItem from '@mui/material/MenuItem'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
-import { useRouteLoaderData } from 'react-router-dom'
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CircularProgress,
+  Grid2,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography
+} from '@mui/material'
+
+import { MenuRounded } from '@mui/icons-material'
 
 import DeleteTeam from './dialogs/DeleteTeam'
 import UpdateTeam from './dialogs/UpdateTeam'
@@ -72,7 +75,7 @@ export default function TeamCard ({ competitionID, team, setLoading, setSuccessM
         <Box sx={{ width: "100%", textAlign: "right" }}>
           <IconButton size="small" aria-label="team menu" aria-controls="menu-team-card"
             aria-haspopup="true" onClick={openMenu} color="inherit">
-            <MenuRoundedIcon color='action' />
+            <MenuRounded color='action' />
           </IconButton>
           <Menu id="menu-team-card" anchorEl={menuWindow} anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
             keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }}
@@ -87,7 +90,7 @@ export default function TeamCard ({ competitionID, team, setLoading, setSuccessM
   }
 
   return (
-    <Grid>
+    <Grid2>
       <Box sx={{ minWidth: 150 }}>
         <Card variant="outlined" sx={{ width: 150, height: 120 }}>
           <CardActionArea>
@@ -108,6 +111,6 @@ export default function TeamCard ({ competitionID, team, setLoading, setSuccessM
       </Box>
       { deleteTeamOpen ? <DeleteTeam competitionID={competitionID} team={team} closeDialog={closeDeleteTeam} setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage}/> : null }
       { updateTeamOpen ? <UpdateTeam competitionID={competitionID} team={team} closeDialog={closeUpdateTeam} setUpdating={setUpdating} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} /> : null }
-    </Grid>
+    </Grid2>
   )
 }
